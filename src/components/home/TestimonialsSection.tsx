@@ -48,12 +48,20 @@ const CarouselContainer = styled.div`
   display: flex;
   align-items: center;
   justify-content: center;
+
+  @media (max-width: 768px) {
+    height: 600px;
+  }
 `;
 
 const TestimonialCard = styled(motion.div)`
   position: absolute;
   width: 100%;
   padding: ${({ theme }) => theme.spacing.xl};
+
+  @media (max-width: 768px) {
+    padding: ${({ theme }) => theme.spacing.md};
+  }
 `;
 
 const Quote = styled.p`
@@ -64,6 +72,10 @@ const Quote = styled.p`
   font-style: italic;
   color: ${({ theme }) => theme.colors.text};
   font-weight: 300;
+
+  @media (max-width: 768px) {
+    font-size: 1.25rem;
+  }
 `;
 
 const Author = styled.div`
