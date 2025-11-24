@@ -9,8 +9,8 @@ export async function POST(request: Request) {
         const { name, email, company, projectType, budget, description, timeline } = body;
 
         const { data, error } = await resend.emails.send({
-            from: 'Bonsai Web Design <onboarding@resend.dev>', // Default testing domain
-            to: ['contact@bonsaiwebdesign.com'], // Ideally this should be the user's email, but for now we send to the owner
+            from: 'Bonsai Web Design <contact@bonsaiwebdesign.com>',
+            to: ['contact@bonsaiwebdesign.com'],
             subject: `New Project Inquiry from ${name}`,
             html: `
         <h1>New Project Inquiry</h1>

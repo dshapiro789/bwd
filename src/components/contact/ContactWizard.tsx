@@ -200,8 +200,18 @@ export default function ContactWizard() {
         resolver: zodResolver(
             step === 1 ? step1Schema : step === 2 ? step2Schema : step3Schema
         ) as any,
-        defaultValues: formData,
+        defaultValues: {
+            name: '',
+            email: '',
+            company: '',
+            projectType: '',
+            budget: '',
+            description: '',
+            timeline: '',
+            ...formData,
+        },
         mode: 'onChange',
+        shouldUnregister: false,
     });
 
     const onNext = async () => {
