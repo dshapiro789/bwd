@@ -78,9 +78,9 @@ export default function Footer() {
           </FooterColumn>
           <FooterColumn>
             <FooterTitle>Social</FooterTitle>
-            <FooterLink href="#">Instagram</FooterLink>
-            <FooterLink href="#">LinkedIn</FooterLink>
-            <FooterLink href="#">Twitter</FooterLink>
+            <FooterLink href="https://www.instagram.com/bonsaiwebdesign/" target="_blank" rel="noopener noreferrer">Instagram</FooterLink>
+            <FooterLink href="https://www.linkedin.com/in/davidshapiro7/" target="_blank" rel="noopener noreferrer">LinkedIn</FooterLink>
+            <FooterLink href="https://www.facebook.com/profile.php?id=61583882777025" target="_blank" rel="noopener noreferrer">Facebook</FooterLink>
           </FooterColumn>
           <FooterColumn>
             <FooterTitle>Accepted Payments</FooterTitle>
