@@ -189,6 +189,7 @@ const Button = styled.button<{ $variant?: 'primary' | 'secondary' }>`
 export default function ContactWizard() {
     const [step, setStep] = useState(1);
     const [formData, setFormData] = useState<Partial<FormData>>({});
+    const [isSubmitting, setIsSubmitting] = useState(false);
 
     const {
         register,
@@ -215,9 +216,29 @@ export default function ContactWizard() {
     };
 
     const onSubmit = async (data: FormData) => {
-        console.log('Form Data:', { ...formData, ...data });
-        // Here we would integrate with Resend API
-        alert('Thank you! We will be in touch shortly.');
+        setIsSubmitting(true);
+        try {
+            const finalData = { ...formData, ...data };
+            const response = await fetch('/api/send', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(finalData),
+            });
+
+            if (response.ok) {
+                alert('Thank you! We will be in touch shortly.');
+                // Optional: Reset form or redirect
+            } else {
+                throw new Error('Failed to send message');
+            }
+        } catch (error) {
+            console.error('Error sending message:', error);
+            alert('Something went wrong. Please try again later.');
+        } finally {
+            setIsSubmitting(false);
+        }
     };
 
     return (
@@ -329,8 +350,8 @@ export default function ContactWizard() {
                                 Next Step
                             </Button>
                         ) : (
-                            <Button type="submit" style={{ marginLeft: 'auto' }}>
-                                Submit Request
+                            <Button type="submit" style={{ marginLeft: 'auto' }} disabled={isSubmitting}>
+                                {isSubmitting ? 'Sending...' : 'Submit Request'}
                             </Button>
                         )}
                     </ButtonGroup>
