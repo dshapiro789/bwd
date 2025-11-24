@@ -129,7 +129,7 @@ export default function HeroSection() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, delay: 0.6, ease: "easeOut" }}
         >
-          We build bespoke web experiences for brands that refuse to compromise on elegance.
+          We craft tailored web experiences for brands that refuse to compromise on elegance.
         </SubText>
       </Content>
 

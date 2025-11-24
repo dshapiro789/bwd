@@ -76,71 +76,71 @@ const ServiceDescription = styled.p`
 `;
 
 const services = [
-    {
-        id: 1,
-        title: 'Experience Design',
-        description: 'Intuitive interfaces designed to captivate and convert. We blend aesthetics with functionality to create seamless user journeys.',
-        icon: <SiFigma />,
-    },
-    {
-        id: 2,
-        title: 'Technical Development',
-        description: 'Robust, scalable architectures built with modern frameworks. Speed, security, and performance come as standard.',
-        icon: <SiNextdotjs />,
-    },
-    {
-        id: 3,
-        title: 'Brand Identity',
-        description: 'Crafting visual languages that tell your story. From logos to typography, we build systems that resonate with your audience.',
-        icon: <SiReact />, // Using React icon as abstract symbol for "System"
-    },
-    {
-        id: 4,
-        title: 'E-Commerce',
-        description: 'Seamless shopping experiences. From custom storefronts to secure payment integrations, we help you sell with style.',
-        icon: <SiShopify />,
-    },
+  {
+    id: 1,
+    title: 'Experience Design',
+    description: 'Intuitive interfaces designed to captivate and convert. We blend aesthetics with functionality to create seamless user journeys.',
+    icon: <SiFigma />,
+  },
+  {
+    id: 2,
+    title: 'Technical Development',
+    description: 'Robust, scalable architectures built with modern frameworks. Speed, security, and performance come as standard.',
+    icon: <SiNextdotjs />,
+  },
+  {
+    id: 3,
+    title: 'Brand Identity',
+    description: 'Crafting visual languages that tell your story. From logos to typography, we build systems that resonate with your audience.',
+    icon: <SiReact />, // Using React icon as abstract symbol for "System"
+  },
+  {
+    id: 4,
+    title: 'E-Commerce',
+    description: 'Seamless shopping experiences. From custom storefronts to secure payment integrations, we help you sell with style.',
+    icon: <SiShopify />,
+  },
 ];
 
 export default function ServicesSection() {
-    return (
-        <ServicesWrapper id="services">
-            <Container>
-                <Header>
-                    <Title
-                        initial={{ opacity: 0, y: 20 }}
-                        whileInView={{ opacity: 1, y: 0 }}
-                        viewport={{ once: true }}
-                        transition={{ duration: 0.6 }}
-                    >
-                        Bespoke Digital Solutions
-                    </Title>
-                    <Subtitle
-                        initial={{ opacity: 0, y: 20 }}
-                        whileInView={{ opacity: 1, y: 0 }}
-                        viewport={{ once: true }}
-                        transition={{ duration: 0.6, delay: 0.2 }}
-                    >
-                        We don't just build websites; we craft digital legacies.
-                    </Subtitle>
-                </Header>
+  return (
+    <ServicesWrapper id="services">
+      <Container>
+        <Header>
+          <Title
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.6 }}
+          >
+            Refined Digital Solutions
+          </Title>
+          <Subtitle
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.6, delay: 0.2 }}
+          >
+            We don't just build websites; we craft digital legacies.
+          </Subtitle>
+        </Header>
 
-                <Grid>
-                    {services.map((service, index) => (
-                        <ServiceCard
-                            key={service.id}
-                            initial={{ opacity: 0, y: 20 }}
-                            whileInView={{ opacity: 1, y: 0 }}
-                            viewport={{ once: true }}
-                            transition={{ duration: 0.5, delay: index * 0.1 }}
-                        >
-                            <IconWrapper>{service.icon}</IconWrapper>
-                            <ServiceTitle>{service.title}</ServiceTitle>
-                            <ServiceDescription>{service.description}</ServiceDescription>
-                        </ServiceCard>
-                    ))}
-                </Grid>
-            </Container>
-        </ServicesWrapper>
-    );
+        <Grid>
+          {services.map((service, index) => (
+            <ServiceCard
+              key={service.id}
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.5, delay: index * 0.1 }}
+            >
+              <IconWrapper>{service.icon}</IconWrapper>
+              <ServiceTitle>{service.title}</ServiceTitle>
+              <ServiceDescription>{service.description}</ServiceDescription>
+            </ServiceCard>
+          ))}
+        </Grid>
+      </Container>
+    </ServicesWrapper>
+  );
 }
