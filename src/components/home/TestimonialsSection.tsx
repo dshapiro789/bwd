@@ -8,23 +8,26 @@ import { Section, Container } from '../layout/Container';
 const testimonials = [
   {
     id: 1,
-    name: 'Sarah Jenkins',
-    role: 'CEO, Lumina Financial',
-    content: 'Bonsai Web Design transformed our digital presence. The attention to detail and premium aesthetic perfectly matched our brand vision.',
+    name: 'Nick Jabbour',
+    role: 'Founder, RxChat.com',
+    content:
+      "Not a day goes by where I don't feel grateful to be working with David. He is not only thorough and skilled, but takes pride in his work and applies himself consistently to the challenges at hand. As an individual, he demonstrates kindness and integrity — and these qualities spill into his professional life as well. For lack of a better term, David is truly a ‘gem’ to know and work with.",
     rating: 5,
   },
   {
     id: 2,
-    name: 'Michael Chen',
-    role: 'Founder, Nexus Tech',
-    content: 'An absolute pleasure to work with. The team understood our complex requirements and delivered a flawless, high-performance application.',
+    name: 'Tony',
+    role: 'Founder, Palm Breeze Real Estate',
+    content:
+      'David elevated our online presence with clean, human-centered design across our website, blog and weekly newsletter. The results were both positive and impactful.',
     rating: 5,
   },
   {
     id: 3,
-    name: 'Elena Rodriguez',
-    role: 'Director, Serene Wellness',
-    content: 'Our clients love the new website. It captures the essence of our sanctuary beautifully. Highly recommended for luxury brands.',
+    name: 'Cherie Woodworth',
+    role: 'Manager, Weatherford Ranches',
+    content:
+      'Seamless communication and a thoughtful approach to content. Couldn’t have asked for a better partner!',
     rating: 5,
   },
 ];
