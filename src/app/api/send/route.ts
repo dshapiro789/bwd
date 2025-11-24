@@ -27,11 +27,13 @@ export async function POST(request: Request) {
         });
 
         if (error) {
+            console.error('Resend API Error:', error);
             return NextResponse.json({ error }, { status: 500 });
         }
 
         return NextResponse.json(data);
     } catch (error) {
+        console.error('Internal Server Error:', error);
         return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });
     }
 }
