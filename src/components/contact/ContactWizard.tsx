@@ -7,6 +7,7 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { Section, Container } from '../layout/Container';
+import SuccessModal from './SuccessModal';
 
 // Validation Schemas
 const step1Schema = z.object({
@@ -190,6 +191,7 @@ export default function ContactWizard() {
     const [step, setStep] = useState(1);
     const [formData, setFormData] = useState<Partial<FormData>>({});
     const [isSubmitting, setIsSubmitting] = useState(false);
+    const [showSuccessModal, setShowSuccessModal] = useState(false);
 
     const {
         register,
@@ -238,7 +240,7 @@ export default function ContactWizard() {
             });
 
             if (response.ok) {
-                alert('Thank you! We will be in touch shortly.');
+                setShowSuccessModal(true);
                 // Optional: Reset form or redirect
             } else {
                 throw new Error('Failed to send message');
@@ -367,6 +369,16 @@ export default function ContactWizard() {
                     </ButtonGroup>
                 </form>
             </FormContainer>
+            <SuccessModal
+                isOpen={showSuccessModal}
+                onClose={() => {
+                    setShowSuccessModal(false);
+                    setStep(1);
+                    setFormData({});
+                    // Ideally reset the react-hook-form too, but this is a good start
+                    window.location.reload(); // Simple way to reset everything for now
+                }}
+            />
         </WizardWrapper>
     );
 }
