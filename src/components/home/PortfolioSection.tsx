@@ -49,6 +49,13 @@ const projects = [
     category: 'Rental Property Demo',
     url: 'https://rental-property-booking-template-kg5og73xk.vercel.app/',
   },
+
+  {
+    id: 8,
+    title: 'Live Pura Vida',
+    category: 'Travel Agency Demo',
+    url: 'https://livepuravida.net',
+  },
 ];
 
 const PortfolioWrapper = styled(Section)`
