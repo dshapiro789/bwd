@@ -60,7 +60,12 @@ const projects = [
 ];
 
 const PortfolioWrapper = styled(Section)`
-  background-color: ${({ theme }) => theme.colors.background};
+  background: linear-gradient(
+    180deg,
+    rgba(20, 40, 30, 0.2) 0%,
+    rgba(16, 32, 24, 0.3) 50%,
+    rgba(20, 40, 30, 0.2) 100%
+  );
   padding: ${({ theme }) => theme.spacing.xl} 0;
   position: relative;
   overflow: hidden;

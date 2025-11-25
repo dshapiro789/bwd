@@ -30,7 +30,12 @@ const step3Schema = z.object({
 type FormData = z.infer<typeof step1Schema> & z.infer<typeof step2Schema> & z.infer<typeof step3Schema>;
 
 const WizardWrapper = styled(Section)`
-  background-color: ${({ theme }) => theme.colors.background};
+  background: linear-gradient(
+    180deg,
+    rgba(16, 32, 24, 0.35) 0%,
+    rgba(20, 40, 30, 0.25) 50%,
+    rgba(16, 32, 24, 0.35) 100%
+  );
   min-height: 100vh;
   display: flex;
   align-items: center;
@@ -44,7 +49,7 @@ const WizardWrapper = styled(Section)`
     left: 0;
     right: 0;
     bottom: 0;
-    background-image: radial-gradient(circle at 1px 1px, rgba(200, 159, 129, 0.03) 1px, transparent 0);
+    background-image: radial-gradient(circle at 1px 1px, rgba(93, 117, 102, 0.04) 1px, transparent 0);
     background-size: 40px 40px;
     pointer-events: none;
   }

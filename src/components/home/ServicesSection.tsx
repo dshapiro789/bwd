@@ -7,7 +7,12 @@ import { SiReact, SiFigma, SiShopify, SiNextdotjs } from 'react-icons/si';
 import GradientText from '../common/GradientText';
 
 const ServicesWrapper = styled(Section)`
-  background-color: ${({ theme }) => theme.colors.background};
+  background: linear-gradient(
+    180deg,
+    rgba(16, 32, 24, 0.3) 0%,
+    rgba(20, 40, 30, 0.2) 50%,
+    rgba(16, 32, 24, 0.3) 100%
+  );
   padding-top: ${({ theme }) => theme.spacing.xxxl};
   padding-bottom: ${({ theme }) => theme.spacing.xxxl};
 `;

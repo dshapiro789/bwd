@@ -34,11 +34,16 @@ const testimonials = [
 ];
 
 const TestimonialsWrapper = styled(Section)`
-  background-color: ${({ theme }) => theme.colors.surface};
+  background: linear-gradient(
+    180deg,
+    rgba(20, 40, 30, 0.3) 0%,
+    rgba(16, 32, 24, 0.35) 50%,
+    rgba(20, 40, 30, 0.3) 100%
+  );
   color: ${({ theme }) => theme.colors.text};
   text-align: center;
-  border-top: 1px solid rgba(255, 255, 255, 0.05);
-  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+  border-top: 1px solid rgba(93, 117, 102, 0.15);
+  border-bottom: 1px solid rgba(93, 117, 102, 0.15);
 `;
 
 const CarouselContainer = styled.div`
