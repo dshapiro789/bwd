@@ -114,12 +114,8 @@ const MobileNavLink = styled(motion.a)`
   letter-spacing: 0.1em;
   text-transform: uppercase;
   color: ${({ theme }) => theme.colors.primary};
-  opacity: 0.9;
   cursor: pointer;
-
-  &:hover {
-    opacity: 1;
-  }
+  will-change: opacity;
 `;
 
 export default function Header() {
