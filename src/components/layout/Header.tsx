@@ -97,7 +97,12 @@ const MobileMenuOverlay = styled(motion.div)`
   left: 0;
   right: 0;
   bottom: 0;
-  background: rgba(0, 0, 0, 0.95);
+  background: linear-gradient(
+    180deg,
+    rgba(16, 32, 24, 0.98) 0%,
+    rgba(20, 40, 30, 0.98) 50%,
+    rgba(16, 32, 24, 0.98) 100%
+  );
   backdrop-filter: blur(10px);
   z-index: 1001;
   display: flex;
@@ -115,7 +120,6 @@ const MobileNavLink = styled(motion.a)`
   text-transform: uppercase;
   color: ${({ theme }) => theme.colors.primary};
   cursor: pointer;
-  will-change: opacity;
 `;
 
 export default function Header() {
@@ -188,50 +192,66 @@ export default function Header() {
             transition={{ duration: 0.3 }}
             onClick={() => setMobileMenuOpen(false)}
           >
-            <MobileNavLink
+            <motion.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
-              transition={{ duration: 0.5, delay: 0.1, ease: [0.16, 1, 0.3, 1] }}
-              onClick={(e) => {
-                e.stopPropagation();
-                handleMobileNavClick('#portfolio');
-              }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.15, delay: 0.05 }}
             >
-              Work
-            </MobileNavLink>
-            <MobileNavLink
+              <MobileNavLink
+                onClick={(e) => {
+                  e.stopPropagation();
+                  handleMobileNavClick('#portfolio');
+                }}
+              >
+                Work
+              </MobileNavLink>
+            </motion.div>
+            <motion.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
-              transition={{ duration: 0.5, delay: 0.2, ease: [0.16, 1, 0.3, 1] }}
-              onClick={(e) => {
-                e.stopPropagation();
-                handleMobileNavClick('#services');
-              }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.15, delay: 0.1 }}
             >
-              Services
-            </MobileNavLink>
-            <MobileNavLink
+              <MobileNavLink
+                onClick={(e) => {
+                  e.stopPropagation();
+                  handleMobileNavClick('#services');
+                }}
+              >
+                Services
+              </MobileNavLink>
+            </motion.div>
+            <motion.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
-              transition={{ duration: 0.5, delay: 0.3, ease: [0.16, 1, 0.3, 1] }}
-              onClick={(e) => {
-                e.stopPropagation();
-                handleMobileNavClick('#about');
-              }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.15, delay: 0.15 }}
             >
-              Studio
-            </MobileNavLink>
-            <MobileNavLink
+              <MobileNavLink
+                onClick={(e) => {
+                  e.stopPropagation();
+                  handleMobileNavClick('#about');
+                }}
+              >
+                Studio
+              </MobileNavLink>
+            </motion.div>
+            <motion.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
-              transition={{ duration: 0.5, delay: 0.4, ease: [0.16, 1, 0.3, 1] }}
-              onClick={(e) => {
-                e.stopPropagation();
-                handleMobileNavClick('#contact');
-              }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.15, delay: 0.2 }}
             >
-              Contact
-            </MobileNavLink>
+              <MobileNavLink
+                onClick={(e) => {
+                  e.stopPropagation();
+                  handleMobileNavClick('#contact');
+                }}
+              >
+                Contact
+              </MobileNavLink>
+            </motion.div>
           </MobileMenuOverlay>
         )}
       </AnimatePresence>
