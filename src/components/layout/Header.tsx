@@ -115,7 +115,6 @@ const MobileNavLink = styled(motion.a)`
   text-transform: uppercase;
   color: ${({ theme }) => theme.colors.primary};
   opacity: 0.9;
-  transition: opacity 0.3s ease;
   cursor: pointer;
 
   &:hover {
