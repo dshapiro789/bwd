@@ -20,10 +20,17 @@ const Header = styled.div`
 `;
 
 const Title = styled(motion.h2)`
-  font-size: 3rem;
-  color: ${({ theme }) => theme.colors.primary};
-  margin-bottom: ${({ theme }) => theme.spacing.md};
+  font-family: ${({ theme }) => theme.fonts.heading};
+  font-size: 3.5rem;
   font-weight: 300;
+  color: ${({ theme }) => theme.colors.primary};
+  margin-bottom: ${({ theme }) => theme.spacing.xl};
+  letter-spacing: 0.05em;
+  text-shadow: 0 2px 12px rgba(200, 159, 129, 0.2);
+  
+  @media (max-width: 768px) {
+    font-size: 2.5rem;
+  }
 `;
 
 const Subtitle = styled(motion.p)`

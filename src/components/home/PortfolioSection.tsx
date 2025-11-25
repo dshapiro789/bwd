@@ -10,7 +10,7 @@ const projects = [
   {
     id: 1,
     title: 'Emerald Grove Digital',
-    category: 'Digital Agency',
+    category: 'Demo',
     url: 'https://emeraldgrovedigital.com',
   },
   {
@@ -37,6 +37,12 @@ const projects = [
     category: 'E-Commerce',
     url: 'https://weatherfordranchesllc.com',
   },
+  {
+    id: 6,
+    title: 'Shapiro Works',
+    category: 'Demo',
+    url: 'https://shapiroworks.com',
+  },
 ];
 
 const PortfolioWrapper = styled(Section)`
@@ -52,12 +58,17 @@ const Header = styled.div`
 `;
 
 const SectionTitle = styled(motion.h2)`
-  font-size: 1.5rem;
+  font-family: ${({ theme }) => theme.fonts.heading};
+  font-size: 3rem;
+  font-weight: 300;
   color: ${({ theme }) => theme.colors.primary};
-  text-transform: uppercase;
-  letter-spacing: 0.2em;
-  margin-bottom: ${({ theme }) => theme.spacing.sm};
-  font-weight: 400;
+  letter-spacing: 0.05em;
+  text-shadow: 0 2px 12px rgba(200, 159, 129, 0.2);
+  margin-bottom: ${({ theme }) => theme.spacing.xl};
+  
+  @media (max-width: 768px) {
+    font-size: 2.25rem;
+  }
 `;
 
 const ProjectList = styled.div`
@@ -160,7 +171,7 @@ export default function PortfolioSection() {
             viewport={{ once: true }}
             transition={{ duration: 0.6 }}
           >
-            Selected Works
+            Projects
           </SectionTitle>
         </Header>
 

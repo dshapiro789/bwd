@@ -48,14 +48,17 @@ const PreTitle = styled(motion.span)`
 `;
 
 const Title = styled(motion.h2)`
-  font-size: 2.5rem;
-  color: ${({ theme }) => theme.colors.text};
-  margin-bottom: ${({ theme }) => theme.spacing.xl};
+  font-family: ${({ theme }) => theme.fonts.heading};
+  font-size: 3.5rem;
   font-weight: 300;
+  color: ${({ theme }) => theme.colors.primary};
+  margin-bottom: ${({ theme }) => theme.spacing.xl};
+  letter-spacing: 0.05em;
+  text-shadow: 0 2px 12px rgba(200, 159, 129, 0.2);
   line-height: 1.2;
 
-  @media (min-width: ${({ theme }) => theme.breakpoints.tablet}) {
-    font-size: 4rem;
+  @media (max-width: 768px) {
+    font-size: 2.5rem;
   }
 `;
 
