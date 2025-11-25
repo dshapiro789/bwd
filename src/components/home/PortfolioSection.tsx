@@ -45,8 +45,8 @@ const projects = [
   },
   {
     id: 7,
-    title: 'Luxury Vacation Rental Booking',
-    category: 'Vacation RentalDemo',
+    title: 'Luxury Vacation Rental',
+    category: 'Rental Property Demo',
     url: 'https://rental-property-booking-template-kg5og73xk.vercel.app/',
   },
 ];
