@@ -8,6 +8,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { Section, Container } from '../layout/Container';
 import SuccessModal from './SuccessModal';
+import MagneticButton from '../common/MagneticButton';
 
 // Validation Schemas
 const step1Schema = z.object({
@@ -469,13 +470,17 @@ export default function ContactWizard() {
                                 </Button>
                             )}
                             {step < 3 ? (
-                                <Button type="button" onClick={onNext} style={{ marginLeft: 'auto' }}>
-                                    Next Step
-                                </Button>
+                                <MagneticButton type="button" onClick={onNext} strength={0.2}>
+                                    <Button as="div" style={{ marginLeft: 'auto' }}>
+                                        Next Step
+                                    </Button>
+                                </MagneticButton>
                             ) : (
-                                <Button type="submit" style={{ marginLeft: 'auto' }} disabled={isSubmitting}>
-                                    {isSubmitting ? 'Sending...' : 'Submit Request'}
-                                </Button>
+                                <MagneticButton type="submit" disabled={isSubmitting} strength={0.2}>
+                                    <Button as="div" style={{ marginLeft: 'auto' }} disabled={isSubmitting}>
+                                        {isSubmitting ? 'Sending...' : 'Submit Request'}
+                                    </Button>
+                                </MagneticButton>
                             )}
                         </ButtonGroup>
                     </form>

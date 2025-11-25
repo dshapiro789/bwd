@@ -35,9 +35,28 @@ const FooterTitle = styled.h3`
 const FooterLink = styled.a`
   color: rgba(255, 255, 255, 0.8);
   transition: color 0.3s ease;
+  position: relative;
+  display: inline-block;
+  
+  &::after {
+    content: '';
+    position: absolute;
+    bottom: -2px;
+    left: 0;
+    width: 100%;
+    height: 2px;
+    background: ${({ theme }) => theme.colors.gold};
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+  }
 
   &:hover {
     color: ${({ theme }) => theme.colors.gold};
+    
+    &::after {
+      transform: scaleX(1);
+    }
   }
 `;
 

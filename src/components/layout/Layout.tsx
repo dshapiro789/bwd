@@ -3,7 +3,8 @@
 import styled from 'styled-components';
 import Header from './Header';
 import Footer from './Footer';
-import CustomCursor from '../common/CustomCursor';
+import ScrollProgress from '../common/ScrollProgress';
+import CursorGlow from '../common/CursorGlow';
 
 interface LayoutProps {
     children: React.ReactNode;
@@ -12,7 +13,8 @@ interface LayoutProps {
 export default function Layout({ children }: LayoutProps) {
     return (
         <>
-            <CustomCursor />
+            <ScrollProgress />
+            <CursorGlow />
             <Header />
             <main>{children}</main>
             <Footer />

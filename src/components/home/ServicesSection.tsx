@@ -4,6 +4,7 @@ import styled from 'styled-components';
 import { Section, Container } from '../layout/Container';
 import { motion } from 'framer-motion';
 import { SiReact, SiFigma, SiShopify, SiNextdotjs } from 'react-icons/si';
+import GradientText from '../common/GradientText';
 
 const ServicesWrapper = styled(Section)`
   background-color: ${({ theme }) => theme.colors.background};
@@ -119,7 +120,7 @@ export default function ServicesSection() {
             viewport={{ once: true }}
             transition={{ duration: 0.6 }}
           >
-            Refined Digital Solutions
+            <GradientText>Refined Digital Solutions</GradientText>
           </Title>
           <Subtitle
             initial={{ opacity: 0, y: 20 }}

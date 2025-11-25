@@ -4,6 +4,7 @@ import styled from 'styled-components';
 import { motion, useScroll, useTransform } from 'framer-motion';
 import { useRef } from 'react';
 import { Section, Container } from '../layout/Container';
+import GradientText from '../common/GradientText';
 
 // Updated Project Data
 const projects = [
@@ -100,7 +101,8 @@ const ItemWrapper = styled(motion.a)`
   cursor: pointer;
   text-decoration: none;
   position: relative;
-  transition: all 0.3s ease;
+  transition: padding-left 0.4s cubic-bezier(0.16, 1, 0.3, 1),
+              border-color 0.4s cubic-bezier(0.16, 1, 0.3, 1);
 
   &:last-child {
     border-bottom: none;
@@ -154,10 +156,10 @@ function ProjectItem({ project }: { project: typeof projects[0] }) {
     offset: ["start end", "end start"]
   });
 
-  // Smooth fade in and out based on scroll position
-  // 0 -> 0.2 (fade in) | 0.2 -> 0.8 (visible) | 0.8 -> 1 (fade out)
-  const opacity = useTransform(scrollYProgress, [0, 0.2, 0.8, 1], [0, 1, 1, 0]);
-  const y = useTransform(scrollYProgress, [0, 0.2, 0.8, 1], [50, 0, 0, -50]);
+  // Enhanced parallax with scale and depth
+  const opacity = useTransform(scrollYProgress, [0, 0.15, 0.85, 1], [0, 1, 1, 0]);
+  const y = useTransform(scrollYProgress, [0, 0.15, 0.85, 1], [80, 0, 0, -80]);
+  const scale = useTransform(scrollYProgress, [0, 0.15, 0.5, 0.85, 1], [0.9, 1, 1, 1, 0.9]);
 
   return (
     <ItemWrapper
@@ -165,7 +167,7 @@ function ProjectItem({ project }: { project: typeof projects[0] }) {
       href={project.url}
       target="_blank"
       rel="noopener noreferrer"
-      style={{ opacity, y }}
+      style={{ opacity, y, scale }}
     >
       <ProjectTitle>{project.title}</ProjectTitle>
       <ProjectCategory>{project.category}</ProjectCategory>
@@ -184,7 +186,7 @@ export default function PortfolioSection() {
             viewport={{ once: true }}
             transition={{ duration: 0.6 }}
           >
-            Projects
+            <GradientText>Projects</GradientText>
           </SectionTitle>
         </Header>
 

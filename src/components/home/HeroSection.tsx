@@ -4,6 +4,7 @@ import styled from 'styled-components';
 import { motion, useScroll, useTransform } from 'framer-motion';
 import { Container } from '../layout/Container';
 import { useRef } from 'react';
+import GradientText from '../common/GradientText';
 
 const HeroWrapper = styled.section`
   height: 100vh;
@@ -121,7 +122,7 @@ export default function HeroSection() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, delay: 0.4, ease: "easeOut" }}
         >
-          Crafting <span>timeless</span> digital legacies.
+          <GradientText>Crafting <span>timeless</span> digital legacies.</GradientText>
         </Tagline>
 
         <SubText

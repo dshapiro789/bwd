@@ -4,6 +4,8 @@ import styled from 'styled-components';
 import { Section, Container } from '../layout/Container';
 import { motion, useScroll, useTransform } from 'framer-motion';
 import { useRef } from 'react';
+import AnimatedCounter from '../common/AnimatedCounter';
+import GradientText from '../common/GradientText';
 
 const StudioWrapper = styled(Section)`
   background-color: ${({ theme }) => theme.colors.surface};
@@ -130,7 +132,7 @@ export default function StudioSection() {
           viewport={{ once: true }}
           transition={{ duration: 0.6, delay: 0.1 }}
         >
-          Cultivating Digital Excellence.
+          <GradientText>Cultivating Digital Excellence.</GradientText>
         </Title>
 
         <Text
@@ -158,11 +160,15 @@ export default function StudioSection() {
           transition={{ duration: 0.6, delay: 0.4 }}
         >
           <Stat>
-            <StatNumber>10+</StatNumber>
+            <StatNumber>
+              <AnimatedCounter to={10} suffix="+" />
+            </StatNumber>
             <StatLabel>Years Exp.</StatLabel>
           </Stat>
           <Stat>
-            <StatNumber>50+</StatNumber>
+            <StatNumber>
+              <AnimatedCounter to={50} suffix="+" />
+            </StatNumber>
             <StatLabel>Projects</StatLabel>
           </Stat>
         </StatGrid>

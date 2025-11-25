@@ -1,9 +1,10 @@
 'use client';
 
 import styled from 'styled-components';
-import { useState, useEffect } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { useState, useEffect, useRef } from 'react';
+import { motion, AnimatePresence, useMotionValue, useSpring } from 'framer-motion';
 import { Section, Container } from '../layout/Container';
+import GradientText from '../common/GradientText';
 
 const testimonials = [
   {
@@ -58,10 +59,16 @@ const TestimonialCard = styled(motion.div)`
   position: absolute;
   width: 100%;
   padding: ${({ theme }) => theme.spacing.xl};
+  perspective: 1000px;
 
   @media (max-width: 768px) {
     padding: ${({ theme }) => theme.spacing.md};
   }
+`;
+
+const TestimonialContent = styled(motion.div)`
+  transform-style: preserve-3d;
+  will-change: transform;
 `;
 
 const Quote = styled.p`
@@ -132,6 +139,14 @@ const SectionTitle = styled.h2`
 
 export default function TestimonialsSection() {
   const [currentIndex, setCurrentIndex] = useState(0);
+  const cardRef = useRef<HTMLDivElement>(null);
+
+  const rotateX = useMotionValue(0);
+  const rotateY = useMotionValue(0);
+
+  const springConfig = { stiffness: 100, damping: 15 };
+  const springRotateX = useSpring(rotateX, springConfig);
+  const springRotateY = useSpring(rotateY, springConfig);
 
   useEffect(() => {
     const timer = setInterval(() => {
@@ -140,11 +155,34 @@ export default function TestimonialsSection() {
     return () => clearInterval(timer);
   }, []);
 
+  const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
+    if (!cardRef.current) return;
+
+    const rect = cardRef.current.getBoundingClientRect();
+    const centerX = rect.left + rect.width / 2;
+    const centerY = rect.top + rect.height / 2;
+
+    const rotateXValue = ((e.clientY - centerY) / rect.height) * -10;
+    const rotateYValue = ((e.clientX - centerX) / rect.width) * 10;
+
+    rotateX.set(rotateXValue);
+    rotateY.set(rotateYValue);
+  };
+
+  const handleMouseLeave = () => {
+    rotateX.set(0);
+    rotateY.set(0);
+  };
+
   return (
     <TestimonialsWrapper>
       <Container>
-        <SectionTitle>Client Stories</SectionTitle>
-        <CarouselContainer>
+        <SectionTitle><GradientText>Client Stories</GradientText></SectionTitle>
+        <CarouselContainer
+          ref={cardRef}
+          onMouseMove={handleMouseMove}
+          onMouseLeave={handleMouseLeave}
+        >
           <AnimatePresence mode="wait">
             <TestimonialCard
               key={currentIndex}
@@ -153,12 +191,19 @@ export default function TestimonialsSection() {
               exit={{ opacity: 0, x: -50 }}
               transition={{ duration: 0.5 }}
             >
-              <Stars>{'★'.repeat(testimonials[currentIndex].rating)}</Stars>
-              <Quote>"{testimonials[currentIndex].content}"</Quote>
-              <Author>
-                <Name>{testimonials[currentIndex].name}</Name>
-                <Role>{testimonials[currentIndex].role}</Role>
-              </Author>
+              <TestimonialContent
+                style={{
+                  rotateX: springRotateX,
+                  rotateY: springRotateY,
+                }}
+              >
+                <Stars>{'★'.repeat(testimonials[currentIndex].rating)}</Stars>
+                <Quote>"{testimonials[currentIndex].content}"</Quote>
+                <Author>
+                  <Name>{testimonials[currentIndex].name}</Name>
+                  <Role>{testimonials[currentIndex].role}</Role>
+                </Author>
+              </TestimonialContent>
             </TestimonialCard>
           </AnimatePresence>
         </CarouselContainer>
