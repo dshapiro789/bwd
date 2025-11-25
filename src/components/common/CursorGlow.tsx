@@ -47,47 +47,64 @@ const CursorInner = styled(motion.div)`
 `;
 
 export default function CursorGlow() {
-    const [isMounted, setIsMounted] = useState(false);
+  const [isMounted, setIsMounted] = useState(false);
+  const [isHovering, setIsHovering] = useState(false);
 
-    const cursorX = useMotionValue(0);
-    const cursorY = useMotionValue(0);
+  const cursorX = useMotionValue(0);
+  const cursorY = useMotionValue(0);
+  const scale = useMotionValue(1);
 
-    const springConfig = { damping: 25, stiffness: 200, mass: 0.5 };
-    const cursorXSpring = useSpring(cursorX, springConfig);
-    const cursorYSpring = useSpring(cursorY, springConfig);
+  const springConfig = { damping: 25, stiffness: 200, mass: 0.5 };
+  const cursorXSpring = useSpring(cursorX, springConfig);
+  const cursorYSpring = useSpring(cursorY, springConfig);
+  const scaleSpring = useSpring(scale, { damping: 20, stiffness: 300 });
 
-    const innerSpringConfig = { damping: 30, stiffness: 400, mass: 0.1 };
-    const innerX = useSpring(cursorX, innerSpringConfig);
-    const innerY = useSpring(cursorY, innerSpringConfig);
+  const innerSpringConfig = { damping: 30, stiffness: 400, mass: 0.1 };
+  const innerX = useSpring(cursorX, innerSpringConfig);
+  const innerY = useSpring(cursorY, innerSpringConfig);
 
-    useEffect(() => {
-        setIsMounted(true);
+  useEffect(() => {
+    setIsMounted(true);
 
-        const moveCursor = (e: MouseEvent) => {
-            cursorX.set(e.clientX - 20);
-            cursorY.set(e.clientY - 20);
-        };
+    const moveCursor = (e: MouseEvent) => {
+      cursorX.set(e.clientX - 20);
+      cursorY.set(e.clientY - 20);
 
-        window.addEventListener('mousemove', moveCursor);
-        return () => window.removeEventListener('mousemove', moveCursor);
-    }, [cursorX, cursorY]);
+      // Check if hovering over clickable element
+      const target = e.target as HTMLElement;
+      const isClickable = target.closest('button, a, input, textarea, select, [role="button"], [onclick]');
 
-    if (!isMounted) return null;
+      if (isClickable) {
+        setIsHovering(true);
+        scale.set(1.5);
+      } else {
+        setIsHovering(false);
+        scale.set(1);
+      }
+    };
 
-    return (
-        <>
-            <CursorOuter
-                style={{
-                    translateX: cursorXSpring,
-                    translateY: cursorYSpring,
-                }}
-            />
-            <CursorInner
-                style={{
-                    translateX: innerX,
-                    translateY: innerY,
-                }}
-            />
-        </>
-    );
+    window.addEventListener('mousemove', moveCursor);
+    return () => window.removeEventListener('mousemove', moveCursor);
+  }, [cursorX, cursorY, scale]);
+
+  if (!isMounted) return null;
+
+  return (
+    <>
+      <CursorOuter
+        style={{
+          translateX: cursorXSpring,
+          translateY: cursorYSpring,
+          scale: scaleSpring,
+        }}
+      />
+      <CursorInner
+        style={{
+          translateX: innerX,
+          translateY: innerY,
+          scale: scaleSpring,
+        }}
+      />
+    </>
+  );
 }
