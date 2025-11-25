@@ -53,14 +53,13 @@ const ServiceCard = styled(motion.div)`
   background: ${({ theme }) => theme.colors.surface};
   padding: ${({ theme }) => theme.spacing.xl};
   border: 1px solid rgba(255, 255, 255, 0.05);
-  transition: all 0.3s ease;
+  transition: border-color 0.3s ease, background-color 0.3s ease;
   display: flex;
   flex-direction: column;
   gap: ${({ theme }) => theme.spacing.lg};
 
   &:hover {
     border-color: ${({ theme }) => theme.colors.primary};
-    transform: translateY(-5px);
   }
 `;
 
@@ -138,6 +137,7 @@ export default function ServicesSection() {
               key={service.id}
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
+              whileHover={{ y: -5 }}
               viewport={{ once: true }}
               transition={{ duration: 0.5, delay: index * 0.1 }}
             >
