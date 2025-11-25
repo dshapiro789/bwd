@@ -23,10 +23,20 @@ const BackgroundImage = styled(motion.div)`
   left: 0;
   right: 0;
   bottom: 0;
-  /* Organic Luxury Background */
+  /* Elegant Multi-layered Gradient */
   background: 
-    radial-gradient(circle at 20% 30%, rgba(200, 159, 129, 0.08) 0%, transparent 50%),
-    radial-gradient(circle at 80% 70%, rgba(93, 117, 102, 0.1) 0%, transparent 50%);
+    /* Subtle vignette */
+    radial-gradient(ellipse at center, transparent 0%, rgba(0, 0, 0, 0.3) 100%),
+    /* Primary gold accent - top left */
+    radial-gradient(circle at 15% 20%, rgba(200, 159, 129, 0.15) 0%, transparent 40%),
+    /* Secondary emerald accent - bottom right */
+    radial-gradient(circle at 85% 80%, rgba(93, 117, 102, 0.12) 0%, transparent 40%),
+    /* Tertiary gold accent - center right */
+    radial-gradient(circle at 90% 40%, rgba(200, 159, 129, 0.08) 0%, transparent 35%),
+    /* Ambient depth - subtle overall glow */
+    radial-gradient(ellipse at 50% 50%, rgba(200, 159, 129, 0.03) 0%, transparent 60%),
+    /* Base gradient for depth */
+    linear-gradient(180deg, rgba(0, 0, 0, 0.4) 0%, transparent 50%, rgba(0, 0, 0, 0.6) 100%);
   z-index: 1;
 `;
 

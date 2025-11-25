@@ -193,9 +193,9 @@ export default function Header() {
             onClick={() => setMobileMenuOpen(false)}
           >
             <MobileNavLink
-              initial={{ y: 20, opacity: 0 }}
-              animate={{ y: 0, opacity: 1 }}
-              transition={{ duration: 0.4, delay: 0.1, ease: [0.16, 1, 0.3, 1] }}
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ duration: 0.5, delay: 0.1, ease: [0.16, 1, 0.3, 1] }}
               onClick={(e) => {
                 e.stopPropagation();
                 handleMobileNavClick('#portfolio');
@@ -204,9 +204,9 @@ export default function Header() {
               Work
             </MobileNavLink>
             <MobileNavLink
-              initial={{ y: 20, opacity: 0 }}
-              animate={{ y: 0, opacity: 1 }}
-              transition={{ duration: 0.4, delay: 0.2, ease: [0.16, 1, 0.3, 1] }}
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ duration: 0.5, delay: 0.2, ease: [0.16, 1, 0.3, 1] }}
               onClick={(e) => {
                 e.stopPropagation();
                 handleMobileNavClick('#services');
@@ -215,9 +215,9 @@ export default function Header() {
               Services
             </MobileNavLink>
             <MobileNavLink
-              initial={{ y: 20, opacity: 0 }}
-              animate={{ y: 0, opacity: 1 }}
-              transition={{ duration: 0.4, delay: 0.3, ease: [0.16, 1, 0.3, 1] }}
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ duration: 0.5, delay: 0.3, ease: [0.16, 1, 0.3, 1] }}
               onClick={(e) => {
                 e.stopPropagation();
                 handleMobileNavClick('#about');
@@ -226,9 +226,9 @@ export default function Header() {
               Studio
             </MobileNavLink>
             <MobileNavLink
-              initial={{ y: 20, opacity: 0 }}
-              animate={{ y: 0, opacity: 1 }}
-              transition={{ duration: 0.4, delay: 0.4, ease: [0.16, 1, 0.3, 1] }}
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ duration: 0.5, delay: 0.4, ease: [0.16, 1, 0.3, 1] }}
               onClick={(e) => {
                 e.stopPropagation();
                 handleMobileNavClick('#contact');
