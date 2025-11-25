@@ -10,7 +10,7 @@ const projects = [
   {
     id: 1,
     title: 'Emerald Grove Digital',
-    category: 'Demo',
+    category: 'AI Services Demo',
     url: 'https://emeraldgrovedigital.com',
   },
   {
@@ -40,8 +40,14 @@ const projects = [
   {
     id: 6,
     title: 'Shapiro Works',
-    category: 'Demo',
+    category: 'Digital Agency Demo',
     url: 'https://shapiroworks.com',
+  },
+  {
+    id: 7,
+    title: 'Luxury Vacation Rental Booking',
+    category: 'Vacation RentalDemo',
+    url: 'https://rental-property-booking-template-kg5og73xk.vercel.app/',
   },
 ];
 
