@@ -76,7 +76,7 @@ export default function CursorGlow() {
 
       if (isClickable) {
         setIsHovering(true);
-        scale.set(1.5);
+        scale.set(1.25);
       } else {
         setIsHovering(false);
         scale.set(1);
