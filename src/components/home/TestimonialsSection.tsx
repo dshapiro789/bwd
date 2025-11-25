@@ -116,6 +116,20 @@ const Dot = styled.button<{ $active: boolean }>`
   transition: background-color 0.3s ease;
 `;
 
+const SectionTitle = styled.h2`
+  font-family: ${({ theme }) => theme.fonts.heading};
+  font-size: 3rem;
+  font-weight: 300;
+  color: ${({ theme }) => theme.colors.primary};
+  margin-bottom: ${({ theme }) => theme.spacing.xl};
+  letter-spacing: 0.05em;
+  text-shadow: 0 2px 8px rgba(200, 159, 129, 0.15);
+
+  @media (max-width: 768px) {
+    font-size: 2.25rem;
+  }
+`;
+
 export default function TestimonialsSection() {
   const [currentIndex, setCurrentIndex] = useState(0);
 
@@ -129,7 +143,7 @@ export default function TestimonialsSection() {
   return (
     <TestimonialsWrapper>
       <Container>
-        <h2 style={{ color: '#C1A240', marginBottom: '2rem' }}>Client Stories</h2>
+        <SectionTitle>Client Stories</SectionTitle>
         <CarouselContainer>
           <AnimatePresence mode="wait">
             <TestimonialCard
