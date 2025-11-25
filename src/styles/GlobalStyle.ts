@@ -45,13 +45,29 @@ export const GlobalStyle = createGlobalStyle`
     text-decoration: none;
     color: inherit;
     transition: ${theme.transitions.default};
+    
+    /* Hide default cursor on non-touch devices */
+    @media (hover: hover) and (pointer: fine) {
+      cursor: none;
+    }
   }
 
   button {
-    cursor: pointer;
     border: none;
     outline: none;
     font-family: inherit;
+    
+    /* Hide default cursor on non-touch devices */
+    @media (hover: hover) and (pointer: fine) {
+      cursor: none !important;
+    }
+  }
+  
+  /* Hide cursor on all interactive elements */
+  @media (hover: hover) and (pointer: fine) {
+    input, textarea, select, [role="button"], [onclick] {
+      cursor: none !important;
+    }
   }
 
   /* Custom Selection */
