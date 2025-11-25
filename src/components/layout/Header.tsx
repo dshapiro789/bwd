@@ -195,7 +195,7 @@ export default function Header() {
             <MobileNavLink
               initial={{ y: 20, opacity: 0 }}
               animate={{ y: 0, opacity: 1 }}
-              transition={{ delay: 0.1 }}
+              transition={{ duration: 0.4, delay: 0.1, ease: [0.16, 1, 0.3, 1] }}
               onClick={(e) => {
                 e.stopPropagation();
                 handleMobileNavClick('#portfolio');
@@ -206,7 +206,7 @@ export default function Header() {
             <MobileNavLink
               initial={{ y: 20, opacity: 0 }}
               animate={{ y: 0, opacity: 1 }}
-              transition={{ delay: 0.2 }}
+              transition={{ duration: 0.4, delay: 0.2, ease: [0.16, 1, 0.3, 1] }}
               onClick={(e) => {
                 e.stopPropagation();
                 handleMobileNavClick('#services');
@@ -217,7 +217,7 @@ export default function Header() {
             <MobileNavLink
               initial={{ y: 20, opacity: 0 }}
               animate={{ y: 0, opacity: 1 }}
-              transition={{ delay: 0.3 }}
+              transition={{ duration: 0.4, delay: 0.3, ease: [0.16, 1, 0.3, 1] }}
               onClick={(e) => {
                 e.stopPropagation();
                 handleMobileNavClick('#about');
@@ -228,7 +228,7 @@ export default function Header() {
             <MobileNavLink
               initial={{ y: 20, opacity: 0 }}
               animate={{ y: 0, opacity: 1 }}
-              transition={{ delay: 0.4 }}
+              transition={{ duration: 0.4, delay: 0.4, ease: [0.16, 1, 0.3, 1] }}
               onClick={(e) => {
                 e.stopPropagation();
                 handleMobileNavClick('#contact');
