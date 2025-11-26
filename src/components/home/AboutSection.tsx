@@ -56,7 +56,7 @@ const PhotoContainer = styled.div`
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: ${({ theme }) => theme.spacing.lg};
+  gap: ${({ theme }) => theme.spacing.md};
 `;
 
 const PhotoFrame = styled(motion.div)`
@@ -135,6 +135,21 @@ const NameLabel = styled(motion.div)`
   @media (max-width: 768px) {
     font-size: 1.4rem;
     letter-spacing: 0.1em;
+  }
+`;
+
+const RoleLabel = styled(motion.div)`
+  font-family: ${({ theme }) => theme.fonts.main};
+  font-size: 1rem;
+  font-weight: 400;
+  text-align: center;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: ${({ theme }) => theme.colors.textSecondary};
+  opacity: 0.7;
+
+  @media (max-width: 768px) {
+    font-size: 0.9rem;
   }
 `;
 
@@ -257,6 +272,14 @@ export default function AboutSection() {
             >
               David Aaron Shapiro
             </NameLabel>
+            <RoleLabel
+              initial={{ opacity: 0 }}
+              whileInView={{ opacity: 0.7 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.8, delay: 0.5 }}
+            >
+              Web Designer
+            </RoleLabel>
           </PhotoContainer>
 
           <BioContent
