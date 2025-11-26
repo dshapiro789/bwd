@@ -294,6 +294,12 @@ const ProjectHeader = styled.div`
   position: relative;
   z-index: 1;
   gap: ${({ theme }) => theme.spacing.md};
+
+  @media (max-width: ${({ theme }) => theme.breakpoints.tablet}) {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: ${({ theme }) => theme.spacing.sm};
+  }
 `;
 
 const ProjectTitleWrapper = styled.div`
