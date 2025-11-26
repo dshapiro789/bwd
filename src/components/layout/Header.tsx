@@ -169,8 +169,9 @@ export default function Header() {
             <Logo href="/">Bonsai</Logo>
             <NavLinks>
               <NavLink href="#portfolio">Work</NavLink>
+              <NavLink href="#about">About</NavLink>
               <NavLink href="#services">Services</NavLink>
-              <NavLink href="#about">Studio</NavLink>
+              <NavLink href="#studio">Studio</NavLink>
               <NavLink href="#contact">Contact</NavLink>
             </NavLinks>
             <MobileMenuButton
@@ -216,10 +217,10 @@ export default function Header() {
               <MobileNavLink
                 onClick={(e) => {
                   e.stopPropagation();
-                  handleMobileNavClick('#services');
+                  handleMobileNavClick('#about');
                 }}
               >
-                Services
+                About
               </MobileNavLink>
             </motion.div>
             <motion.div
@@ -231,7 +232,22 @@ export default function Header() {
               <MobileNavLink
                 onClick={(e) => {
                   e.stopPropagation();
-                  handleMobileNavClick('#about');
+                  handleMobileNavClick('#services');
+                }}
+              >
+                Services
+              </MobileNavLink>
+            </motion.div>
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.15, delay: 0.2 }}
+            >
+              <MobileNavLink
+                onClick={(e) => {
+                  e.stopPropagation();
+                  handleMobileNavClick('#studio');
                 }}
               >
                 Studio
@@ -241,7 +257,7 @@ export default function Header() {
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
-              transition={{ duration: 0.15, delay: 0.2 }}
+              transition={{ duration: 0.15, delay: 0.25 }}
             >
               <MobileNavLink
                 onClick={(e) => {
