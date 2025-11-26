@@ -98,6 +98,11 @@ const CarouselContainer = styled.div`
   display: flex;
   align-items: center;
   justify-content: center;
+
+  @media (max-width: 768px) {
+    padding-bottom: 80px;
+    min-height: 450px;
+  }
 `;
 
 const CardWrapper = styled(motion.div)`
@@ -291,8 +296,11 @@ const ArrowButton = styled(motion.button)`
   }
 
   @media (max-width: 768px) {
-    width: 40px;
-    height: 40px;
+    width: 44px;
+    height: 44px;
+    top: auto;
+    bottom: 10px;
+    transform: none;
     
     svg {
       font-size: 1.2rem;
@@ -304,7 +312,7 @@ const PrevButton = styled(ArrowButton)`
   left: -60px;
 
   @media (max-width: 768px) {
-    left: 10px;
+    left: 20px;
   }
 `;
 
@@ -312,7 +320,7 @@ const NextButton = styled(ArrowButton)`
   right: -60px;
 
   @media (max-width: 768px) {
-    right: 10px;
+    right: 20px;
   }
 `;
 
