@@ -330,7 +330,7 @@ const ExternalIcon = styled(motion.span)`
   }
 `;
 
-const CategoryBadge = styled.span<{ $color: string }>`
+const CategoryBadge = styled.span`
   display: inline-block;
   padding: 6px 14px;
   border-radius: 20px;
@@ -341,17 +341,17 @@ const CategoryBadge = styled.span<{ $color: string }>`
   letter-spacing: 0.05em;
   background: linear-gradient(
     135deg,
-    ${({ $color }) => $color}22,
-    ${({ $color }) => $color}11
+    rgba(200, 159, 129, 0.2),
+    rgba(200, 159, 129, 0.1)
   );
-  color: ${({ $color }) => $color};
-  border: 1px solid ${({ $color }) => $color}44;
-  box-shadow: 0 0 20px ${({ $color }) => $color}22;
+  color: ${({ theme }) => theme.colors.primary};
+  border: 1px solid rgba(200, 159, 129, 0.3);
+  box-shadow: 0 0 20px rgba(200, 159, 129, 0.15);
   transition: all 0.3s ease;
 
   ${ItemWrapper}:hover & {
-    box-shadow: 0 0 30px ${({ $color }) => $color}44;
-    border-color: ${({ $color }) => $color}66;
+    box-shadow: 0 0 30px rgba(200, 159, 129, 0.25);
+    border-color: rgba(200, 159, 129, 0.4);
   }
 `;
 
@@ -431,7 +431,7 @@ function ProjectItem({ project, index, isMobile = false }: ProjectItemProps) {
               </ExternalIcon>
             </ProjectTitle>
             <MetaRow>
-              <CategoryBadge $color={project.categoryColor}>
+              <CategoryBadge>
                 {project.category}
               </CategoryBadge>
             </MetaRow>
