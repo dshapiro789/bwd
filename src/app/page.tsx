@@ -3,6 +3,7 @@
 import Layout from '@/components/layout/Layout';
 import HeroSection from '@/components/home/HeroSection';
 import PortfolioSection from '@/components/home/PortfolioSection';
+import AboutSection from '@/components/home/AboutSection';
 import ContactWizard from '@/components/contact/ContactWizard';
 import TestimonialsSection from '@/components/home/TestimonialsSection';
 
@@ -28,10 +29,17 @@ export default function Home() {
         height="250px"
       />
 
-      <ServicesSection />
+      <AboutSection />
 
       <ParallaxDivider
         image="/images/bonsai-divider-3.png"
+        height="250px"
+      />
+
+      <ServicesSection />
+
+      <ParallaxDivider
+        image="/images/bonsai-divider-4.png"
         height="300px"
       />
 
