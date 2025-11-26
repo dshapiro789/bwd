@@ -208,39 +208,8 @@ const ItemWrapper = styled(motion.a)`
     transition: opacity 0.4s ease;
   }
 
-  &::after {
-    content: '';
-    position: absolute;
-    inset: 0;
-    border-radius: 16px;
-    background: conic-gradient(
-      from 0deg,
-      transparent 0deg,
-      ${({ theme }) => theme.colors.primary} 90deg,
-      ${({ theme }) => theme.colors.accent} 180deg,
-      transparent 270deg
-    );
-    opacity: 0;
-    transition: opacity 0.4s ease;
-    animation: rotate 4s linear infinite;
-    filter: blur(8px);
-  }
-
-  &:hover::after {
-    opacity: 0.3;
-  }
-
   &:hover::before {
     opacity: 1;
-  }
-
-  @keyframes rotate {
-    from {
-      transform: rotate(0deg);
-    }
-    to {
-      transform: rotate(360deg);
-    }
   }
 
   &:hover {
