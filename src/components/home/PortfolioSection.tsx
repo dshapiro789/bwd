@@ -425,13 +425,13 @@ const ProgressTrack = styled.div`
   width: 100%;
   max-width: 200px;
   height: 4px;
-  background: rgba(0, 0, 0, 0.3);
+  background: rgba(255, 255, 255, 0.1);
   border-radius: 4px;
   overflow: visible;
   position: relative;
   box-shadow: 
     inset 0 1px 2px rgba(0, 0, 0, 0.5),
-    0 1px 0 rgba(255, 255, 255, 0.05);
+    0 1px 0 rgba(255, 255, 255, 0.1);
 `;
 
 const ProgressBar = styled(motion.div)`
@@ -441,12 +441,12 @@ const ProgressBar = styled(motion.div)`
   height: 100%;
   width: 100%;
   background: linear-gradient(90deg, 
-    ${({ theme }) => theme.colors.primary}00, 
+    ${({ theme }) => theme.colors.primary}40, 
     ${({ theme }) => theme.colors.primary}
   );
   border-radius: 4px;
   transform-origin: 0%;
-  box-shadow: 0 0 10px ${({ theme }) => theme.colors.primary}40;
+  box-shadow: 0 0 10px ${({ theme }) => theme.colors.primary}60;
 
   /* The Glowing Spark Tip */
   &::after {
@@ -462,6 +462,13 @@ const ProgressBar = styled(motion.div)`
     box-shadow: 
       0 0 10px #fff,
       0 0 20px ${({ theme }) => theme.colors.primary};
+    animation: pulse 2s infinite ease-in-out;
+  }
+
+  @keyframes pulse {
+    0% { opacity: 0.8; transform: translateY(-50%) scale(1); }
+    50% { opacity: 1; transform: translateY(-50%) scale(1.2); box-shadow: 0 0 15px #fff, 0 0 30px ${({ theme }) => theme.colors.primary}; }
+    100% { opacity: 0.8; transform: translateY(-50%) scale(1); }
   }
 `;
 
