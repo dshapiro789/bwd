@@ -424,11 +424,14 @@ const ProgressContainer = styled.div`
 const ProgressTrack = styled.div`
   width: 100%;
   max-width: 200px;
-  height: 2px;
-  background: rgba(255, 255, 255, 0.1);
-  border-radius: 2px;
-  overflow: hidden;
+  height: 4px;
+  background: rgba(0, 0, 0, 0.3);
+  border-radius: 4px;
+  overflow: visible;
   position: relative;
+  box-shadow: 
+    inset 0 1px 2px rgba(0, 0, 0, 0.5),
+    0 1px 0 rgba(255, 255, 255, 0.05);
 `;
 
 const ProgressBar = styled(motion.div)`
@@ -437,8 +440,29 @@ const ProgressBar = styled(motion.div)`
   top: 0;
   height: 100%;
   width: 100%;
-  background: linear-gradient(90deg, ${({ theme }) => theme.colors.primary}, ${({ theme }) => theme.colors.accent});
+  background: linear-gradient(90deg, 
+    ${({ theme }) => theme.colors.primary}00, 
+    ${({ theme }) => theme.colors.primary}
+  );
+  border-radius: 4px;
   transform-origin: 0%;
+  box-shadow: 0 0 10px ${({ theme }) => theme.colors.primary}40;
+
+  /* The Glowing Spark Tip */
+  &::after {
+    content: '';
+    position: absolute;
+    right: -2px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 4px;
+    height: 12px;
+    background: #fff;
+    border-radius: 2px;
+    box-shadow: 
+      0 0 10px #fff,
+      0 0 20px ${({ theme }) => theme.colors.primary};
+  }
 `;
 
 export default function PortfolioSection() {
