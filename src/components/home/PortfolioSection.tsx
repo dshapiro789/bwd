@@ -21,6 +21,16 @@ const projects = [
   },
   {
     id: 2,
+    title: 'Shapiro Works',
+    category: 'Digital Agency Demo',
+    url: 'https://shapiroworks.com',
+    year: '2024',
+    status: 'Live',
+    tech: ['Agency'],
+    categoryColor: '#8b5cf6',
+  },
+  {
+    id: 3,
     title: 'Quality Prompt',
     category: 'AI Engineering',
     url: 'https://qualityprompt.cv',
@@ -30,7 +40,7 @@ const projects = [
     categoryColor: '#60a5fa',
   },
   {
-    id: 3,
+    id: 4,
     title: 'AI Bitcoin Tutor',
     category: 'EdTech / Crypto',
     url: 'https://aibitcointutor.com',
@@ -40,7 +50,7 @@ const projects = [
     categoryColor: '#f59e0b',
   },
   {
-    id: 4,
+    id: 5,
     title: 'Crypto Apparel',
     category: 'E-Commerce',
     url: 'https://cryptoapparel.net',
@@ -50,7 +60,7 @@ const projects = [
     categoryColor: '#ec4899',
   },
   {
-    id: 5,
+    id: 6,
     title: 'Weatherford Ranches',
     category: 'E-Commerce',
     url: 'https://weatherfordranchesllc.com',
@@ -58,16 +68,6 @@ const projects = [
     status: 'Live',
     tech: ['E-Commerce'],
     categoryColor: '#ec4899',
-  },
-  {
-    id: 6,
-    title: 'Shapiro Works',
-    category: 'Digital Agency Demo',
-    url: 'https://shapiroworks.com',
-    year: '2024',
-    status: 'Live',
-    tech: ['Agency'],
-    categoryColor: '#8b5cf6',
   },
   {
     id: 7,
