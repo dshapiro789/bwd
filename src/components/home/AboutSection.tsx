@@ -55,7 +55,7 @@ const ContentGrid = styled(motion.div)`
 const PhotoFrame = styled(motion.div)`
   position: relative;
   width: 100%;
-  max-width: 320px;
+  max-width: 400px;
   margin: 0 auto;
   aspect-ratio: 1;
   border-radius: 20px;
