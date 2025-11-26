@@ -162,13 +162,41 @@ const BioContent = styled(motion.div)`
 const IntroText = styled.p`
   font-family: ${({ theme }) => theme.fonts.heading};
   font-size: 1.3rem;
-  line-height: 1.8;
+  line-height: 1.9;
   color: ${({ theme }) => theme.colors.text};
   font-weight: 300;
-  letter-spacing: 0.01em;
+  letter-spacing: 0.02em;
+  background: rgba(20, 30, 25, 0.3);
+  padding: ${({ theme }) => theme.spacing.lg};
+  border-radius: 12px;
+  border: 1px solid rgba(200, 159, 129, 0.1);
+  backdrop-filter: blur(8px);
+  position: relative;
+  
+  &::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    width: 3px;
+    background: linear-gradient(
+      180deg,
+      ${({ theme }) => theme.colors.primary},
+      ${({ theme }) => theme.colors.accent}
+    );
+    border-radius: 12px 0 0 12px;
+  }
+
+  &::first-line {
+    font-weight: 400;
+    letter-spacing: 0.03em;
+  }
 
   @media (max-width: 768px) {
     font-size: 1.15rem;
+    line-height: 1.8;
+    padding: ${({ theme }) => theme.spacing.md};
   }
 `;
 
