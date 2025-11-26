@@ -328,6 +328,7 @@ const ProjectTitle = styled.h3`
 
 const ExternalIcon = styled(motion.span)`
   font-size: 1.2rem;
+  color: ${({ theme }) => theme.colors.primary};
   opacity: 0;
   transform: translateX(-10px);
 
