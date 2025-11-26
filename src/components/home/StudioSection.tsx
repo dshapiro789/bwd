@@ -79,14 +79,10 @@ const Text = styled(motion.p)`
 `;
 
 const StatGrid = styled(motion.div)`
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: ${({ theme }) => theme.spacing.xl};
+  display: flex;
+  justify-content: center;
   margin-top: ${({ theme }) => theme.spacing.xxl};
   width: 100%;
-  max-width: 400px;
-  margin-left: auto;
-  margin-right: auto;
 `;
 
 const Stat = styled.div``;
@@ -164,12 +160,6 @@ export default function StudioSection() {
           viewport={{ once: true }}
           transition={{ duration: 0.6, delay: 0.4 }}
         >
-          <Stat>
-            <StatNumber>
-              <AnimatedCounter to={10} suffix="+" />
-            </StatNumber>
-            <StatLabel>Years Exp.</StatLabel>
-          </Stat>
           <Stat>
             <StatNumber>
               <AnimatedCounter to={50} suffix="+" />
