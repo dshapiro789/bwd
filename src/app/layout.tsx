@@ -2,6 +2,8 @@ import type { Metadata } from 'next';
 import StyledComponentsRegistry from '@/lib/registry';
 import Providers from '@/lib/providers';
 
+import { Analytics } from '@vercel/analytics/react';
+
 export const metadata: Metadata = {
   title: 'Bonsai Web Design | Premium Web Design Agency',
   description: 'Crafting timeless design and meaningful content for modern brands.',
@@ -18,6 +20,7 @@ export default function RootLayout({
         <StyledComponentsRegistry>
           <Providers>{children}</Providers>
         </StyledComponentsRegistry>
+        <Analytics />
       </body>
     </html>
   );
