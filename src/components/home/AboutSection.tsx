@@ -278,7 +278,7 @@ export default function AboutSection() {
               viewport={{ once: true }}
               transition={{ duration: 0.8, delay: 0.5 }}
             >
-              Web Designer
+              Bonsai Web Designer
             </RoleLabel>
           </PhotoContainer>
 
