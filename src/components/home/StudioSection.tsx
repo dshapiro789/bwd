@@ -114,7 +114,7 @@ export default function StudioSection() {
   const y = useTransform(scrollYProgress, [0, 1], ["0%", "20%"]);
 
   return (
-    <StudioWrapper id="about" ref={ref}>
+    <StudioWrapper id="studio" ref={ref}>
       <BackgroundImage style={{ y }} />
 
       <ContentContainer style={{ opacity, scale }}>
