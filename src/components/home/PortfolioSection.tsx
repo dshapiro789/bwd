@@ -354,10 +354,6 @@ const CategoryBadge = styled.span`
     box-shadow: 0 0 30px rgba(200, 159, 129, 0.25);
     border-color: rgba(200, 159, 129, 0.4);
   }
-
-  @media (max-width: ${({ theme }) => theme.breakpoints.tablet}) {
-    display: none;
-  }
 `;
 
 const MetaRow = styled.div`
