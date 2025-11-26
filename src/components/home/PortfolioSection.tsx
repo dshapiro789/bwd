@@ -191,16 +191,10 @@ const ContentWrapper = styled.div`
 
 const ProjectHeader = styled.div`
   display: flex;
-  justify-content: space-between;
-  align-items: center;
+  flex-direction: column;
+  align-items: flex-start;
   margin-bottom: ${({ theme }) => theme.spacing.md};
-  gap: ${({ theme }) => theme.spacing.md};
-
-  @media (max-width: 768px) {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: ${({ theme }) => theme.spacing.sm};
-  }
+  gap: ${({ theme }) => theme.spacing.sm};
 `;
 
 const ProjectTitle = styled.h3`
