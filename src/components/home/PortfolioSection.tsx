@@ -156,24 +156,7 @@ const MobileCarouselTrack = styled(motion.div)`
   }
 `;
 
-const ProgressDots = styled.div`
-  display: flex;
-  justify-content: center;
-  gap: 8px;
-  margin-top: ${({ theme }) => theme.spacing.md};
-`;
 
-const Dot = styled.div<{ active: boolean }>`
-  width: 8px;
-  height: 8px;
-  border-radius: 50%;
-  background: ${({ active, theme }) =>
-    active
-      ? `linear-gradient(135deg, ${theme.colors.primary}, ${theme.colors.accent})`
-      : 'rgba(255, 255, 255, 0.2)'};
-  transition: all 0.3s ease;
-  transform: scale(${({ active }) => (active ? 1.2 : 1)});
-`;
 
 const ItemWrapper = styled(motion.a)`
   display: block;
@@ -431,9 +414,79 @@ function ProjectItem({ project, index, isMobile = false }: ProjectItemProps) {
   );
 }
 
+const ProgressContainer = styled.div`
+  padding: 0 ${({ theme }) => theme.spacing.md};
+  margin-top: ${({ theme }) => theme.spacing.md};
+  display: flex;
+  justify-content: center;
+`;
+
+const ProgressTrack = styled.div`
+  width: 100%;
+  max-width: 200px;
+  height: 4px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 4px;
+  overflow: visible;
+  position: relative;
+  box-shadow: 
+    inset 0 1px 2px rgba(0, 0, 0, 0.5),
+    0 1px 0 rgba(255, 255, 255, 0.1);
+`;
+
+const ProgressBar = styled(motion.div)`
+  position: absolute;
+  left: 0;
+  top: 0;
+  height: 100%;
+  width: 100%;
+  background: linear-gradient(90deg, 
+    ${({ theme }) => theme.colors.primary}40, 
+    ${({ theme }) => theme.colors.primary}
+  );
+  border-radius: 4px;
+  transform-origin: 0%;
+  box-shadow: 0 0 10px ${({ theme }) => theme.colors.primary}60;
+
+  /* The Glowing Spark Tip */
+  &::after {
+    content: '';
+    position: absolute;
+    right: -2px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 4px;
+    height: 12px;
+    background: #fff;
+    border-radius: 2px;
+    box-shadow: 
+      0 0 10px #fff,
+      0 0 20px ${({ theme }) => theme.colors.primary};
+    animation: pulse 2s infinite ease-in-out;
+  }
+
+  @keyframes pulse {
+    0% { opacity: 0.8; transform: translateY(-50%) scale(1); }
+    50% { opacity: 1; transform: translateY(-50%) scale(1.2); box-shadow: 0 0 15px #fff, 0 0 30px ${({ theme }) => theme.colors.primary}; }
+    100% { opacity: 0.8; transform: translateY(-50%) scale(1); }
+  }
+`;
+
 export default function PortfolioSection() {
-  const [activeIndex, setActiveIndex] = useState(0);
   const constraintsRef = useRef(null);
+  const x = useMotionValue(0);
+
+  // Calculate progress based on scroll position
+  // We estimate the total scrollable width based on number of items
+  // This is an approximation that works well for the visual indicator
+  const cardWidth = 300; // Approximate width of card + gap
+  const maxScroll = (projects.length - 1) * cardWidth;
+
+  const progressScale = useTransform(
+    x,
+    [0, -maxScroll],
+    [0, 1]
+  );
 
   return (
     <PortfolioWrapper id="portfolio">
@@ -459,30 +512,21 @@ export default function PortfolioSection() {
         {/* Mobile Carousel */}
         <MobileCarousel ref={constraintsRef}>
           <MobileCarouselTrack
+            style={{ x }}
             drag="x"
             dragConstraints={{ left: -2000, right: 0 }}
             dragElastic={0.1}
-            onDragEnd={(e, { offset, velocity }) => {
-              const swipeThreshold = 50;
-              const swipeVelocity = 500;
-
-              if (Math.abs(offset.x) > swipeThreshold || Math.abs(velocity.x) > swipeVelocity) {
-                const direction = offset.x > 0 ? -1 : 1;
-                const newIndex = Math.max(0, Math.min(activeIndex + direction, projects.length - 1));
-                setActiveIndex(newIndex);
-              }
-            }}
           >
             {projects.map((project, index) => (
               <ProjectItem key={project.id} project={project} index={index} isMobile />
             ))}
           </MobileCarouselTrack>
 
-          <ProgressDots>
-            {projects.map((_, index) => (
-              <Dot key={index} active={index === activeIndex} />
-            ))}
-          </ProgressDots>
+          <ProgressContainer>
+            <ProgressTrack>
+              <ProgressBar style={{ scaleX: progressScale }} />
+            </ProgressTrack>
+          </ProgressContainer>
         </MobileCarousel>
       </Container>
     </PortfolioWrapper>
