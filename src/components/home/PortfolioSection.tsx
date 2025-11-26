@@ -335,6 +335,11 @@ const ExternalIcon = styled(motion.span)`
     opacity: 1;
     transform: translateX(0);
   }
+
+  @media (max-width: ${({ theme }) => theme.breakpoints.tablet}) {
+    opacity: 1;
+    transform: translateX(0);
+  }
 `;
 
 const CategoryBadge = styled.span`
@@ -475,17 +480,22 @@ export default function PortfolioSection() {
         </ProjectList>
 
         {/* Mobile Carousel */}
-        <MobileCarousel>
+        <MobileCarousel ref={constraintsRef}>
           <MobileCarouselTrack
             drag="x"
-            dragConstraints={constraintsRef}
-            onDragEnd={(e, { offset }) => {
-              const cardWidth = 296; // 280px + 16px gap
-              const newIndex = Math.round(-offset.x / cardWidth);
-              setActiveIndex(Math.max(0, Math.min(newIndex, projects.length - 1)));
+            dragConstraints={{ left: -2000, right: 0 }}
+            dragElastic={0.1}
+            onDragEnd={(e, { offset, velocity }) => {
+              const swipeThreshold = 50;
+              const swipeVelocity = 500;
+
+              if (Math.abs(offset.x) > swipeThreshold || Math.abs(velocity.x) > swipeVelocity) {
+                const direction = offset.x > 0 ? -1 : 1;
+                const newIndex = Math.max(0, Math.min(activeIndex + direction, projects.length - 1));
+                setActiveIndex(newIndex);
+              }
             }}
           >
-            <div ref={constraintsRef} />
             {projects.map((project, index) => (
               <ProjectItem key={project.id} project={project} index={index} isMobile />
             ))}
