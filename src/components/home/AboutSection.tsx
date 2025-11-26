@@ -52,6 +52,13 @@ const ContentGrid = styled(motion.div)`
   }
 `;
 
+const PhotoContainer = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: ${({ theme }) => theme.spacing.lg};
+`;
+
 const PhotoFrame = styled(motion.div)`
   position: relative;
   width: 100%;
@@ -89,6 +96,45 @@ const PhotoFrame = styled(motion.div)`
     width: 100%;
     height: 100%;
     object-fit: cover;
+  }
+`;
+
+const NameLabel = styled(motion.div)`
+  font-family: ${({ theme }) => theme.fonts.heading};
+  font-size: 1.8rem;
+  font-weight: 300;
+  text-align: center;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  background: linear-gradient(
+    135deg,
+    ${({ theme }) => theme.colors.primary},
+    ${({ theme }) => theme.colors.accent}
+  );
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  position: relative;
+  
+  &::after {
+    content: '';
+    position: absolute;
+    bottom: -8px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 60px;
+    height: 1px;
+    background: linear-gradient(
+      90deg,
+      transparent,
+      ${({ theme }) => theme.colors.primary},
+      transparent
+    );
+  }
+
+  @media (max-width: 768px) {
+    font-size: 1.4rem;
+    letter-spacing: 0.1em;
   }
 `;
 
@@ -188,20 +234,30 @@ export default function AboutSection() {
         <ContentGrid
           style={{ opacity, y, filter }}
         >
-          <PhotoFrame
-            initial={{ opacity: 0, scale: 0.9 }}
-            whileInView={{ opacity: 1, scale: 1 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.8, delay: 0.2 }}
-          >
-            <Image
-              src="/images/headshot.jpg"
-              alt="Professional headshot"
-              width={400}
-              height={400}
-              priority
-            />
-          </PhotoFrame>
+          <PhotoContainer>
+            <PhotoFrame
+              initial={{ opacity: 0, scale: 0.9 }}
+              whileInView={{ opacity: 1, scale: 1 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.8, delay: 0.2 }}
+            >
+              <Image
+                src="/images/headshot.jpg"
+                alt="Professional headshot"
+                width={400}
+                height={400}
+                priority
+              />
+            </PhotoFrame>
+            <NameLabel
+              initial={{ opacity: 0, y: 10 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.8, delay: 0.4 }}
+            >
+              David Aaron Shapiro
+            </NameLabel>
+          </PhotoContainer>
 
           <BioContent
             initial={{ opacity: 0, x: 50 }}
