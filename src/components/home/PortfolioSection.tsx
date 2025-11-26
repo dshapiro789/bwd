@@ -94,6 +94,7 @@ const CarouselContainer = styled.div`
   max-width: 900px;
   margin: 0 auto;
   padding: ${({ theme }) => theme.spacing.xl} 0;
+  padding-bottom: 80px;
   min-height: 400px;
   display: flex;
   align-items: center;
@@ -263,8 +264,7 @@ const CategoryBadge = styled.span`
 
 const ArrowButton = styled(motion.button)`
   position: absolute;
-  top: 50%;
-  transform: translateY(-50%);
+  bottom: 10px;
   background: rgba(20, 30, 25, 0.8);
   border: 1px solid rgba(200, 159, 129, 0.3);
   border-radius: 50%;
@@ -292,9 +292,6 @@ const ArrowButton = styled(motion.button)`
   @media (max-width: 768px) {
     width: 44px;
     height: 44px;
-    top: auto;
-    bottom: 10px;
-    transform: none;
     
     svg {
       font-size: 1.2rem;
@@ -303,19 +300,11 @@ const ArrowButton = styled(motion.button)`
 `;
 
 const PrevButton = styled(ArrowButton)`
-  left: -60px;
-
-  @media (max-width: 768px) {
-    left: 20px;
-  }
+  left: 20px;
 `;
 
 const NextButton = styled(ArrowButton)`
-  right: -60px;
-
-  @media (max-width: 768px) {
-    right: 20px;
-  }
+  right: 20px;
 `;
 
 const ProgressContainer = styled.div`
