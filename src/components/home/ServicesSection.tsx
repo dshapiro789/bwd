@@ -124,7 +124,8 @@ const IconWrapper = styled.div`
   transition: transform 0.3s ease;
 
   ${ServiceCard}:hover & {
-    transform: scale(1.1);
+    transform: scale(1.05) translateY(-2px);
+    filter: drop-shadow(0 0 15px rgba(200, 159, 129, 0.5));
   }
 `;
 
@@ -150,19 +151,22 @@ function ScrollRevealCard({ children, index }: { children: React.ReactNode; inde
     offset: ["start end", "end start"]
   });
 
-  // Alternating entry sides: even from left (-100), odd from right (100)
-  const xOffset = index % 2 === 0 ? -100 : 100;
+  // Alternating entry sides: even from left (-50), odd from right (50)
+  // Reduced offset for more subtle movement
+  const xOffset = index % 2 === 0 ? -50 : 50;
 
-  const opacity = useTransform(scrollYProgress, [0, 0.2, 0.8, 1], [0, 1, 1, 0]);
-  const x = useTransform(scrollYProgress, [0, 0.2, 0.8, 1], [xOffset, 0, 0, xOffset]);
+  const opacity = useTransform(scrollYProgress, [0, 0.25, 0.75, 1], [0, 1, 1, 0]);
+  const x = useTransform(scrollYProgress, [0, 0.25, 0.75, 1], [xOffset, 0, 0, xOffset]);
+  const scale = useTransform(scrollYProgress, [0, 0.25, 0.75, 1], [0.9, 1, 1, 0.9]);
 
-  // Add a subtle scale effect
-  const scale = useTransform(scrollYProgress, [0, 0.2, 0.8, 1], [0.8, 1, 1, 0.8]);
+  // Feathered blur effect
+  const blur = useTransform(scrollYProgress, [0, 0.25, 0.75, 1], [10, 0, 0, 10]);
+  const filter = useMotionTemplate`blur(${blur}px)`;
 
   return (
     <CardWrapper
       ref={ref}
-      style={{ opacity, x, scale }}
+      style={{ opacity, x, scale, filter }}
     >
       {children}
     </CardWrapper>
