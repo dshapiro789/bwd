@@ -55,7 +55,7 @@ const ContentGrid = styled(motion.div)`
 const PhotoFrame = styled(motion.div)`
   position: relative;
   width: 100%;
-  max-width: 400px;
+  max-width: 320px;
   margin: 0 auto;
   aspect-ratio: 1;
   border-radius: 20px;
@@ -160,82 +160,82 @@ const StatLabel = styled.div`
 `;
 
 export default function AboutSection() {
-    const ref = useRef(null);
-    const { scrollYProgress } = useScroll({
-        target: ref,
-        offset: ["start end", "end start"]
-    });
+  const ref = useRef(null);
+  const { scrollYProgress } = useScroll({
+    target: ref,
+    offset: ["start end", "end start"]
+  });
 
-    const opacity = useTransform(scrollYProgress, [0, 0.25, 0.75, 1], [0, 1, 1, 0]);
-    const y = useTransform(scrollYProgress, [0, 0.25, 0.75, 1], [50, 0, 0, 50]);
-    const blur = useTransform(scrollYProgress, [0, 0.25, 0.75, 1], [10, 0, 0, 10]);
-    const filter = useMotionTemplate`blur(${blur}px)`;
+  const opacity = useTransform(scrollYProgress, [0, 0.25, 0.75, 1], [0, 1, 1, 0]);
+  const y = useTransform(scrollYProgress, [0, 0.25, 0.75, 1], [50, 0, 0, 50]);
+  const blur = useTransform(scrollYProgress, [0, 0.25, 0.75, 1], [10, 0, 0, 10]);
+  const filter = useMotionTemplate`blur(${blur}px)`;
 
-    return (
-        <AboutWrapper id="about" ref={ref}>
-            <Container>
-                <Header>
-                    <Title
-                        initial={{ opacity: 0, y: 30 }}
-                        whileInView={{ opacity: 1, y: 0 }}
-                        viewport={{ once: true }}
-                        transition={{ duration: 0.8, ease: "easeOut" }}
-                    >
-                        <GradientText>About</GradientText>
-                    </Title>
-                </Header>
+  return (
+    <AboutWrapper id="about" ref={ref}>
+      <Container>
+        <Header>
+          <Title
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.8, ease: "easeOut" }}
+          >
+            <GradientText>About</GradientText>
+          </Title>
+        </Header>
 
-                <ContentGrid
-                    style={{ opacity, y, filter }}
-                >
-                    <PhotoFrame
-                        initial={{ opacity: 0, scale: 0.9 }}
-                        whileInView={{ opacity: 1, scale: 1 }}
-                        viewport={{ once: true }}
-                        transition={{ duration: 0.8, delay: 0.2 }}
-                    >
-                        <Image
-                            src="/images/headshot.jpg"
-                            alt="Professional headshot"
-                            width={400}
-                            height={400}
-                            priority
-                        />
-                    </PhotoFrame>
+        <ContentGrid
+          style={{ opacity, y, filter }}
+        >
+          <PhotoFrame
+            initial={{ opacity: 0, scale: 0.9 }}
+            whileInView={{ opacity: 1, scale: 1 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.8, delay: 0.2 }}
+          >
+            <Image
+              src="/images/headshot.jpg"
+              alt="Professional headshot"
+              width={400}
+              height={400}
+              priority
+            />
+          </PhotoFrame>
 
-                    <BioContent
-                        initial={{ opacity: 0, x: 50 }}
-                        whileInView={{ opacity: 1, x: 0 }}
-                        viewport={{ once: true }}
-                        transition={{ duration: 0.8, delay: 0.3 }}
-                    >
-                        <IntroText>
-                            With a decade of experience building for the web and a Software Engineering degree from Western Governors University, I've dedicated my career to transforming ideas into refined digital realities.
-                        </IntroText>
+          <BioContent
+            initial={{ opacity: 0, x: 50 }}
+            whileInView={{ opacity: 1, x: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.8, delay: 0.3 }}
+          >
+            <IntroText>
+              With a decade of experience building for the web and a Software Engineering degree from Western Governors University, I've dedicated my career to transforming ideas into refined digital realities.
+            </IntroText>
 
-                        <PhilosophyText>
-                            "I don't just build websites—I craft digital experiences that resonate, engage, and endure."
-                        </PhilosophyText>
+            <PhilosophyText>
+              "I don't just build websites—I craft digital experiences that resonate, engage, and endure."
+            </PhilosophyText>
 
-                        <StatsGrid>
-                            <StatCard
-                                whileHover={{ scale: 1.05 }}
-                                transition={{ duration: 0.2 }}
-                            >
-                                <StatNumber>10+</StatNumber>
-                                <StatLabel>Years Experience</StatLabel>
-                            </StatCard>
-                            <StatCard
-                                whileHover={{ scale: 1.05 }}
-                                transition={{ duration: 0.2 }}
-                            >
-                                <StatNumber>WGU</StatNumber>
-                                <StatLabel>BS Software Engineering</StatLabel>
-                            </StatCard>
-                        </StatsGrid>
-                    </BioContent>
-                </ContentGrid>
-            </Container>
-        </AboutWrapper>
-    );
+            <StatsGrid>
+              <StatCard
+                whileHover={{ scale: 1.05 }}
+                transition={{ duration: 0.2 }}
+              >
+                <StatNumber>10+</StatNumber>
+                <StatLabel>Years Experience</StatLabel>
+              </StatCard>
+              <StatCard
+                whileHover={{ scale: 1.05 }}
+                transition={{ duration: 0.2 }}
+              >
+                <StatNumber>WGU</StatNumber>
+                <StatLabel>BS Software Engineering</StatLabel>
+              </StatCard>
+            </StatsGrid>
+          </BioContent>
+        </ContentGrid>
+      </Container>
+    </AboutWrapper>
+  );
 }
