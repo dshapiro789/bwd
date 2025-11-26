@@ -6,6 +6,7 @@ import { motion, useScroll, useTransform, useMotionTemplate } from 'framer-motio
 import { useRef } from 'react';
 import Image from 'next/image';
 import GradientText from '../common/GradientText';
+import AnimatedCounter from '../common/AnimatedCounter';
 
 const AboutWrapper = styled(Section)`
   background: linear-gradient(
@@ -329,7 +330,9 @@ export default function AboutSection() {
                 whileHover={{ scale: 1.05 }}
                 transition={{ duration: 0.2 }}
               >
-                <StatNumber>10+</StatNumber>
+                <StatNumber>
+                  <AnimatedCounter to={10} suffix="+" />
+                </StatNumber>
                 <StatLabel>Years Experience</StatLabel>
               </StatCard>
               <StatCard
