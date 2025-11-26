@@ -5,6 +5,7 @@ import { motion, useMotionValue, useSpring, useTransform } from 'framer-motion';
 import { useRef, useState, useEffect } from 'react';
 import { Section, Container } from '../layout/Container';
 import GradientText from '../common/GradientText';
+import { FiArrowUpRight } from 'react-icons/fi';
 
 // Updated Project Data with enhanced metadata
 const projects = [
@@ -327,11 +328,17 @@ const ProjectTitle = styled.h3`
 `;
 
 const ExternalIcon = styled(motion.span)`
-  font-size: 1.2rem;
-  color: ${({ theme }) => theme.colors.primary} !important;
+  font-size: 1.4rem;
+  color: ${({ theme }) => theme.colors.primary};
   opacity: 0;
   transform: translateX(-10px);
-  display: inline-block;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  svg {
+    stroke-width: 2.5px;
+  }
 
   ${ItemWrapper}:hover & {
     opacity: 1;
@@ -439,9 +446,8 @@ function ProjectItem({ project, index, isMobile = false }: ProjectItemProps) {
           <ProjectTitleWrapper>
             <ProjectTitle>
               {project.title}
-              <ExternalIcon
-              >
-                ↗
+              <ExternalIcon>
+                <FiArrowUpRight />
               </ExternalIcon>
             </ProjectTitle>
           </ProjectTitleWrapper>
