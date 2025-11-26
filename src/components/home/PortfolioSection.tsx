@@ -289,10 +289,11 @@ const IndexNumber = styled.div`
 const ProjectHeader = styled.div`
   display: flex;
   justify-content: space-between;
-  align-items: flex-start;
+  align-items: center;
   margin-bottom: ${({ theme }) => theme.spacing.sm};
   position: relative;
   z-index: 1;
+  gap: ${({ theme }) => theme.spacing.md};
 `;
 
 const ProjectTitleWrapper = styled.div`
@@ -352,6 +353,10 @@ const CategoryBadge = styled.span`
   ${ItemWrapper}:hover & {
     box-shadow: 0 0 30px rgba(200, 159, 129, 0.25);
     border-color: rgba(200, 159, 129, 0.4);
+  }
+
+  @media (max-width: ${({ theme }) => theme.breakpoints.tablet}) {
+    display: none;
   }
 `;
 
@@ -430,12 +435,11 @@ function ProjectItem({ project, index, isMobile = false }: ProjectItemProps) {
                 ↗
               </ExternalIcon>
             </ProjectTitle>
-            <MetaRow>
-              <CategoryBadge>
-                {project.category}
-              </CategoryBadge>
-            </MetaRow>
           </ProjectTitleWrapper>
+
+          <CategoryBadge>
+            {project.category}
+          </CategoryBadge>
         </ProjectHeader>
 
       </ContentWrapper>
