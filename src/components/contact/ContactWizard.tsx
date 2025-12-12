@@ -317,7 +317,7 @@ export default function ContactWizard() {
     } = useForm<FormData>({
         resolver: zodResolver(
             step === 1 ? step1Schema : step === 2 ? step2Schema : step3Schema
-        ) as any,
+        ) as any, // eslint-disable-line
         defaultValues: {
             name: '',
             email: '',

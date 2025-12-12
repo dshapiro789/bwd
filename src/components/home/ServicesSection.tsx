@@ -7,7 +7,7 @@ import { SiReact, SiFigma, SiShopify, SiNextdotjs } from 'react-icons/si';
 import GradientText from '../common/GradientText';
 
 import { useRef } from 'react';
-import { useScroll, useTransform, useSpring, useMotionValue, useMotionTemplate } from 'framer-motion';
+import { useScroll, useTransform, useMotionTemplate } from 'framer-motion';
 
 const ServicesWrapper = styled(Section)`
   background: linear-gradient(
@@ -43,12 +43,6 @@ const Title = styled(motion.h2)`
   @media (max-width: 768px) {
     font-size: 2.5rem;
   }
-`;
-
-const Subtitle = styled(motion.p)`
-  color: ${({ theme }) => theme.colors.textSecondary};
-  font-size: 1.1rem;
-  line-height: 1.6;
 `;
 
 const Grid = styled.div`

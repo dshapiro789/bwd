@@ -6,7 +6,6 @@ import { useEffect, useRef } from 'react';
 interface AnimatedCounterProps {
     from?: number;
     to: number;
-    duration?: number;
     suffix?: string;
     className?: string;
 }
@@ -14,7 +13,6 @@ interface AnimatedCounterProps {
 export default function AnimatedCounter({
     from = 0,
     to,
-    duration = 2,
     suffix = '',
     className,
 }: AnimatedCounterProps) {

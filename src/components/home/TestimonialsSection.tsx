@@ -203,7 +203,7 @@ export default function TestimonialsSection() {
                 }}
               >
                 <Stars>{'★'.repeat(testimonials[currentIndex].rating)}</Stars>
-                <Quote>"{testimonials[currentIndex].content}"</Quote>
+                <Quote>&quot;{testimonials[currentIndex].content}&quot;</Quote>
                 <Author>
                   <Name>{testimonials[currentIndex].name}</Name>
                   <Role>{testimonials[currentIndex].role}</Role>

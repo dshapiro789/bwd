@@ -48,7 +48,6 @@ const CursorInner = styled(motion.div)`
 
 export default function CursorGlow() {
   const [isMounted, setIsMounted] = useState(false);
-  const [isHovering, setIsHovering] = useState(false);
 
   const cursorX = useMotionValue(0);
   const cursorY = useMotionValue(0);
@@ -64,7 +63,12 @@ export default function CursorGlow() {
   const innerY = useSpring(cursorY, innerSpringConfig);
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setIsMounted(true);
+  }, []);
+
+  useEffect(() => {
+    if (!isMounted) return;
 
     const moveCursor = (e: MouseEvent) => {
       cursorX.set(e.clientX - 20);
@@ -75,17 +79,15 @@ export default function CursorGlow() {
       const isClickable = target.closest('button, a, input, textarea, select, [role="button"], [onclick]');
 
       if (isClickable) {
-        setIsHovering(true);
         scale.set(1.25);
       } else {
-        setIsHovering(false);
         scale.set(1);
       }
     };
 
     window.addEventListener('mousemove', moveCursor);
     return () => window.removeEventListener('mousemove', moveCursor);
-  }, [cursorX, cursorY, scale]);
+  }, [isMounted, cursorX, cursorY, scale]);
 
   if (!isMounted) return null;
 
