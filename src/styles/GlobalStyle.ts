@@ -20,11 +20,6 @@ export const GlobalStyle = createGlobalStyle`
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
     overflow-x: hidden;
-    
-    /* Hide default cursor on non-touch devices */
-    @media (hover: hover) and (pointer: fine) {
-      cursor: none;
-    }
     line-height: 1.6;
   }
 
@@ -45,27 +40,17 @@ export const GlobalStyle = createGlobalStyle`
     text-decoration: none;
     color: inherit;
     transition: ${theme.transitions.default};
-    
-    /* Hide default cursor on non-touch devices */
-    @media (hover: hover) and (pointer: fine) {
-      cursor: none;
-    }
   }
 
   button {
     border: none;
     outline: none;
     font-family: inherit;
-    
-    /* Hide default cursor on non-touch devices */
-    @media (hover: hover) and (pointer: fine) {
-      cursor: none !important;
-    }
   }
   
-  /* Hide cursor on all interactive elements */
+  /* Hide cursor on ALL elements for non-touch devices */
   @media (hover: hover) and (pointer: fine) {
-    input, textarea, select, [role="button"], [onclick] {
+    *, *::before, *::after {
       cursor: none !important;
     }
   }

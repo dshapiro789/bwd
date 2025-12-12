@@ -40,7 +40,7 @@ export default function GradientText({ children, className }: GradientTextProps)
         <GradientSpan
             ref={ref}
             className={className}
-            style={{ backgroundPosition } as any}
+            style={{ backgroundPosition } as unknown as React.CSSProperties}
         >
             {children}
         </GradientSpan>

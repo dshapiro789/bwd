@@ -1,7 +1,7 @@
 'use client';
 
 import styled from 'styled-components';
-import { Section, Container } from '../layout/Container';
+import { Section } from '../layout/Container';
 import { motion, useScroll, useTransform } from 'framer-motion';
 import { useRef } from 'react';
 import AnimatedCounter from '../common/AnimatedCounter';
@@ -142,7 +142,7 @@ export default function StudioSection() {
           viewport={{ once: true }}
           transition={{ duration: 0.6, delay: 0.2 }}
         >
-          Like a bonsai, true craftsmanship requires patience, vision, and an unyielding attention to detail. We don't just build websites; we nurture digital ecosystems that grow with your business.
+          Like a bonsai, true craftsmanship requires patience, vision, and an unyielding attention to detail. We don&apos;t just build websites; we nurture digital ecosystems that grow with your business.
         </Text>
 
         <Text

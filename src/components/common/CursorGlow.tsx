@@ -1,7 +1,7 @@
 'use client';
 
 import { motion, useMotionValue, useSpring } from 'framer-motion';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef } from 'react';
 import styled from 'styled-components';
 
 const CursorOuter = styled(motion.div)`
@@ -47,8 +47,7 @@ const CursorInner = styled(motion.div)`
 `;
 
 export default function CursorGlow() {
-  const [isMounted, setIsMounted] = useState(false);
-  const [isHovering, setIsHovering] = useState(false);
+  const isMountedRef = useRef(false);
 
   const cursorX = useMotionValue(0);
   const cursorY = useMotionValue(0);
@@ -64,7 +63,7 @@ export default function CursorGlow() {
   const innerY = useSpring(cursorY, innerSpringConfig);
 
   useEffect(() => {
-    setIsMounted(true);
+    isMountedRef.current = true;
 
     const moveCursor = (e: MouseEvent) => {
       cursorX.set(e.clientX - 20);
@@ -75,10 +74,8 @@ export default function CursorGlow() {
       const isClickable = target.closest('button, a, input, textarea, select, [role="button"], [onclick]');
 
       if (isClickable) {
-        setIsHovering(true);
         scale.set(1.25);
       } else {
-        setIsHovering(false);
         scale.set(1);
       }
     };
@@ -87,7 +84,8 @@ export default function CursorGlow() {
     return () => window.removeEventListener('mousemove', moveCursor);
   }, [cursorX, cursorY, scale]);
 
-  if (!isMounted) return null;
+  // Return null during SSR - the component will render properly after hydration
+  if (typeof window === 'undefined') return null;
 
   return (
     <>

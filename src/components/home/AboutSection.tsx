@@ -318,11 +318,11 @@ export default function AboutSection() {
             transition={{ duration: 0.8, delay: 0.3 }}
           >
             <IntroText>
-              With a decade of experience building for the web and a Software Engineering degree from Western Governors University, I've dedicated my career to transforming ideas into refined digital realities.
+              With a decade of experience building for the web and a Software Engineering degree from Western Governors University, I&apos;ve dedicated my career to transforming ideas into refined digital realities.
             </IntroText>
 
             <PhilosophyText>
-              "I don't just build websites—I craft digital experiences that resonate, engage, and endure."
+              &quot;I don&apos;t just build websites—I craft digital experiences that resonate, engage, and endure.&quot;
             </PhilosophyText>
 
             <StatsGrid>
