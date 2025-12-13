@@ -6,6 +6,7 @@ import PortfolioSection from '@/components/home/PortfolioSection';
 import AboutSection from '@/components/home/AboutSection';
 import ContactWizard from '@/components/contact/ContactWizard';
 import TestimonialsSection from '@/components/home/TestimonialsSection';
+import PricingSection from '@/components/home/PricingSection';
 
 import ServicesSection from '@/components/home/ServicesSection';
 import StudioSection from '@/components/home/StudioSection';
@@ -25,7 +26,7 @@ export default function Home() {
       <PortfolioSection />
 
       <ParallaxDivider
-        image="/images/bonsai-divider-2.png"
+        image="/images/bonsai-divider-fern.jpg"
         height="250px"
       />
 
@@ -39,6 +40,14 @@ export default function Home() {
       <ServicesSection />
 
       <ParallaxDivider
+        image="/images/bonsai-divider-3.png"
+        height="250px"
+        position="center 75%"
+      />
+
+      <PricingSection />
+
+      <ParallaxDivider
         image="/images/bonsai-divider-4.png"
         height="300px"
       />
@@ -48,6 +57,8 @@ export default function Home() {
       <ParallaxDivider
         image="/images/bonsai-divider-4.png"
         height="250px"
+        position="center 70%"
+        size="120%"
       />
 
       <TestimonialsSection />

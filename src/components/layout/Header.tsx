@@ -171,6 +171,7 @@ export default function Header() {
               <NavLink href="#portfolio">Work</NavLink>
               <NavLink href="#about">About</NavLink>
               <NavLink href="#services">Services</NavLink>
+              <NavLink href="#pricing">Pricing</NavLink>
               <NavLink href="#studio">Studio</NavLink>
               <NavLink href="#contact">Contact</NavLink>
             </NavLinks>
@@ -236,6 +237,21 @@ export default function Header() {
                 }}
               >
                 Services
+              </MobileNavLink>
+            </motion.div>
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.15, delay: 0.175 }}
+            >
+              <MobileNavLink
+                onClick={(e) => {
+                  e.stopPropagation();
+                  handleMobileNavClick('#pricing');
+                }}
+              >
+                Pricing
               </MobileNavLink>
             </motion.div>
             <motion.div

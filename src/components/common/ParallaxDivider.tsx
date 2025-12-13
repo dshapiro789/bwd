@@ -7,6 +7,8 @@ import { useRef } from 'react';
 interface ParallaxDividerProps {
     image: string;
     height?: string;
+    position?: string;
+    size?: string;
 }
 
 const DividerWrapper = styled.div<{ $height: string }>`
@@ -17,18 +19,23 @@ const DividerWrapper = styled.div<{ $height: string }>`
   background: ${({ theme }) => theme.colors.background};
 `;
 
-const ParallaxImage = styled(motion.div)`
+const ParallaxImage = styled(motion.div) <{ $position: string; $size: string }>`
   position: absolute;
   top: -20%;
   left: 0;
   right: 0;
   bottom: -20%;
-  background-size: cover;
-  background-position: center;
+  background-size: ${({ $size }) => $size};
+  background-position: ${({ $position }) => $position};
   opacity: 0.6;
 `;
 
-export default function ParallaxDivider({ image, height = '300px' }: ParallaxDividerProps) {
+export default function ParallaxDivider({
+    image,
+    height = '300px',
+    position = 'center',
+    size = 'cover'
+}: ParallaxDividerProps) {
     const ref = useRef(null);
     const { scrollYProgress } = useScroll({
         target: ref,
@@ -40,6 +47,8 @@ export default function ParallaxDivider({ image, height = '300px' }: ParallaxDiv
     return (
         <DividerWrapper ref={ref} $height={height}>
             <ParallaxImage
+                $position={position}
+                $size={size}
                 style={{ backgroundImage: `url(${image})`, y }}
             />
         </DividerWrapper>
