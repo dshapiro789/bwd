@@ -200,7 +200,7 @@ const pricingOptions: PricingOption[] = [
   {
     id: 1,
     title: 'Maintenance',
-    price: '$35',
+    price: '$40',
     description: '/ hour',
     icon: <FaTools />,
     features: [
@@ -212,13 +212,13 @@ const pricingOptions: PricingOption[] = [
   },
   {
     id: 2,
-    title: 'Single Page Site',
+    title: 'Custom Webite',
     price: '$500+',
     pricePrefix: 'Starting at',
-    description: 'Flat Rate',
+    description: '/ page',
     icon: <FaLaptopCode />,
     features: [
-      '5 Custom Sections',
+      'Up To 5 Sections Per Page',
       'Custom Contact Form',
       'Styled Components',
       'Mobile Responsive',
@@ -230,16 +230,23 @@ const pricingOptions: PricingOption[] = [
   },
   {
     id: 3,
-    title: 'Additional Pages or Features',
+    title: 'Custom Add-ons',
     price: '$250+',
     pricePrefix: 'Starting at',
-    description: 'Per Page or Custom Feature',
+    description: 'Per Custom Feature',
     icon: <FaLayerGroup />,
     features: [
-      'Content Integration',
+      'Custom Content Integration',
       'Custom Layouts',
       'Advanced Features',
-      'Tailored Design'
+      'Custom Components',
+      'Database Integration',
+      'Custom API Endpoints',
+      'Custom Authentication',
+      'Custom Deployment',
+      'AI Integration',
+      'Website Analytics',
+      'Custom Email Integration'
     ]
   },
 ];
