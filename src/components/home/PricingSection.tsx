@@ -212,7 +212,7 @@ const pricingOptions: PricingOption[] = [
   },
   {
     id: 2,
-    title: 'Custom Webite',
+    title: 'Custom Website',
     price: '$500+',
     pricePrefix: 'Starting at',
     description: '/ page',
