@@ -10,6 +10,12 @@ import { FiArrowUpRight, FiChevronLeft, FiChevronRight } from 'react-icons/fi';
 // Project Data
 const projects = [
   {
+    id: 0,
+    title: 'AthleteXperience',
+    category: 'Feature Rich Mobile App (Coming Soon)',
+    url: 'https://theathletexperience.com',
+  },
+  {
     id: 1,
     title: 'Emerald Grove Digital',
     category: 'AI Services Demo',
@@ -18,13 +24,13 @@ const projects = [
   {
     id: 2,
     title: 'Shapiro Works',
-    category: 'Digital Agency Demo',
+    category: 'Digital Freelance Agency',
     url: 'https://shapiroworks.com',
   },
   {
     id: 3,
     title: 'Quality Prompt',
-    category: 'AI Engineering',
+    category: 'AI PromptEngineering',
     url: 'https://qualityprompt.cv',
   },
   {
