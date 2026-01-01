@@ -29,9 +29,9 @@ const projects = [
   },
   {
     id: 3,
-    title: 'Quality Prompt',
-    category: 'AI PromptEngineering',
-    url: 'https://qualityprompt.cv',
+    title: 'UPrompt',
+    category: 'AI Prompt Engineering',
+    url: 'https://uprompt.me',
   },
   {
     id: 4,
