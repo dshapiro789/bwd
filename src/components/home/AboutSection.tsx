@@ -97,6 +97,7 @@ const PhotoFrame = styled(motion.div)`
     width: 100%;
     height: 100%;
     object-fit: cover;
+    object-position: top;
   }
 `;
 
@@ -286,7 +287,7 @@ export default function AboutSection() {
               transition={{ duration: 0.8, delay: 0.2 }}
             >
               <Image
-                src="/images/headshot.jpg"
+                src="/images/headshot.png"
                 alt="Professional headshot"
                 width={400}
                 height={400}
