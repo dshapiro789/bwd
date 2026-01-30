@@ -118,6 +118,10 @@ const Subtitle = styled(motion.p)`
   font-size: 1.1rem;
   margin-top: ${({ theme }) => theme.spacing.md};
   opacity: 0.8;
+  
+  @media (min-width: 769px) {
+    display: none;
+  }
 `;
 
 const ScrollContainer = styled.div`
@@ -447,7 +451,7 @@ export default function PortfolioSection() {
           dragConstraints={{ left: -maxScroll, right: 0 }}
           dragElastic={0.1}
           dragTransition={{ bounceStiffness: 300, bounceDamping: 30 }}
-          style={{ x, paddingLeft: 'calc(50vw - 200px)', paddingRight: 'calc(50vw - 200px)' }}
+          style={{ x, paddingLeft: '48px', paddingRight: 'calc(50vw - 200px)' }}
           onDragStart={() => setIsDragging(true)}
           onDragEnd={handleDragEnd}
         >
