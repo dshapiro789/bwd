@@ -39,31 +39,41 @@ const Title = styled(motion.h2)`
   }
 `;
 
-const ContentGrid = styled(motion.div)`
+const TeamContainer = styled(motion.div)`
+  display: flex;
+  flex-direction: column;
+  gap: ${({ theme }) => theme.spacing.xxxl};
+  max-width: 1200px;
+  margin: 0 auto;
+`;
+
+const MemberSection = styled(motion.div) <{ $reverse?: boolean }>`
   display: grid;
   grid-template-columns: 1fr;
   gap: ${({ theme }) => theme.spacing.xxl};
   align-items: center;
-  max-width: 1200px;
-  margin: 0 auto;
 
   @media (min-width: ${({ theme }) => theme.breakpoints.tablet}) {
-    grid-template-columns: 1fr 1.5fr;
+    grid-template-columns: ${({ $reverse }) => $reverse ? '1.5fr 1fr' : '1fr 1.5fr'};
     gap: ${({ theme }) => theme.spacing.xxxl};
   }
 `;
 
-const PhotoContainer = styled.div`
+const PhotoContainer = styled.div<{ $order?: number }>`
   display: flex;
   flex-direction: column;
   align-items: center;
   gap: ${({ theme }) => theme.spacing.md};
+  
+  @media (min-width: ${({ theme }) => theme.breakpoints.tablet}) {
+    order: ${({ $order }) => $order || 0};
+  }
 `;
 
 const PhotoFrame = styled(motion.div)`
   position: relative;
   width: 100%;
-  max-width: 400px;
+  max-width: 350px;
   margin: 0 auto;
   aspect-ratio: 1;
   border-radius: 20px;
@@ -190,11 +200,6 @@ const IntroText = styled.p`
     border-radius: 12px 0 0 12px;
   }
 
-  &::first-line {
-    font-weight: 400;
-    letter-spacing: 0.03em;
-  }
-
   @media (max-width: 768px) {
     font-size: 1.15rem;
     line-height: 1.8;
@@ -250,6 +255,18 @@ const StatLabel = styled.div`
   letter-spacing: 0.05em;
 `;
 
+const Divider = styled.div`
+  width: 100%;
+  height: 1px;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(200, 159, 129, 0.3),
+    transparent
+  );
+  margin: 0 auto;
+`;
+
 export default function AboutSection() {
   const ref = useRef(null);
   const { scrollYProgress } = useScroll({
@@ -257,9 +274,9 @@ export default function AboutSection() {
     offset: ["start end", "end start"]
   });
 
-  const opacity = useTransform(scrollYProgress, [0, 0.25, 0.75, 1], [0, 1, 1, 0]);
-  const y = useTransform(scrollYProgress, [0, 0.25, 0.75, 1], [50, 0, 0, 50]);
-  const blur = useTransform(scrollYProgress, [0, 0.25, 0.75, 1], [10, 0, 0, 10]);
+  const opacity = useTransform(scrollYProgress, [0, 0.15, 0.85, 1], [0, 1, 1, 0]);
+  const y = useTransform(scrollYProgress, [0, 0.15, 0.85, 1], [50, 0, 0, 50]);
+  const blur = useTransform(scrollYProgress, [0, 0.15, 0.85, 1], [10, 0, 0, 10]);
   const filter = useMotionTemplate`blur(${blur}px)`;
 
   return (
@@ -272,80 +289,153 @@ export default function AboutSection() {
             viewport={{ once: true }}
             transition={{ duration: 0.8, ease: "easeOut" }}
           >
-            <GradientText>About</GradientText>
+            <GradientText>Meet The Team</GradientText>
           </Title>
         </Header>
 
-        <ContentGrid
-          style={{ opacity, y, filter }}
-        >
-          <PhotoContainer>
-            <PhotoFrame
-              initial={{ opacity: 0, scale: 0.9 }}
-              whileInView={{ opacity: 1, scale: 1 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.8, delay: 0.2 }}
-            >
-              <Image
-                src="/images/headshot.png"
-                alt="Professional headshot"
-                width={400}
-                height={400}
-                priority
-              />
-            </PhotoFrame>
-            <NameLabel
-              initial={{ opacity: 0, y: 10 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.8, delay: 0.4 }}
-            >
-              David Aaron Shapiro
-            </NameLabel>
-            <RoleLabel
-              initial={{ opacity: 0 }}
-              whileInView={{ opacity: 0.7 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.8, delay: 0.5 }}
-            >
-              Bonsai Web Designer
-            </RoleLabel>
-          </PhotoContainer>
-
-          <BioContent
-            initial={{ opacity: 0, x: 50 }}
-            whileInView={{ opacity: 1, x: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.8, delay: 0.3 }}
-          >
-            <IntroText>
-              With a decade of experience building for the web and a Software Engineering degree from Western Governors University, I&apos;ve dedicated my career to transforming ideas into refined digital realities.
-            </IntroText>
-
-            <PhilosophyText>
-              &quot;I don&apos;t just build websites—I craft digital experiences that resonate, engage, and endure.&quot;
-            </PhilosophyText>
-
-            <StatsGrid>
-              <StatCard
-                whileHover={{ scale: 1.05 }}
-                transition={{ duration: 0.2 }}
+        <TeamContainer style={{ opacity, y, filter }}>
+          {/* David Shapiro - Image Left, Bio Right */}
+          <MemberSection>
+            <PhotoContainer>
+              <PhotoFrame
+                initial={{ opacity: 0, scale: 0.9 }}
+                whileInView={{ opacity: 1, scale: 1 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.8, delay: 0.2 }}
               >
-                <StatNumber>
-                  <AnimatedCounter to={10} suffix="+" />
-                </StatNumber>
-                <StatLabel>Years Experience</StatLabel>
-              </StatCard>
-              <StatCard
-                whileHover={{ scale: 1.05 }}
-                transition={{ duration: 0.2 }}
+                <Image
+                  src="/images/headshot.png"
+                  alt="David Aaron Shapiro - Bonsai Web Designer"
+                  width={350}
+                  height={350}
+                  priority
+                />
+              </PhotoFrame>
+              <NameLabel
+                initial={{ opacity: 0, y: 10 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.8, delay: 0.4 }}
               >
-                <StatNumber>WGU</StatNumber>
-                <StatLabel>BS Software Engineering</StatLabel>
-              </StatCard>
-            </StatsGrid>
-          </BioContent>
-        </ContentGrid>
+                David Aaron Shapiro
+              </NameLabel>
+              <RoleLabel
+                initial={{ opacity: 0 }}
+                whileInView={{ opacity: 0.7 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.8, delay: 0.5 }}
+              >
+                Bonsai Web Designer
+              </RoleLabel>
+            </PhotoContainer>
+
+            <BioContent
+              initial={{ opacity: 0, x: 50 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.8, delay: 0.3 }}
+            >
+              <IntroText>
+                With a decade of experience building for the web and a Software Engineering degree from Western Governors University, I&apos;ve dedicated my career to transforming ideas into refined digital realities.
+              </IntroText>
+
+              <PhilosophyText>
+                &quot;I don&apos;t just build websites—I craft digital experiences that resonate, engage, and endure.&quot;
+              </PhilosophyText>
+
+              <StatsGrid>
+                <StatCard
+                  whileHover={{ scale: 1.05 }}
+                  transition={{ duration: 0.2 }}
+                >
+                  <StatNumber>
+                    <AnimatedCounter to={10} suffix="+" />
+                  </StatNumber>
+                  <StatLabel>Years Experience</StatLabel>
+                </StatCard>
+                <StatCard
+                  whileHover={{ scale: 1.05 }}
+                  transition={{ duration: 0.2 }}
+                >
+                  <StatNumber>WGU</StatNumber>
+                  <StatLabel>BS Software Engineering</StatLabel>
+                </StatCard>
+              </StatsGrid>
+            </BioContent>
+          </MemberSection>
+
+          <Divider />
+
+          {/* Jennifer Shapiro - Image Right, Bio Left */}
+          <MemberSection $reverse>
+            <BioContent
+              initial={{ opacity: 0, x: -50 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.8, delay: 0.3 }}
+            >
+              <IntroText>
+                With an eye for elegance and a passion for visual storytelling, Jennifer brings a refined creative vision to every project. Her expertise in design aesthetics ensures each website captures the essence of your brand.
+              </IntroText>
+
+              <PhilosophyText>
+                &quot;Great design is invisible—it feels natural, intuitive, and memorable.&quot;
+              </PhilosophyText>
+
+              <StatsGrid>
+                <StatCard
+                  whileHover={{ scale: 1.05 }}
+                  transition={{ duration: 0.2 }}
+                >
+                  <StatNumber>
+                    <AnimatedCounter to={8} suffix="+" />
+                  </StatNumber>
+                  <StatLabel>Years Creative</StatLabel>
+                </StatCard>
+                <StatCard
+                  whileHover={{ scale: 1.05 }}
+                  transition={{ duration: 0.2 }}
+                >
+                  <StatNumber>Art</StatNumber>
+                  <StatLabel>Design Leadership</StatLabel>
+                </StatCard>
+              </StatsGrid>
+            </BioContent>
+
+            <PhotoContainer $order={2}>
+              <PhotoFrame
+                initial={{ opacity: 0, scale: 0.9 }}
+                whileInView={{ opacity: 1, scale: 1 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.8, delay: 0.2 }}
+              >
+                <Image
+                  src="/images/jennifer-headshot.jpg"
+                  alt="Jennifer Shapiro - Creative Director"
+                  width={350}
+                  height={350}
+                  priority
+                />
+              </PhotoFrame>
+              <NameLabel
+                initial={{ opacity: 0, y: 10 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.8, delay: 0.4 }}
+              >
+                Jennifer Shapiro
+              </NameLabel>
+              <RoleLabel
+                initial={{ opacity: 0 }}
+                whileInView={{ opacity: 0.7 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.8, delay: 0.5 }}
+              >
+                Creative Director
+              </RoleLabel>
+            </PhotoContainer>
+          </MemberSection>
+        </TeamContainer>
       </Container>
     </AboutWrapper>
   );
