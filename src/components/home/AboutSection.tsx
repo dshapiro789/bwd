@@ -42,7 +42,7 @@ const Title = styled(motion.h2)`
 const TeamContainer = styled(motion.div)`
   display: flex;
   flex-direction: column;
-  gap: ${({ theme }) => theme.spacing.xxxl};
+  gap: ${({ theme }) => theme.spacing.xl};
   max-width: 1200px;
   margin: 0 auto;
 `;
@@ -336,73 +336,25 @@ export default function AboutSection() {
               transition={{ duration: 0.8, delay: 0.3 }}
             >
               <IntroText>
-                With a decade of experience building for the web and a Software Engineering degree from Western Governors University, I&apos;ve dedicated my career to transforming ideas into refined digital realities.
+                With years of experience building for the web and a Software Engineering degree from Western Governors University, David has dedicated his career to transforming ideas into refined digital realities.
               </IntroText>
 
-              <PhilosophyText>
-                &quot;I don&apos;t just build websites—I craft digital experiences that resonate, engage, and endure.&quot;
-              </PhilosophyText>
-
-              <StatsGrid>
-                <StatCard
-                  whileHover={{ scale: 1.05 }}
-                  transition={{ duration: 0.2 }}
-                >
-                  <StatNumber>
-                    <AnimatedCounter to={10} suffix="+" />
-                  </StatNumber>
-                  <StatLabel>Years Experience</StatLabel>
-                </StatCard>
-                <StatCard
-                  whileHover={{ scale: 1.05 }}
-                  transition={{ duration: 0.2 }}
-                >
-                  <StatNumber>WGU</StatNumber>
-                  <StatLabel>BS Software Engineering</StatLabel>
-                </StatCard>
-              </StatsGrid>
+              <StatCard
+                whileHover={{ scale: 1.05 }}
+                transition={{ duration: 0.2 }}
+                style={{ maxWidth: '400px', margin: '0 auto', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '16px' }}
+              >
+                <StatNumber style={{ marginBottom: 0 }}>WGU</StatNumber>
+                <StatLabel>Bachelor of Science in Software Engineering</StatLabel>
+              </StatCard>
             </BioContent>
           </MemberSection>
 
           <Divider />
 
-          {/* Jennifer Shapiro - Image Right, Bio Left */}
-          <MemberSection $reverse>
-            <BioContent
-              initial={{ opacity: 0, x: -50 }}
-              whileInView={{ opacity: 1, x: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.8, delay: 0.3 }}
-            >
-              <IntroText>
-                With an eye for elegance and a passion for visual storytelling, Jennifer brings a refined creative vision to every project. Her expertise in design aesthetics ensures each website captures the essence of your brand.
-              </IntroText>
-
-              <PhilosophyText>
-                &quot;Great design is invisible—it feels natural, intuitive, and memorable.&quot;
-              </PhilosophyText>
-
-              <StatsGrid>
-                <StatCard
-                  whileHover={{ scale: 1.05 }}
-                  transition={{ duration: 0.2 }}
-                >
-                  <StatNumber>
-                    <AnimatedCounter to={8} suffix="+" />
-                  </StatNumber>
-                  <StatLabel>Years Creative</StatLabel>
-                </StatCard>
-                <StatCard
-                  whileHover={{ scale: 1.05 }}
-                  transition={{ duration: 0.2 }}
-                >
-                  <StatNumber>Art</StatNumber>
-                  <StatLabel>Design Leadership</StatLabel>
-                </StatCard>
-              </StatsGrid>
-            </BioContent>
-
-            <PhotoContainer $order={2}>
+          {/* Jennifer Shapiro - Image Left, Bio Right (same as David) */}
+          <MemberSection>
+            <PhotoContainer>
               <PhotoFrame
                 initial={{ opacity: 0, scale: 0.9 }}
                 whileInView={{ opacity: 1, scale: 1 }}
@@ -411,7 +363,7 @@ export default function AboutSection() {
               >
                 <Image
                   src="/images/jennifer-headshot.jpg"
-                  alt="Jennifer Shapiro - Creative Director"
+                  alt="Jenna Shapiro - Creative Director"
                   width={350}
                   height={350}
                   priority
@@ -423,7 +375,7 @@ export default function AboutSection() {
                 viewport={{ once: true }}
                 transition={{ duration: 0.8, delay: 0.4 }}
               >
-                Jennifer Shapiro
+                Jenna Shapiro
               </NameLabel>
               <RoleLabel
                 initial={{ opacity: 0 }}
@@ -434,6 +386,17 @@ export default function AboutSection() {
                 Creative Director
               </RoleLabel>
             </PhotoContainer>
+
+            <BioContent
+              initial={{ opacity: 0, x: 50 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.8, delay: 0.3 }}
+            >
+              <IntroText>
+                With an eye for elegance and a passion for visual storytelling, Jenna brings a refined creative vision to every project. Her expertise in design aesthetics ensures each website captures the essence of your brand.
+              </IntroText>
+            </BioContent>
           </MemberSection>
         </TeamContainer>
       </Container>

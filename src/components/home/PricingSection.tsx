@@ -2,11 +2,11 @@
 
 import styled from 'styled-components';
 import { Section, Container } from '../layout/Container';
-import { motion } from 'framer-motion';
-import { FaTools, FaLaptopCode, FaLayerGroup } from 'react-icons/fa';
+import { motion, useMotionValue, useTransform, useSpring } from 'framer-motion';
+import { FaTools, FaLaptopCode, FaLayerGroup, FaCheck } from 'react-icons/fa';
 import GradientText from '../common/GradientText';
-import { useRef } from 'react';
-import { useScroll, useTransform } from 'framer-motion';
+import { useRef, useState } from 'react';
+import { useScroll, useTransform as useScrollTransform } from 'framer-motion';
 
 const PricingWrapper = styled(Section)`
   background: linear-gradient(
@@ -59,51 +59,67 @@ const Grid = styled.div`
 
 const CardWrapper = styled(motion.div)`
   perspective: 1000px;
+  cursor: pointer;
 `;
 
-const PricingCard = styled(motion.div)`
-  background: rgba(20, 30, 25, 0.6);
+const PricingCard = styled(motion.div) <{ $isHovered?: boolean }>`
+  background: rgba(20, 30, 25, 0.5);
   padding: ${({ theme }) => theme.spacing.xl};
-  border-radius: 16px;
-  border: 1px solid rgba(200, 159, 129, 0.1);
-  backdrop-filter: blur(12px);
+  border-radius: 24px;
+  border: 1px solid rgba(200, 159, 129, 0.15);
+  backdrop-filter: blur(20px);
   display: flex;
   flex-direction: column;
-  gap: ${({ theme }) => theme.spacing.lg};
+  gap: ${({ theme }) => theme.spacing.md};
   position: relative;
   overflow: hidden;
   height: 100%;
-  transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
   align-items: center;
   text-align: center;
+  transform-style: preserve-3d;
+  will-change: transform;
 
-  /* Elegant Gold Glow on Hover */
+  /* Multi-layer glass effect */
   &::before {
     content: '';
     position: absolute;
     inset: 0;
-    border-radius: 16px;
+    border-radius: 24px;
     padding: 1px;
     background: linear-gradient(
       135deg,
-      rgba(200, 159, 129, 0.4),
-      transparent 50%,
-      rgba(200, 159, 129, 0.4)
+      rgba(200, 159, 129, 0.5),
+      transparent 40%,
+      transparent 60%,
+      rgba(200, 159, 129, 0.5)
     );
     -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
     -webkit-mask-composite: xor;
     mask-composite: exclude;
-    opacity: 0.5;
+    opacity: 0.6;
     transition: opacity 0.4s ease;
   }
 
-  &:hover {
-    transform: translateY(-5px);
-    background: rgba(25, 35, 30, 0.8);
-    box-shadow: 
-      0 10px 30px rgba(0, 0, 0, 0.2),
-      0 0 20px rgba(200, 159, 129, 0.1);
-    border-color: rgba(200, 159, 129, 0.3);
+  /* Inner glow layer */
+  &::after {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: radial-gradient(
+      ellipse at center,
+      rgba(200, 159, 129, 0.08) 0%,
+      transparent 50%
+    );
+    opacity: 0;
+    transition: opacity 0.5s ease;
+    pointer-events: none;
+  }
+
+  &:hover::after {
+    opacity: 1;
   }
 
   &:hover::before {
@@ -111,40 +127,94 @@ const PricingCard = styled(motion.div)`
   }
 `;
 
-const IconWrapper = styled.div`
-  font-size: 2.5rem;
-  color: ${({ theme }) => theme.colors.primary};
-  opacity: 0.9;
-  filter: drop-shadow(0 0 10px rgba(200, 159, 129, 0.3));
-  transition: transform 0.3s ease;
-  margin-bottom: ${({ theme }) => theme.spacing.sm};
+const FloatingShadow = styled(motion.div)`
+  position: absolute;
+  bottom: -20px;
+  left: 10%;
+  right: 10%;
+  height: 40px;
+  background: radial-gradient(
+    ellipse at center,
+    rgba(0, 0, 0, 0.3) 0%,
+    transparent 70%
+  );
+  filter: blur(15px);
+  z-index: -1;
+  opacity: 0.5;
+  transition: all 0.4s ease;
+`;
 
-  ${PricingCard}:hover & {
-    transform: scale(1.05) translateY(-2px);
-    filter: drop-shadow(0 0 15px rgba(200, 159, 129, 0.5));
-  }
+const IconWrapper = styled(motion.div)`
+  width: 70px;
+  height: 70px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 2rem;
+  color: ${({ theme }) => theme.colors.primary};
+  background: rgba(200, 159, 129, 0.1);
+  border-radius: 20px;
+  border: 1px solid rgba(200, 159, 129, 0.2);
+  filter: drop-shadow(0 0 15px rgba(200, 159, 129, 0.2));
+  transition: all 0.4s ease;
+  margin-bottom: ${({ theme }) => theme.spacing.sm};
+`;
+
+const PriceContainer = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+`;
+
+const PricePrefix = styled.div`
+  font-size: 0.8rem;
+  color: ${({ theme }) => theme.colors.textSecondary};
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  opacity: 0.8;
 `;
 
 const Price = styled.div`
   font-family: ${({ theme }) => theme.fonts.heading};
-  font-size: 2.5rem;
+  font-size: 3rem;
+  font-weight: 300;
   color: ${({ theme }) => theme.colors.text};
-  margin-bottom: ${({ theme }) => theme.spacing.xs};
+  letter-spacing: -0.02em;
+  background: linear-gradient(
+    135deg,
+    ${({ theme }) => theme.colors.text} 0%,
+    ${({ theme }) => theme.colors.primary} 100%
+  );
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
 `;
 
 const PriceLabel = styled.div`
-  font-family: ${({ theme }) => theme.fonts.main};
-  font-size: 0.9rem;
-  color: ${({ theme }) => theme.colors.textSecondary};
+  font-family: ${({ theme }) => theme.fonts.heading};
+  font-size: 1.1rem;
+  color: ${({ theme }) => theme.colors.primary};
   text-transform: uppercase;
-  letter-spacing: 0.05em;
+  letter-spacing: 0.15em;
+  font-weight: 400;
 `;
 
-const Divider = styled.div`
-  width: 40px;
-  height: 1px;
-  background: ${({ theme }) => theme.colors.primary};
-  opacity: 0.3;
+const PriceDescription = styled.div`
+  font-size: 0.85rem;
+  color: ${({ theme }) => theme.colors.textSecondary};
+  opacity: 0.7;
+`;
+
+const Divider = styled(motion.div)`
+  width: 60px;
+  height: 2px;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    ${({ theme }) => theme.colors.primary},
+    transparent
+  );
   margin: ${({ theme }) => theme.spacing.sm} auto;
 `;
 
@@ -154,34 +224,101 @@ const FeatureList = styled.ul`
   margin: 0;
   display: flex;
   flex-direction: column;
-  gap: ${({ theme }) => theme.spacing.sm};
+  gap: ${({ theme }) => theme.spacing.xs};
+  width: 100%;
 `;
 
-const FeatureItem = styled.li`
+const FeatureItem = styled(motion.li)`
   color: ${({ theme }) => theme.colors.textSecondary};
-  font-size: 0.95rem;
+  font-size: 0.9rem;
   line-height: 1.5;
+  display: flex;
+  align-items: center;
+  gap: ${({ theme }) => theme.spacing.sm};
+  padding: ${({ theme }) => theme.spacing.xs} 0;
+  
+  svg {
+    color: ${({ theme }) => theme.colors.primary};
+    font-size: 0.7rem;
+    opacity: 0.8;
+    flex-shrink: 0;
+  }
 `;
 
-function ScrollRevealCard({ children, index }: { children: React.ReactNode; index: number }) {
-  const ref = useRef(null);
+interface TiltCardProps {
+  children: React.ReactNode;
+  index: number;
+}
+
+function TiltCard({ children, index }: TiltCardProps) {
+  const ref = useRef<HTMLDivElement>(null);
+  const [isHovered, setIsHovered] = useState(false);
+
+  const x = useMotionValue(0);
+  const y = useMotionValue(0);
+
+  const rotateX = useSpring(useTransform(y, [-0.5, 0.5], [8, -8]), { stiffness: 300, damping: 30 });
+  const rotateY = useSpring(useTransform(x, [-0.5, 0.5], [-8, 8]), { stiffness: 300, damping: 30 });
+
+  const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
+    if (!ref.current) return;
+    const rect = ref.current.getBoundingClientRect();
+    const centerX = rect.left + rect.width / 2;
+    const centerY = rect.top + rect.height / 2;
+    x.set((e.clientX - centerX) / rect.width);
+    y.set((e.clientY - centerY) / rect.height);
+  };
+
+  const handleMouseLeave = () => {
+    x.set(0);
+    y.set(0);
+    setIsHovered(false);
+  };
+
+  // Scroll-based reveal
+  const scrollRef = useRef(null);
   const { scrollYProgress } = useScroll({
-    target: ref,
+    target: scrollRef,
     offset: ["start end", "end start"]
   });
 
-  // Staggered entry
-  const yOffset = 50 + (index * 20);
-
-  const opacity = useTransform(scrollYProgress, [0, 0.2, 0.8, 1], [0, 1, 1, 0]);
-  const y = useTransform(scrollYProgress, [0, 0.2, 0.8, 1], [yOffset, 0, 0, -yOffset]);
+  const yOffset = 60 + (index * 20);
+  const opacity = useScrollTransform(scrollYProgress, [0, 0.2, 0.8, 1], [0, 1, 1, 0]);
+  const yPos = useScrollTransform(scrollYProgress, [0, 0.2, 0.8, 1], [yOffset, 0, 0, -yOffset]);
 
   return (
     <CardWrapper
-      ref={ref}
-      style={{ opacity, y }}
+      ref={scrollRef}
+      style={{ opacity, y: yPos }}
     >
-      {children}
+      <motion.div
+        ref={ref}
+        onMouseMove={handleMouseMove}
+        onMouseEnter={() => setIsHovered(true)}
+        onMouseLeave={handleMouseLeave}
+        style={{
+          rotateX,
+          rotateY,
+          transformStyle: 'preserve-3d',
+        }}
+        animate={{
+          scale: isHovered ? 1.02 : 1,
+          z: isHovered ? 30 : 0,
+        }}
+        transition={{ duration: 0.3 }}
+      >
+        <PricingCard $isHovered={isHovered}>
+          {children}
+        </PricingCard>
+        <FloatingShadow
+          animate={{
+            opacity: isHovered ? 0.8 : 0.4,
+            scale: isHovered ? 1.1 : 1,
+            y: isHovered ? 10 : 0,
+          }}
+          transition={{ duration: 0.3 }}
+        />
+      </motion.div>
     </CardWrapper>
   );
 }
@@ -251,6 +388,18 @@ const pricingOptions: PricingOption[] = [
   },
 ];
 
+const featureVariants = {
+  hidden: { opacity: 0, x: -10 },
+  visible: (i: number) => ({
+    opacity: 1,
+    x: 0,
+    transition: {
+      delay: i * 0.05,
+      duration: 0.3,
+    },
+  }),
+};
+
 export default function PricingSection() {
   return (
     <PricingWrapper id="pricing">
@@ -268,30 +417,50 @@ export default function PricingSection() {
 
         <Grid>
           {pricingOptions.map((option, index) => (
-            <ScrollRevealCard key={option.id} index={index}>
-              <PricingCard>
-                <IconWrapper>{option.icon}</IconWrapper>
-                <div>
-                  {option.pricePrefix && (
-                    <div style={{ fontSize: '0.85rem', color: '#9CA59E', marginBottom: '4px', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
-                      {option.pricePrefix}
-                    </div>
-                  )}
-                  <Price>{option.price}</Price>
-                  <PriceLabel>{option.title}</PriceLabel>
-                  <div style={{ fontSize: '0.8rem', opacity: 0.7, marginTop: '4px' }}>{option.description}</div>
-                </div>
-                <Divider />
-                <FeatureList>
-                  {option.features.map((feature, i) => (
-                    <FeatureItem key={i}>{feature}</FeatureItem>
-                  ))}
-                </FeatureList>
-              </PricingCard>
-            </ScrollRevealCard>
+            <TiltCard key={option.id} index={index}>
+              <IconWrapper
+                whileHover={{ scale: 1.1, rotate: 5 }}
+                transition={{ duration: 0.3 }}
+              >
+                {option.icon}
+              </IconWrapper>
+
+              <PriceContainer>
+                {option.pricePrefix && (
+                  <PricePrefix>{option.pricePrefix}</PricePrefix>
+                )}
+                <Price>{option.price}</Price>
+                <PriceLabel>{option.title}</PriceLabel>
+                <PriceDescription>{option.description}</PriceDescription>
+              </PriceContainer>
+
+              <Divider
+                initial={{ width: 0 }}
+                whileInView={{ width: 60 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.6, delay: 0.3 }}
+              />
+
+              <FeatureList>
+                {option.features.map((feature, i) => (
+                  <FeatureItem
+                    key={i}
+                    custom={i}
+                    variants={featureVariants}
+                    initial="hidden"
+                    whileInView="visible"
+                    viewport={{ once: true }}
+                  >
+                    <FaCheck />
+                    {feature}
+                  </FeatureItem>
+                ))}
+              </FeatureList>
+            </TiltCard>
           ))}
         </Grid>
       </Container>
     </PricingWrapper>
   );
 }
+
