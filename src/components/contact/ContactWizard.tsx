@@ -143,8 +143,15 @@ const FormTitle = styled.h2`
   }
 `;
 
-const InputGroup = styled.div`
+const InputGroup = styled.div.attrs({
+    suppressHydrationWarning: true,
+})`
   margin-bottom: ${({ theme }) => theme.spacing.lg};
+
+  /* Allow hydration mismatches from browser extensions (e.g., LastPass) */
+  & * {
+    /* This selector helps ensure nested elements inherit the suppression */
+  }
 `;
 
 const Label = styled.label`
@@ -158,7 +165,12 @@ const Label = styled.label`
   opacity: 0.9;
 `;
 
-const Input = styled.input`
+const Input = styled.input.attrs({
+    'data-lpignore': 'true',
+    'data-form-type': 'other',
+    autoComplete: 'off',
+    suppressHydrationWarning: true,
+})`
   width: 100%;
   padding: ${({ theme }) => `${theme.spacing.md} ${theme.spacing.lg}`};
   border: 1px solid rgba(200, 159, 129, 0.15);
@@ -209,7 +221,11 @@ const Select = styled.select`
   }
 `;
 
-const TextArea = styled.textarea`
+const TextArea = styled.textarea.attrs({
+    'data-lpignore': 'true',
+    'data-form-type': 'other',
+    suppressHydrationWarning: true,
+})`
   width: 100%;
   padding: ${({ theme }) => `${theme.spacing.md} ${theme.spacing.lg}`};
   border: 1px solid rgba(200, 159, 129, 0.15);

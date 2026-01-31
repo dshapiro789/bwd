@@ -336,23 +336,26 @@ interface PricingOption {
 const pricingOptions: PricingOption[] = [
   {
     id: 1,
-    title: 'Maintenance',
-    price: '$40',
-    description: '/ hour',
+    title: 'Hourly Project & Maintenance Rate',
+    price: '$45',
+    description: '',
     icon: <FaTools />,
     features: [
       'Website Updates',
+      'Bug Fixes & Debugging',
+      'Feature Enhancements',
       'Content Refresh',
       'Technical Support',
-      'Performance Checks'
+      'Performance Optimization',
+      'QA Testing',
     ]
   },
   {
     id: 2,
     title: 'Custom Website',
-    price: '$500+',
+    price: '$500-$1k',
     pricePrefix: 'Starting at',
-    description: '/ page',
+    description: 'Per Page',
     icon: <FaLaptopCode />,
     features: [
       'Up To 5 Sections Per Page',
@@ -362,7 +365,8 @@ const pricingOptions: PricingOption[] = [
       'Brand Integration',
       'Domain Integration',
       'GitHub Integration',
-      'Vercel Deployment'
+      'Vercel Deployment',
+      'All Options Negotiable'
     ]
   },
   {
