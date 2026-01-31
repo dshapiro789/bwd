@@ -1,8 +1,8 @@
 'use client';
 
 import styled from 'styled-components';
-import { motion, useTransform, useMotionValue, animate } from 'framer-motion';
-import { useState, useRef, useEffect } from 'react';
+import { motion } from 'framer-motion';
+import { useState, useRef, useEffect, useCallback } from 'react';
 import { Section, Container } from '../layout/Container';
 import GradientText from '../common/GradientText';
 import { FiArrowUpRight, FiChevronLeft, FiChevronRight } from 'react-icons/fi';
@@ -127,17 +127,34 @@ const Subtitle = styled(motion.p)`
 const ScrollContainer = styled.div`
   position: relative;
   width: 100%;
-  overflow: hidden;
+  overflow-x: auto;
+  overflow-y: hidden;
+  scroll-snap-type: x mandatory;
+  scroll-behavior: smooth;
+  -webkit-overflow-scrolling: touch;
+  
+  /* Hide scrollbar but keep functionality */
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+  &::-webkit-scrollbar {
+    display: none;
+  }
 `;
 
-const ScrollTrack = styled(motion.div)`
+const ScrollTrack = styled.div`
   display: flex;
   gap: 32px;
   padding: 40px 0;
-  cursor: grab;
   
-  &:active {
-    cursor: grabbing;
+  /* Padding for centering first/last cards */
+  @media (max-width: 768px) {
+    padding-left: calc((100vw - 320px) / 2);
+    padding-right: calc((100vw - 320px) / 2);
+  }
+  
+  @media (min-width: 769px) {
+    padding-left: 48px;
+    padding-right: 48px;
   }
 `;
 
@@ -156,6 +173,7 @@ const ProjectCard = styled(motion.a) <{ $gradient: string }>`
   overflow: hidden;
   backdrop-filter: blur(20px);
   border: 1px solid rgba(200, 159, 129, 0.15);
+  scroll-snap-align: center;
   
   /* Shine effect */
   &::before {
@@ -353,72 +371,62 @@ const ScrollHint = styled(motion.div)`
 
 export default function PortfolioSection() {
   const [currentIndex, setCurrentIndex] = useState(0);
+  const [scrollProgress, setScrollProgress] = useState(0);
   const scrollRef = useRef<HTMLDivElement>(null);
-  const trackRef = useRef<HTMLDivElement>(null);
-  const x = useMotionValue(0);
-  const [isDragging, setIsDragging] = useState(false);
-  const [trackWidth, setTrackWidth] = useState(0);
-  const [containerWidth, setContainerWidth] = useState(0);
+  const [isMobile, setIsMobile] = useState(false);
 
-  // Calculate dimensions
+  // Detect mobile and setup resize listener
   useEffect(() => {
-    const updateDimensions = () => {
-      if (trackRef.current && scrollRef.current) {
-        setTrackWidth(trackRef.current.scrollWidth);
-        setContainerWidth(scrollRef.current.offsetWidth);
-      }
-    };
-
-    updateDimensions();
-    window.addEventListener('resize', updateDimensions);
-    return () => window.removeEventListener('resize', updateDimensions);
+    const checkMobile = () => setIsMobile(window.innerWidth <= 768);
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    return () => window.removeEventListener('resize', checkMobile);
   }, []);
 
-  const maxScroll = Math.max(0, trackWidth - containerWidth);
-  const cardWidth = 432; // card width + gap
+  // Card dimensions
+  const cardWidth = isMobile ? 320 : 400;
+  const gap = 32;
+  const cardWithGap = cardWidth + gap;
 
-  // Progress based on scroll position
-  const progress = useTransform(x, [0, -maxScroll], [0, 100]);
+  // Handle scroll events to update progress and current index
+  const handleScroll = useCallback(() => {
+    if (!scrollRef.current) return;
 
-  const scrollTo = (direction: 'left' | 'right') => {
-    const currentX = x.get();
-    let newX = direction === 'left'
-      ? Math.min(currentX + cardWidth, 0)
-      : Math.max(currentX - cardWidth, -maxScroll);
+    const { scrollLeft, scrollWidth, clientWidth } = scrollRef.current;
+    const maxScroll = scrollWidth - clientWidth;
 
-    // If scrolling right and we're near the end, snap to end
-    if (direction === 'right' && Math.abs(newX) >= maxScroll - 50) {
-      newX = -maxScroll;
-      animate(x, newX, { type: 'spring', stiffness: 300, damping: 30 });
-      setCurrentIndex(projects.length - 1);
-      return;
-    }
+    // Calculate progress (0-100)
+    const progress = maxScroll > 0 ? (scrollLeft / maxScroll) * 100 : 0;
+    setScrollProgress(progress);
 
-    animate(x, newX, { type: 'spring', stiffness: 300, damping: 30 });
+    // Calculate current index based on scroll position
+    const index = Math.round(scrollLeft / cardWithGap);
+    setCurrentIndex(Math.min(index, projects.length - 1));
+  }, [cardWithGap]);
 
-    // Update current index
-    const newIndex = Math.round(Math.abs(newX) / cardWidth);
-    setCurrentIndex(Math.min(newIndex, projects.length - 1));
-  };
+  // Setup scroll listener
+  useEffect(() => {
+    const container = scrollRef.current;
+    if (!container) return;
 
-  // Handle drag end to snap to cards
-  const handleDragEnd = () => {
-    setIsDragging(false);
-    const currentX = x.get();
+    container.addEventListener('scroll', handleScroll, { passive: true });
+    return () => container.removeEventListener('scroll', handleScroll);
+  }, [handleScroll]);
 
-    // If we're near the end, snap to end
-    if (Math.abs(currentX) >= maxScroll - 50) {
-      animate(x, -maxScroll, { type: 'spring', stiffness: 300, damping: 30 });
-      setCurrentIndex(projects.length - 1);
-      return;
-    }
+  // Navigate to specific card
+  const scrollToCard = (direction: 'left' | 'right') => {
+    if (!scrollRef.current) return;
 
-    const snapIndex = Math.round(Math.abs(currentX) / cardWidth);
-    const snapX = -snapIndex * cardWidth;
-    const clampedX = Math.max(Math.min(snapX, 0), -maxScroll);
+    const newIndex = direction === 'left'
+      ? Math.max(0, currentIndex - 1)
+      : Math.min(projects.length - 1, currentIndex + 1);
 
-    animate(x, clampedX, { type: 'spring', stiffness: 300, damping: 30 });
-    setCurrentIndex(Math.min(snapIndex, projects.length - 1));
+    const targetScroll = newIndex * cardWithGap;
+
+    scrollRef.current.scrollTo({
+      left: targetScroll,
+      behavior: 'smooth'
+    });
   };
 
   return (
@@ -439,32 +447,22 @@ export default function PortfolioSection() {
             viewport={{ once: true }}
             transition={{ duration: 0.6, delay: 0.1 }}
           >
-            Drag to explore our portfolio
+            Swipe to explore our portfolio
           </Subtitle>
         </Header>
       </Container>
 
       <ScrollContainer ref={scrollRef}>
-        <ScrollTrack
-          ref={trackRef}
-          drag="x"
-          dragConstraints={{ left: -maxScroll, right: 0 }}
-          dragElastic={0.1}
-          dragTransition={{ bounceStiffness: 300, bounceDamping: 30 }}
-          style={{ x, paddingLeft: '48px', paddingRight: 'calc(50vw - 200px)' }}
-          onDragStart={() => setIsDragging(true)}
-          onDragEnd={handleDragEnd}
-        >
+        <ScrollTrack>
           {projects.map((project, index) => (
             <ProjectCard
               key={project.id}
-              href={isDragging ? undefined : project.url}
+              href={project.url}
               target="_blank"
               rel="noopener noreferrer"
               $gradient={project.gradient}
               whileHover={{ scale: 1.02, y: -8 }}
               transition={{ duration: 0.3 }}
-              onClick={(e) => isDragging && e.preventDefault()}
             >
               <CardIndex>{String(index + 1).padStart(2, '0')}</CardIndex>
               <CardContent>
@@ -493,7 +491,7 @@ export default function PortfolioSection() {
       <Container>
         <NavigationContainer>
           <NavButton
-            onClick={() => scrollTo('left')}
+            onClick={() => scrollToCard('left')}
             whileHover={{ scale: 1.1 }}
             whileTap={{ scale: 0.95 }}
             disabled={currentIndex === 0}
@@ -502,11 +500,11 @@ export default function PortfolioSection() {
           </NavButton>
 
           <ProgressBar>
-            <ProgressFill style={{ width: `${Math.min(100, ((currentIndex + 1) / projects.length) * 100)}%` }} />
+            <ProgressFill style={{ width: `${Math.max(5, scrollProgress)}%` }} />
           </ProgressBar>
 
           <NavButton
-            onClick={() => scrollTo('right')}
+            onClick={() => scrollToCard('right')}
             whileHover={{ scale: 1.1 }}
             whileTap={{ scale: 0.95 }}
             disabled={currentIndex >= projects.length - 1}
