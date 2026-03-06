@@ -2,7 +2,8 @@
 
 import styled from 'styled-components';
 import { Container } from './Container';
-import { SiBitcoin, SiMonero, SiLitecoin, SiVenmo } from 'react-icons/si';
+import { SiBitcoin, SiMonero, SiLitecoin, SiVenmo, SiZelle } from 'react-icons/si';
+import { BsBank } from 'react-icons/bs';
 
 const FooterWrapper = styled.footer`
   background-color: ${({ theme }) => theme.colors.secondary};
@@ -97,7 +98,6 @@ export default function Footer() {
           </FooterColumn>
           <FooterColumn>
             <FooterTitle>Social</FooterTitle>
-            <FooterLink href="https://www.instagram.com/bonsaiwebdesign/" target="_blank" rel="noopener noreferrer">Instagram</FooterLink>
             <FooterLink href="https://www.linkedin.com/in/davidshapiro7/" target="_blank" rel="noopener noreferrer">LinkedIn</FooterLink>
             <FooterLink href="https://www.facebook.com/profile.php?id=61583882777025" target="_blank" rel="noopener noreferrer">Facebook</FooterLink>
           </FooterColumn>
@@ -107,7 +107,9 @@ export default function Footer() {
               <SiBitcoin title="Bitcoin" />
               <SiMonero title="Monero" />
               <SiLitecoin title="Litecoin" />
-              <SiVenmo title="Venmo" style={{ fontSize: '2rem' }} /> {/* Slightly larger for visibility */}
+              <SiZelle title="Zelle" style={{ fontSize: '2rem' }} />
+              <BsBank title="ACH Bank Transfer" style={{ fontSize: '1.8rem' }} />
+              <SiVenmo title="Venmo" style={{ fontSize: '2.4rem' }} /> {/* Increased size for visibility */}
             </PaymentIcons>
           </FooterColumn>
         </FooterContent>

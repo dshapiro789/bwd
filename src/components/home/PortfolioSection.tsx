@@ -11,6 +11,14 @@ import { FiArrowUpRight, FiChevronLeft, FiChevronRight } from 'react-icons/fi';
 const projects = [
   {
     id: 0,
+    title: 'Healthspan Collective',
+    category: 'Health and Longevity',
+    description: 'Where evidence-based longevity meets community & culture',
+    url: 'https://healthspan.community',
+    gradient: 'linear-gradient(135deg, #2a1a3a 0%, #150d1f 100%)',
+  },
+  {
+    id: 1,
     title: 'AthleteXperience',
     category: 'Feature Rich Mobile App',
     description: 'Coming Soon - A premium mobile experience for athletes',
@@ -18,7 +26,7 @@ const projects = [
     gradient: 'linear-gradient(135deg, #1a3a2a 0%, #0d1f15 100%)',
   },
   {
-    id: 1,
+    id: 2,
     title: 'Emerald Grove Digital',
     category: 'AI Services Demo',
     description: 'Showcasing AI-powered digital solutions',
@@ -26,7 +34,7 @@ const projects = [
     gradient: 'linear-gradient(135deg, #2a4a3a 0%, #152a1f 100%)',
   },
   {
-    id: 2,
+    id: 3,
     title: 'Shapiro Works',
     category: 'Digital Freelance Agency',
     description: 'Professional digital services portfolio',
@@ -34,7 +42,7 @@ const projects = [
     gradient: 'linear-gradient(135deg, #3a2a1a 0%, #1f150d 100%)',
   },
   {
-    id: 3,
+    id: 4,
     title: 'UPrompt',
     category: 'AI Prompt Engineering',
     description: 'Tools for crafting perfect AI prompts',
@@ -42,7 +50,7 @@ const projects = [
     gradient: 'linear-gradient(135deg, #2a2a3a 0%, #15151f 100%)',
   },
   {
-    id: 4,
+    id: 5,
     title: 'AI Bitcoin Tutor',
     category: 'EdTech / Crypto',
     description: 'AI-powered cryptocurrency education',
@@ -50,7 +58,7 @@ const projects = [
     gradient: 'linear-gradient(135deg, #3a3a2a 0%, #1f1f15 100%)',
   },
   {
-    id: 5,
+    id: 6,
     title: 'Crypto Apparel',
     category: 'E-Commerce',
     description: 'Premium cryptocurrency merchandise',
@@ -58,7 +66,7 @@ const projects = [
     gradient: 'linear-gradient(135deg, #2a3a3a 0%, #151f1f 100%)',
   },
   {
-    id: 6,
+    id: 7,
     title: 'Weatherford Ranches',
     category: 'E-Commerce',
     description: 'Ranch products and lifestyle goods',
@@ -66,7 +74,7 @@ const projects = [
     gradient: 'linear-gradient(135deg, #3a2a2a 0%, #1f1515 100%)',
   },
   {
-    id: 7,
+    id: 8,
     title: 'Luxury Vacation Rental',
     category: 'Rental Property Demo',
     description: 'Premium vacation rental booking experience',
@@ -74,7 +82,7 @@ const projects = [
     gradient: 'linear-gradient(135deg, #2a2a2a 0%, #151515 100%)',
   },
   {
-    id: 8,
+    id: 9,
     title: 'Live Pura Vida',
     category: 'Travel Agency Demo',
     description: 'Costa Rica travel experiences',
