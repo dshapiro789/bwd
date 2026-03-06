@@ -330,6 +330,7 @@ export default function ContactWizard() {
         handleSubmit,
         formState: { errors },
         trigger,
+        getValues,
     } = useForm<FormData>({
         resolver: zodResolver(
             step === 1 ? step1Schema : step === 2 ? step2Schema : step3Schema
@@ -351,6 +352,10 @@ export default function ContactWizard() {
     const onNext = async () => {
         const isValid = await trigger();
         if (isValid) {
+            // Keep the state updated with values from the current step
+            // so we can submit everything correctly at the end.
+            const currentValues = getValues();
+            setFormData((prev) => ({ ...prev, ...currentValues }));
             setStep((prev) => prev + 1);
         }
     };
@@ -359,10 +364,12 @@ export default function ContactWizard() {
         setStep((prev) => prev - 1);
     };
 
-    const onSubmit = async (data: FormData) => {
+    const onSubmit = async () => {
         setIsSubmitting(true);
         try {
-            const finalData = { ...formData, ...data };
+            // Get all values directly from the form hook to ensure we have
+            // the absolute latest data from all steps
+            const finalData = getValues();
             const response = await fetch('/api/send', {
                 method: 'POST',
                 headers: {
