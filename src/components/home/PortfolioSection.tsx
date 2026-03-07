@@ -78,7 +78,7 @@ const projects = [
     title: 'Luxury Vacation Rental',
     category: 'Rental Property Demo',
     description: 'Premium vacation rental booking experience',
-    url: 'https://rental-property-booking-template-kg5og73xk.vercel.app/',
+    url: 'https://rental-property-booking-template.vercel.app',
     gradient: 'linear-gradient(135deg, #2a2a2a 0%, #151515 100%)',
   },
   {
