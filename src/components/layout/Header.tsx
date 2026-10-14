@@ -281,6 +281,30 @@ export default function Header() {
     };
   }, [mobileMenuOpen]);
 
+  // While the full-screen menu is open, the page behind it is inert (out of the
+  // tab order and hidden from assistive tech), and Escape closes the menu and
+  // returns focus to the menu button.
+  const menuButtonRef = useRef<HTMLButtonElement>(null);
+  useEffect(() => {
+    if (!mobileMenuOpen) return;
+    const behind = Array.from(document.querySelectorAll<HTMLElement>('main, footer'));
+    behind.forEach((el) => {
+      el.inert = true;
+    });
+    const onKeyDown = (e: KeyboardEvent) => {
+      if (e.key !== 'Escape') return;
+      setMobileMenuOpen(false);
+      menuButtonRef.current?.focus();
+    };
+    document.addEventListener('keydown', onKeyDown);
+    return () => {
+      behind.forEach((el) => {
+        el.inert = false;
+      });
+      document.removeEventListener('keydown', onKeyDown);
+    };
+  }, [mobileMenuOpen]);
+
   const toggleMobileMenu = () => {
     setMobileMenuOpen(!mobileMenuOpen);
   };
@@ -312,6 +336,7 @@ export default function Header() {
               <HeaderCta href={CTA.href}>{CTA.label}</HeaderCta>
             </NavLinks>
             <MobileMenuButton
+              ref={menuButtonRef}
               aria-label="Menu"
               aria-expanded={mobileMenuOpen}
               onClick={toggleMobileMenu}
