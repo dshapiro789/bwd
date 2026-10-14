@@ -6,8 +6,8 @@ import { motion, useMotionValue, useTransform, useSpring } from 'framer-motion';
 import { FaTools, FaLaptopCode, FaLayerGroup, FaCheck } from 'react-icons/fa';
 import GradientText from '../common/GradientText';
 import { useRef, useState } from 'react';
-import { useScroll, useTransform as useScrollTransform } from 'framer-motion';
 import { useReducedMotionSafe } from '@/lib/useMediaQuery';
+import { DUR, EASE_OUT, RISE, STAGGER } from '@/lib/motion';
 
 const PricingWrapper = styled(Section)`
   background: linear-gradient(
@@ -277,21 +277,14 @@ function TiltCard({ children, index }: TiltCardProps) {
     setIsHovered(false);
   };
 
-  // Scroll-based reveal
-  const scrollRef = useRef(null);
-  const { scrollYProgress } = useScroll({
-    target: scrollRef,
-    offset: ["start end", "end start"]
-  });
-
-  const yOffset = 60 + (index * 20);
-  const opacity = useScrollTransform(scrollYProgress, [0, 0.2, 0.8, 1], [0, 1, 1, 0]);
-  const yPos = useScrollTransform(scrollYProgress, [0, 0.2, 0.8, 1], [yOffset, 0, 0, -yOffset]);
-
+  // Reveal once as the card enters view (staggered), then stay put. Under
+  // reduced motion MotionConfig drops the rise and keeps a plain fade.
   return (
     <CardWrapper
-      ref={scrollRef}
-      style={{ opacity, y: reduce ? 0 : yPos }}
+      initial={{ opacity: 0, y: RISE.item }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true, margin: '0px 0px -10% 0px' }}
+      transition={{ duration: DUR.reveal, ease: EASE_OUT, delay: index * STAGGER.item * 2 }}
     >
       <motion.div
         ref={ref}
