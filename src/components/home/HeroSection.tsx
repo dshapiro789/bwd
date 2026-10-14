@@ -46,14 +46,15 @@ type Range = [number, number];
 
 /** Runway choreography, as fractions of the pinned scroll. p = 0 is the resting hero. */
 const RUN: Record<string, Range> = {
-  band: [0.04, 0.42], // the light comes up and settles on the trunk
-  caption: [0.42, 0.5],
-  roll: [0.44, 0.72], // the plate rolls up onto its rod
-  lift: [0.7, 0.84], // the cord draws the rolled scroll up and away
-  head: [0.48, 0.62], // eyebrow, headline, subhead: a short fade, no muddy middle
-  actions: [0.8, 0.92], // calls to action, price, colophon: last to leave
-  rule: [0.78, 0.96], // "01 / 07 · Selected work" draws in where the plate hung
-  label: [0.84, 1],
+  band: [0.03, 0.46], // the light comes up and settles on the trunk
+  // 0.46-0.49: a short hold on the lit tree
+  caption: [0.47, 0.54],
+  roll: [0.49, 0.76], // the plate rolls up onto its rod
+  lift: [0.74, 0.88], // the cord draws the rolled scroll up and away
+  head: [0.53, 0.66], // eyebrow, headline, subhead: a short fade, no muddy middle
+  actions: [0.82, 0.93], // calls to action, price, colophon: last to leave
+  rule: [0.8, 0.97], // "01 / 07 · Selected work" draws in where the plate hung
+  label: [0.86, 1],
 };
 
 /** Unpinned layouts: a light exit on the plate over ['start start', 'end start']. */
