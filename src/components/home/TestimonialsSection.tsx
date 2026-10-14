@@ -116,6 +116,9 @@ const Stars = styled.div`
 `;
 
 const Controls = styled.div`
+  /* Above the absolutely positioned card, which overflows the 400px stage on the long first quote */
+  position: relative;
+  z-index: 1;
   display: flex;
   justify-content: center;
   gap: ${({ theme }) => theme.spacing.md};
@@ -165,8 +168,9 @@ export default function TestimonialsSection() {
   const springRotateY = useSpring(rotateY, springConfig);
 
   // Auto-advance pauses while the carousel is hovered or holds focus, and is
-  // off entirely for readers who prefer reduced motion. Any change of slide
-  // (automatic or a dot) restarts the 5s wait.
+  // off entirely for readers who prefer reduced motion. Any focus counts, so a
+  // dot that was clicked keeps it paused until focus moves elsewhere. Every
+  // change of slide restarts the 5s wait.
   const paused = hovered || focusWithin;
   useEffect(() => {
     if (reduce || paused) return;
