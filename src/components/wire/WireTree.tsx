@@ -2,7 +2,7 @@
 
 import { forwardRef, useRef, type CSSProperties } from 'react';
 import styled, { keyframes } from 'styled-components';
-import { easeIn, motion, useMotionValueEvent, useTransform, type MotionStyle, type MotionValue } from 'framer-motion';
+import { easeIn, easeOut, motion, useMotionValueEvent, useTransform, type MotionStyle, type MotionValue } from 'framer-motion';
 import { EASE_OUT } from '@/lib/motion';
 import { BARK, BRANCHES, CROWN, LIMBS, PADS, POT, ROOTS, SHOOTS, TRUNK, TRUNK_COILS, VIEW, type Box } from './treeArt';
 
@@ -258,9 +258,12 @@ function PadRows({ rows, delay }: { rows: readonly string[]; delay: number }) {
 function Shoot({ index, progress }: { index: number; progress: MotionValue<number> }) {
   const shoot = SHOOTS[index];
   const start = BEATS.prune + index * BEATS.shoot;
+  // Snip, then it tumbles: drops 60px (gravity), drifts a little away from
+  // the trunk, turns 18 degrees and is gone before it crosses much foliage
   const fall = [start + 0.008, start + 0.052];
-  const fade = [start + 0.02, start + 0.052];
+  const fade = [start + 0.014, start + 0.046];
   const y = useTransform(progress, fall, [0, 60], { ease: easeIn });
+  const x = useTransform(progress, fall, [0, 12 * shoot.swing], { ease: easeOut });
   const rotate = useTransform(progress, fall, [0, 18 * shoot.swing]);
   const opacity = useTransform(progress, fade, [1, 0]);
   const tick = useTransform(progress, [start, start + 0.006, start + 0.02, start + 0.034], [0, 1, 1, 0]);
@@ -269,7 +272,7 @@ function Shoot({ index, progress }: { index: number; progress: MotionValue<numbe
 
   return (
     <>
-      <ShootLayer style={{ ...boxStyle(shoot.box), y, rotate, opacity }}>
+      <ShootLayer style={{ ...boxStyle(shoot.box), x, y, rotate, opacity }}>
         <svg viewBox={`${x0} ${y0} ${w} ${h}`}>
           <path d={shoot.d} pathLength={1} data-draw="" style={timing(shoot.t, 0.5)} />
         </svg>

@@ -191,7 +191,8 @@ const Headline = styled.h1`
 `;
 
 const SubText = styled.p`
-  max-width: 36ch;
+  max-width: 52ch;
+  text-wrap: balance;
   margin-bottom: ${({ theme }) => theme.spacing.xl};
   font-size: 1.1rem;
   font-weight: 300;
