@@ -16,6 +16,12 @@ interface MagneticButtonProps {
 const ButtonWrapper = styled(motion.button)`
   position: relative;
   display: inline-block;
+
+  /* GlobalStyle removes the outline on every button; restore it for keyboard focus */
+  &:focus-visible {
+    outline: 1px solid ${({ theme }) => theme.colors.primary};
+    outline-offset: 3px;
+  }
 `;
 
 export default function MagneticButton({
