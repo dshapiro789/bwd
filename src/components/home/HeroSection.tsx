@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useRef, useSyncExternalStore } from 'react';
+import { useEffect, useRef } from 'react';
 import styled, { css, keyframes } from 'styled-components';
 import {
   cubicBezier,
@@ -26,6 +26,7 @@ import {
 } from '../plates/HangingScroll';
 import { MarkLabel, MarkNumeral, MarkRow, MarkRule } from '../plates/ChapterMark';
 import { PIN_QUERY, SPLIT_QUERY } from '../plates/queries';
+import { useHydrated } from '../plates/useHydrated';
 
 /*
  * Hero: "The Hanging Scroll".
@@ -69,15 +70,6 @@ const settle = cubicBezier(0.3, 0, 0.15, 1);
 /** Rolling and lifting: an even hand, gentle at both ends. */
 const steady = cubicBezier(0.35, 0, 0.65, 1);
 const draw = cubicBezier(0.65, 0, 0.35, 1);
-
-const noopSubscribe = () => () => {};
-/** False on the server and during hydration, true after: gates client-only styles. */
-const useHydrated = () =>
-  useSyncExternalStore(
-    noopSubscribe,
-    () => true,
-    () => false
-  );
 
 /* ---------- Entrance (CSS, before hydration) ---------- */
 

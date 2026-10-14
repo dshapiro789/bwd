@@ -1,6 +1,6 @@
 'use client';
 
-import { useRef, useSyncExternalStore, type ReactNode } from 'react';
+import { useRef, type ReactNode } from 'react';
 import Image from 'next/image';
 import styled, { keyframes } from 'styled-components';
 import {
@@ -16,6 +16,7 @@ import { useMediaQuery, useReducedMotionSafe } from '@/lib/useMediaQuery';
 import { DUR, EASE_OUT, RISE } from '@/lib/motion';
 import { CaptionDot, PlateFrame, PlateNo, captionText } from '../plates/Plate';
 import { SPLIT_QUERY } from '../plates/queries';
+import { useHydrated } from '../plates/useHydrated';
 
 /*
  * About as "Plate II": a diptych of the two of them, matched 4:5 crops with
@@ -38,14 +39,6 @@ import { SPLIT_QUERY } from '../plates/queries';
  */
 const DAVID_SIZES = '(min-width: 1024px) 40vw, (min-width: 768px) 48vw, 82vw';
 const JENNA_SIZES = '(min-width: 1024px) 40vw, (min-width: 768px) 50vw, 102vw';
-
-const noopSubscribe = () => () => {};
-const useHydrated = () =>
-  useSyncExternalStore(
-    noopSubscribe,
-    () => true,
-    () => false
-  );
 
 const AboutWrapper = styled(Section)`
   background: linear-gradient(
