@@ -5,6 +5,7 @@ import { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence, useMotionValue, useSpring } from 'framer-motion';
 import { Section, Container } from '../layout/Container';
 import GradientText from '../common/GradientText';
+import { useReducedMotionSafe } from '@/lib/useMediaQuery';
 
 const testimonials = [
   {
@@ -45,6 +46,8 @@ const TestimonialsWrapper = styled(Section)`
   border-top: 1px solid rgba(93, 117, 102, 0.15);
   border-bottom: 1px solid rgba(93, 117, 102, 0.15);
 `;
+
+const Carousel = styled.div``;
 
 const CarouselContainer = styled.div`
   max-width: 800px;
@@ -126,6 +129,11 @@ const Dot = styled.button<{ $active: boolean }>`
   background-color: ${({ $active, theme }) =>
     $active ? theme.colors.gold : 'rgba(255, 255, 255, 0.2)'};
   transition: background-color 0.3s ease;
+
+  &:focus-visible {
+    outline: 1px solid ${({ theme }) => theme.colors.primary};
+    outline-offset: 3px;
+  }
 `;
 
 const SectionTitle = styled.h2`
@@ -144,6 +152,9 @@ const SectionTitle = styled.h2`
 
 export default function TestimonialsSection() {
   const [currentIndex, setCurrentIndex] = useState(0);
+  const [hovered, setHovered] = useState(false);
+  const [focusWithin, setFocusWithin] = useState(false);
+  const reduce = useReducedMotionSafe();
   const cardRef = useRef<HTMLDivElement>(null);
 
   const rotateX = useMotionValue(0);
@@ -153,15 +164,20 @@ export default function TestimonialsSection() {
   const springRotateX = useSpring(rotateX, springConfig);
   const springRotateY = useSpring(rotateY, springConfig);
 
+  // Auto-advance pauses while the carousel is hovered or holds focus, and is
+  // off entirely for readers who prefer reduced motion. Any change of slide
+  // (automatic or a dot) restarts the 5s wait.
+  const paused = hovered || focusWithin;
   useEffect(() => {
-    const timer = setInterval(() => {
+    if (reduce || paused) return;
+    const timer = setTimeout(() => {
       setCurrentIndex((prev) => (prev + 1) % testimonials.length);
     }, 5000);
-    return () => clearInterval(timer);
-  }, []);
+    return () => clearTimeout(timer);
+  }, [reduce, paused, currentIndex]);
 
   const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
-    if (!cardRef.current) return;
+    if (!cardRef.current || reduce) return;
 
     const rect = cardRef.current.getBoundingClientRect();
     const centerX = rect.left + rect.width / 2;
@@ -183,45 +199,54 @@ export default function TestimonialsSection() {
     <TestimonialsWrapper>
       <Container>
         <SectionTitle><GradientText>Client Stories</GradientText></SectionTitle>
-        <CarouselContainer
-          ref={cardRef}
-          onMouseMove={handleMouseMove}
-          onMouseLeave={handleMouseLeave}
+        <Carousel
+          onPointerEnter={(e) => e.pointerType === 'mouse' && setHovered(true)}
+          onPointerLeave={(e) => e.pointerType === 'mouse' && setHovered(false)}
+          onFocus={() => setFocusWithin(true)}
+          onBlur={(e) => {
+            if (!e.currentTarget.contains(e.relatedTarget as Node | null)) setFocusWithin(false);
+          }}
         >
-          <AnimatePresence mode="wait">
-            <TestimonialCard
-              key={currentIndex}
-              initial={{ opacity: 0, x: 50 }}
-              animate={{ opacity: 1, x: 0 }}
-              exit={{ opacity: 0, x: -50 }}
-              transition={{ duration: 0.5 }}
-            >
-              <TestimonialContent
-                style={{
-                  rotateX: springRotateX,
-                  rotateY: springRotateY,
-                }}
+          <CarouselContainer
+            ref={cardRef}
+            onMouseMove={handleMouseMove}
+            onMouseLeave={handleMouseLeave}
+          >
+            <AnimatePresence mode="wait">
+              <TestimonialCard
+                key={currentIndex}
+                initial={{ opacity: 0, x: 50 }}
+                animate={{ opacity: 1, x: 0 }}
+                exit={{ opacity: 0, x: -50 }}
+                transition={{ duration: 0.5 }}
               >
-                <Stars>{'★'.repeat(testimonials[currentIndex].rating)}</Stars>
-                <Quote>&quot;{testimonials[currentIndex].content}&quot;</Quote>
-                <Author>
-                  <Name>{testimonials[currentIndex].name}</Name>
-                  <Role>{testimonials[currentIndex].role}</Role>
-                </Author>
-              </TestimonialContent>
-            </TestimonialCard>
-          </AnimatePresence>
-        </CarouselContainer>
-        <Controls>
-          {testimonials.map((_, index) => (
-            <Dot
-              key={index}
-              $active={index === currentIndex}
-              onClick={() => setCurrentIndex(index)}
-              aria-label={`Go to testimonial ${index + 1}`}
-            />
-          ))}
-        </Controls>
+                <TestimonialContent
+                  style={{
+                    rotateX: reduce ? 0 : springRotateX,
+                    rotateY: reduce ? 0 : springRotateY,
+                  }}
+                >
+                  <Stars>{'★'.repeat(testimonials[currentIndex].rating)}</Stars>
+                  <Quote>&quot;{testimonials[currentIndex].content}&quot;</Quote>
+                  <Author>
+                    <Name>{testimonials[currentIndex].name}</Name>
+                    <Role>{testimonials[currentIndex].role}</Role>
+                  </Author>
+                </TestimonialContent>
+              </TestimonialCard>
+            </AnimatePresence>
+          </CarouselContainer>
+          <Controls>
+            {testimonials.map((_, index) => (
+              <Dot
+                key={index}
+                $active={index === currentIndex}
+                onClick={() => setCurrentIndex(index)}
+                aria-label={`Go to testimonial ${index + 1}`}
+              />
+            ))}
+          </Controls>
+        </Carousel>
       </Container>
     </TestimonialsWrapper>
   );
