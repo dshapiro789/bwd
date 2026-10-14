@@ -11,7 +11,8 @@ const inquirySchema = z.object({
     company: z.string().trim().max(200).optional(),
     projectType: z.string().trim().min(1).max(60),
     budget: z.string().trim().min(1).max(60),
-    description: z.string().trim().min(1).max(5000),
+    // The form sets no maximum, so keep this well above any real brief
+    description: z.string().trim().min(1).max(20000),
     timeline: z.string().trim().max(200).optional(),
 });
 
