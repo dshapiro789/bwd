@@ -85,7 +85,7 @@ const Figure = styled.div`
     }
 
     [data-fade] {
-      animation: ${fade} 0.8s ${EASE} var(--d, 0s) both;
+      animation: ${fade} 0.6s ${EASE} var(--d, 0s) both;
     }
   }
 `;
@@ -99,6 +99,14 @@ const Full = styled.svg`
 const Pad = styled.g`
   stroke: ${({ theme }) => theme.colors.accent};
   opacity: 0.9;
+
+  ${PAD_DASH.map(
+    (dash, k) => `
+  path:nth-child(${k + 1}) {
+    stroke-dasharray: ${dash};
+    opacity: ${PAD_OPACITY[k]};
+  }`
+  ).join('')}
 `;
 
 const Bark = styled.path`
@@ -245,12 +253,14 @@ const Dot = styled.span`
   background: ${({ theme }) => theme.colors.primary};
 `;
 
+/* Every pad renders all four rows (an empty one draws nothing) so each
+   row's style can come from its position */
 function PadRows({ rows, delay }: { rows: readonly string[]; delay: number }) {
   return (
     <Pad data-fade="" style={timing(delay)}>
-      {rows.map((d, k) =>
-        d ? <path key={k} d={d} strokeDasharray={PAD_DASH[k]} opacity={PAD_OPACITY[k]} /> : null
-      )}
+      {PAD_DASH.map((_, k) => (
+        <path key={k} d={rows[k] ?? ''} />
+      ))}
     </Pad>
   );
 }
@@ -274,7 +284,7 @@ function Shoot({ index, progress }: { index: number; progress: MotionValue<numbe
     <>
       <ShootLayer style={{ ...boxStyle(shoot.box), x, y, rotate, opacity }}>
         <svg viewBox={`${x0} ${y0} ${w} ${h}`}>
-          <path d={shoot.d} pathLength={1} data-draw="" style={timing(shoot.t, 0.5)} />
+          <path d={shoot.d} pathLength={1} data-draw="" style={timing(shoot.t, 0.4)} />
         </svg>
       </ShootLayer>
       <Tick
@@ -309,8 +319,10 @@ function Limb({ index, progress }: { index: number; progress: MotionValue<number
       })}
     >
       <svg viewBox={`${x0} ${y0} ${w} ${h}`}>
-        <path d={limb.d[0]} pathLength={1} data-draw="" style={timing(limb.t[0], limb.t[1])} />
-        <path d={limb.d[1]} pathLength={1} data-draw="" style={timing(limb.t[0], limb.t[1])} />
+        <g style={timing(limb.t[0], limb.t[1])}>
+          <path d={limb.d[0]} pathLength={1} data-draw="" />
+          <path d={limb.d[1]} pathLength={1} data-draw="" />
+        </g>
         <PadRows rows={limb.pad.rows} delay={limb.pad.t} />
         <g style={{ '--n': limb.coils.length } as CSSProperties}>
           {limb.coils.map((d, i) => (
@@ -359,9 +371,9 @@ const WireTree = forwardRef<HTMLDivElement, WireTreeProps>(function WireTree({ p
         ))}
         <Bark d={BARK} data-fade="" style={timing(0.6)} />
         {BRANCHES.map((b, i) => (
-          <g key={i}>
-            <path d={b.d[0]} pathLength={1} data-draw="" style={timing(b.t[0], b.t[1])} />
-            <path d={b.d[1]} pathLength={1} data-draw="" style={timing(b.t[0], b.t[1])} />
+          <g key={i} style={timing(b.t[0], b.t[1])}>
+            <path d={b.d[0]} pathLength={1} data-draw="" />
+            <path d={b.d[1]} pathLength={1} data-draw="" />
           </g>
         ))}
         <path d={CROWN} pathLength={1} data-draw="" style={timing(1.05, 0.45)} />
