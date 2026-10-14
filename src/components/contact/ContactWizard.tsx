@@ -11,10 +11,12 @@ import SuccessModal from './SuccessModal';
 import MagneticButton from '../common/MagneticButton';
 
 // Validation Schemas
+// The max lengths mirror src/app/api/send/route.ts, so an over-long field is
+// caught here with a specific message instead of failing on the server.
 const step1Schema = z.object({
-    name: z.string().min(2, 'Name is required'),
-    email: z.string().email('Invalid email address'),
-    company: z.string().optional(),
+    name: z.string().min(2, 'Name is required').max(120, 'Please keep your name under 120 characters'),
+    email: z.string().email('Invalid email address').max(254, 'That email address is too long'),
+    company: z.string().max(200, 'Please keep this under 200 characters').optional(),
 });
 
 const step2Schema = z.object({
@@ -23,8 +25,11 @@ const step2Schema = z.object({
 });
 
 const step3Schema = z.object({
-    description: z.string().min(10, 'Please tell us more about your project'),
-    timeline: z.string().optional(),
+    description: z
+        .string()
+        .min(10, 'Please tell us more about your project')
+        .max(20000, 'Please keep this under 20,000 characters'),
+    timeline: z.string().max(200, 'Please keep this under 200 characters').optional(),
 });
 
 type FormData = z.infer<typeof step1Schema> & z.infer<typeof step2Schema> & z.infer<typeof step3Schema>;
@@ -428,6 +433,7 @@ export default function ContactWizard() {
                                     <InputGroup>
                                         <Label>Company (Optional)</Label>
                                         <Input {...register('company')} placeholder="Your Company Ltd." />
+                                        {errors.company && <ErrorMessage>{errors.company.message}</ErrorMessage>}
                                     </InputGroup>
                                 </motion.div>
                             )}
@@ -486,6 +492,7 @@ export default function ContactWizard() {
                                     <InputGroup>
                                         <Label>Timeline (Optional)</Label>
                                         <Input {...register('timeline')} placeholder="e.g. 3 months" />
+                                        {errors.timeline && <ErrorMessage>{errors.timeline.message}</ErrorMessage>}
                                     </InputGroup>
                                 </motion.div>
                             )}
