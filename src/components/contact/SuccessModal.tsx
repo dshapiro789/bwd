@@ -15,7 +15,8 @@ const Overlay = styled(motion.div)`
   display: flex;
   align-items: center;
   justify-content: center;
-  z-index: 1000;
+  /* Above the fixed header (1002) and the mobile menu overlay (1001) */
+  z-index: 1003;
   padding: ${({ theme }) => theme.spacing.md};
 `;
 
