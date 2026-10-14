@@ -441,8 +441,8 @@ export default function PricingSection() {
               </PriceContainer>
 
               <Divider
-                initial={{ width: 0 }}
-                whileInView={{ width: 60 }}
+                initial={{ scaleX: 0 }}
+                whileInView={{ scaleX: 1 }}
                 viewport={{ once: true }}
                 transition={{ duration: 0.6, delay: 0.3 }}
               />

@@ -7,6 +7,7 @@ import { useRef } from 'react';
 import AnimatedCounter from '../common/AnimatedCounter';
 import GradientText from '../common/GradientText';
 import { useReducedMotionSafe } from '@/lib/useMediaQuery';
+import { DUR, EASE_OUT, RISE } from '@/lib/motion';
 
 const StudioWrapper = styled(Section)`
   background: linear-gradient(
@@ -110,16 +111,19 @@ export default function StudioSection() {
     offset: ["start end", "end start"]
   });
 
-  // Fade in as it enters, fade out as it leaves
-  const opacity = useTransform(scrollYProgress, [0, 0.2, 0.8, 1], [0, 1, 1, 0]);
-  const scale = useTransform(scrollYProgress, [0, 0.2, 0.8, 1], [0.95, 1, 1, 0.95]);
+  // Background parallax only; the content reveals once and then stays put
   const y = useTransform(scrollYProgress, [0, 1], ["0%", "20%"]);
 
   return (
     <StudioWrapper id="studio" ref={ref}>
       <BackgroundImage style={{ y: reduce ? 0 : y }} />
 
-      <ContentContainer style={{ opacity, scale }}>
+      <ContentContainer
+        initial={{ opacity: 0, y: RISE.item }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true, margin: '0px 0px -15% 0px' }}
+        transition={{ duration: DUR.reveal, ease: EASE_OUT }}
+      >
         <PreTitle
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}

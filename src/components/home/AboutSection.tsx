@@ -2,11 +2,11 @@
 
 import styled from 'styled-components';
 import { Section, Container } from '../layout/Container';
-import { motion, useScroll, useTransform, useMotionTemplate } from 'framer-motion';
-import { useRef } from 'react';
+import { motion } from 'framer-motion';
 import Image from 'next/image';
 import GradientText from '../common/GradientText';
 import AnimatedCounter from '../common/AnimatedCounter';
+import { DUR, EASE_OUT, RISE } from '@/lib/motion';
 
 const AboutWrapper = styled(Section)`
   background: linear-gradient(
@@ -268,19 +268,8 @@ const Divider = styled.div`
 `;
 
 export default function AboutSection() {
-  const ref = useRef(null);
-  const { scrollYProgress } = useScroll({
-    target: ref,
-    offset: ["start end", "end start"]
-  });
-
-  const opacity = useTransform(scrollYProgress, [0, 0.15, 0.85, 1], [0, 1, 1, 0]);
-  const y = useTransform(scrollYProgress, [0, 0.15, 0.85, 1], [50, 0, 0, 50]);
-  const blur = useTransform(scrollYProgress, [0, 0.15, 0.85, 1], [10, 0, 0, 10]);
-  const filter = useMotionTemplate`blur(${blur}px)`;
-
   return (
-    <AboutWrapper id="about" ref={ref}>
+    <AboutWrapper id="about">
       <Container>
         <Header>
           <Title
@@ -293,7 +282,13 @@ export default function AboutSection() {
           </Title>
         </Header>
 
-        <TeamContainer style={{ opacity, y, filter }}>
+        {/* Taller than the viewport, so reveal on a margin rather than viewport.amount */}
+        <TeamContainer
+          initial={{ opacity: 0, y: RISE.item }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, margin: '0px 0px -15% 0px' }}
+          transition={{ duration: DUR.reveal, ease: EASE_OUT }}
+        >
           {/* David Shapiro - Image Left, Bio Right */}
           <MemberSection>
             <PhotoContainer>
