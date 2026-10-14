@@ -1,13 +1,22 @@
 'use client';
 
 import styled from 'styled-components';
-import { motion, AnimatePresence, useMotionValue, useSpring } from 'framer-motion';
-import { useState, useRef, useEffect } from 'react';
+import {
+  motion,
+  AnimatePresence,
+  useMotionValue,
+  useScroll,
+  useSpring,
+  useTransform,
+  type MotionValue,
+} from 'framer-motion';
+import { useState, useRef, useEffect, useSyncExternalStore } from 'react';
 import { Section, Container } from '../layout/Container';
 import GradientText from '../common/GradientText';
 import { FiArrowUpRight } from 'react-icons/fi';
 import { featured, projects } from '@/data/work';
 import { useReducedMotionSafe } from '@/lib/useMediaQuery';
+import { WIRE_TARGET } from '../wire/WireTail';
 
 const displayDomain = (url: string) => new URL(url).hostname.replace(/^www\./, '');
 const pad = (n: number) => String(n).padStart(2, '0');
@@ -196,29 +205,32 @@ const Summary = styled.p`
   max-width: 420px;
 `;
 
+const BranchWrap = styled.div`
+  position: relative;
+`;
+
 const Branch = styled.ul`
   position: relative;
   list-style: none;
   margin: 0;
   padding: 0;
-
-  /* The branch line linking every property */
-  &::before {
-    content: '';
-    position: absolute;
-    left: 5px;
-    top: 46px;
-    bottom: 46px;
-    width: 1px;
-    background: linear-gradient(
-      180deg,
-      rgba(200, 159, 129, 0.6) 0%,
-      rgba(200, 159, 129, 0.25) 100%
-    );
-  }
 `;
 
-const BranchNode = styled.span`
+/* Branch Grow: the line linking every property is a real element that grows
+   down from the top as the list scrolls into view, picking up where the
+   hero's wire tail left the stage. */
+const Trunk = styled(motion.span)`
+  position: absolute;
+  left: 5px;
+  top: 46px;
+  bottom: 46px;
+  width: 1px;
+  background: linear-gradient(180deg, rgba(200, 159, 129, 0.6) 0%, rgba(200, 159, 129, 0.25) 100%);
+  transform-origin: 50% 0;
+  pointer-events: none;
+`;
+
+const BranchNode = styled(motion.span)`
   position: relative;
   z-index: 1;
   width: 11px;
@@ -226,7 +238,20 @@ const BranchNode = styled.span`
   border-radius: 50%;
   border: 1px solid ${({ theme }) => theme.colors.primary};
   background: ${({ theme }) => theme.colors.background};
-  transition: ${({ theme }) => theme.transitions.default};
+  /* Named properties only: the scroll-driven scale must not be eased */
+  transition:
+    background-color 0.4s cubic-bezier(0.16, 1, 0.3, 1),
+    box-shadow 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+`;
+
+/* Bronze fill a node takes on as the trunk reaches it */
+const NodeFill = styled(motion.span)`
+  position: absolute;
+  inset: -1px;
+  border-radius: 50%;
+  background: ${({ theme }) => theme.colors.primary};
+  opacity: 0;
+  pointer-events: none;
 `;
 
 const BranchArrow = styled.span`
@@ -553,6 +578,19 @@ const VisuallyHidden = styled.span`
   white-space: nowrap;
 `;
 
+const noSubscribe = () => () => {};
+
+/** A branch node that fills and swells (1 -> 1.15 -> 1) as the trunk passes it. */
+function GrowNode({ progress, at, live }: { progress: MotionValue<number>; at: number; live: boolean }) {
+  const fill = useTransform(progress, [at - 0.03, at], [0, 1]);
+  const scale = useTransform(progress, [at - 0.03, at, at + 0.07], [1, 1.15, 1]);
+  return (
+    <BranchNode data-node="" style={live ? { scale } : undefined}>
+      <NodeFill style={live ? { opacity: fill } : undefined} />
+    </BranchNode>
+  );
+}
+
 const reveal = {
   hidden: { opacity: 0, y: 24 },
   visible: (i: number) => ({
@@ -600,6 +638,49 @@ export default function PortfolioSection() {
 
   const active = hovered !== null ? projects[hovered] : null;
 
+  // Branch Grow: scrubbed by the list's own pass into view. Until mounted (and
+  // under reduced motion) the trunk is simply drawn and the nodes are still.
+  const branchRef = useRef<HTMLDivElement>(null);
+  const trunkRef = useRef<HTMLSpanElement>(null);
+  const mounted = useSyncExternalStore(noSubscribe, () => true, () => false);
+  const [nodeAt, setNodeAt] = useState<number[]>(() =>
+    featured.properties.map((_, i) => i / Math.max(1, featured.properties.length - 1))
+  );
+  const { scrollYProgress: grow } = useScroll({ target: branchRef, offset: ['start 0.8', 'end 0.6'] });
+  const live = mounted && !reduce;
+
+  useEffect(() => {
+    const measure = () => {
+      const trunk = trunkRef.current;
+      const list = branchRef.current;
+      if (!trunk || !list) return;
+      // Layout offsets (summed up the offsetParent chain), so neither the
+      // trunk's scaleY nor the rows' reveal transform skews the positions
+      const offsetIn = (el: HTMLElement) => {
+        let y = 0;
+        let e: HTMLElement | null = el;
+        while (e && e !== list) {
+          y += e.offsetTop;
+          e = e.offsetParent as HTMLElement | null;
+        }
+        return y;
+      };
+      const top = offsetIn(trunk);
+      const height = trunk.offsetHeight || 1;
+      const nodes = Array.from(list.querySelectorAll<HTMLElement>('[data-node]'));
+      setNodeAt(
+        nodes.map((n) => {
+          const centre = offsetIn(n) + n.offsetHeight / 2;
+          return Math.min(1, Math.max(0, (centre - top) / height));
+        })
+      );
+    };
+    measure();
+    const ro = new ResizeObserver(measure);
+    if (branchRef.current) ro.observe(branchRef.current);
+    return () => ro.disconnect();
+  }, []);
+
   return (
     <PortfolioWrapper id="portfolio">
       <Container>
@@ -641,33 +722,41 @@ export default function PortfolioSection() {
             <Summary>{featured.summary}</Summary>
           </FeaturedIntro>
 
-          <Branch>
-            {featured.properties.map((property, i) => (
-              <li key={property.url}>
-                <BranchLink
-                  href={property.url}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  custom={i}
-                  variants={reveal}
-                  initial="hidden"
-                  whileInView="visible"
-                  viewport={{ once: true }}
-                >
-                  <BranchNode />
-                  <BranchText>
-                    <Kind>{property.kind}</Kind>
-                    <BranchTitle>{property.title}</BranchTitle>
-                    <Domain>{displayDomain(property.url)}</Domain>
-                  </BranchText>
-                  <BranchArrow>
-                    <FiArrowUpRight />
-                  </BranchArrow>
-                  <VisuallyHidden>(opens in a new tab)</VisuallyHidden>
-                </BranchLink>
-              </li>
-            ))}
-          </Branch>
+          <BranchWrap ref={branchRef}>
+            <Trunk
+              ref={trunkRef}
+              aria-hidden="true"
+              {...{ [WIRE_TARGET]: '' }}
+              style={live ? { scaleY: grow } : undefined}
+            />
+            <Branch>
+              {featured.properties.map((property, i) => (
+                <li key={property.url}>
+                  <BranchLink
+                    href={property.url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    custom={i}
+                    variants={reveal}
+                    initial="hidden"
+                    whileInView="visible"
+                    viewport={{ once: true }}
+                  >
+                    <GrowNode progress={grow} at={nodeAt[i] ?? 0} live={live} />
+                    <BranchText>
+                      <Kind>{property.kind}</Kind>
+                      <BranchTitle>{property.title}</BranchTitle>
+                      <Domain>{displayDomain(property.url)}</Domain>
+                    </BranchText>
+                    <BranchArrow>
+                      <FiArrowUpRight />
+                    </BranchArrow>
+                    <VisuallyHidden>(opens in a new tab)</VisuallyHidden>
+                  </BranchLink>
+                </li>
+              ))}
+            </Branch>
+          </BranchWrap>
         </FeaturedPanel>
 
         <IndexHeading>
