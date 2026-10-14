@@ -2,11 +2,16 @@
 
 import styled from 'styled-components';
 import { Section, Container } from '../layout/Container';
-import { motion, useScroll, useTransform, useMotionTemplate } from 'framer-motion';
-import { useRef } from 'react';
+import { motion } from 'framer-motion';
 import Image from 'next/image';
 import GradientText from '../common/GradientText';
 import AnimatedCounter from '../common/AnimatedCounter';
+import { DUR, EASE_OUT, RISE } from '@/lib/motion';
+
+// Headshots render at up to 350px: full container width on small phones, and
+// the 1fr column of a 1fr / 1.5fr grid (128px gap) between 768px and ~1046px.
+const HEADSHOT_SIZES =
+  '(min-width: 1047px) 350px, (min-width: 768px) calc(40vw - 70px), (min-width: 382px) 350px, calc(100vw - 32px)';
 
 const AboutWrapper = styled(Section)`
   background: linear-gradient(
@@ -17,7 +22,7 @@ const AboutWrapper = styled(Section)`
   );
   padding-top: ${({ theme }) => theme.spacing.xxxl};
   padding-bottom: ${({ theme }) => theme.spacing.xxxl};
-  overflow: hidden;
+  overflow: clip;
 `;
 
 const Header = styled.div`
@@ -268,19 +273,8 @@ const Divider = styled.div`
 `;
 
 export default function AboutSection() {
-  const ref = useRef(null);
-  const { scrollYProgress } = useScroll({
-    target: ref,
-    offset: ["start end", "end start"]
-  });
-
-  const opacity = useTransform(scrollYProgress, [0, 0.15, 0.85, 1], [0, 1, 1, 0]);
-  const y = useTransform(scrollYProgress, [0, 0.15, 0.85, 1], [50, 0, 0, 50]);
-  const blur = useTransform(scrollYProgress, [0, 0.15, 0.85, 1], [10, 0, 0, 10]);
-  const filter = useMotionTemplate`blur(${blur}px)`;
-
   return (
-    <AboutWrapper id="about" ref={ref}>
+    <AboutWrapper id="about">
       <Container>
         <Header>
           <Title
@@ -293,7 +287,13 @@ export default function AboutSection() {
           </Title>
         </Header>
 
-        <TeamContainer style={{ opacity, y, filter }}>
+        {/* Taller than the viewport, so reveal on a margin rather than viewport.amount */}
+        <TeamContainer
+          initial={{ opacity: 0, y: RISE.item }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, margin: '0px 0px -15% 0px' }}
+          transition={{ duration: DUR.reveal, ease: EASE_OUT }}
+        >
           {/* David Shapiro - Image Left, Bio Right */}
           <MemberSection>
             <PhotoContainer>
@@ -308,7 +308,7 @@ export default function AboutSection() {
                   alt="David Aaron Shapiro - Bonsai Web Designer"
                   width={350}
                   height={350}
-                  priority
+                  sizes={HEADSHOT_SIZES}
                 />
               </PhotoFrame>
               <NameLabel
@@ -352,7 +352,7 @@ export default function AboutSection() {
 
           <Divider />
 
-          {/* Jennifer Shapiro - Image Left, Bio Right (same as David) */}
+          {/* Jenna Shapiro - Image Left, Bio Right (same as David) */}
           <MemberSection>
             <PhotoContainer>
               <PhotoFrame
@@ -362,11 +362,11 @@ export default function AboutSection() {
                 transition={{ duration: 0.8, delay: 0.2 }}
               >
                 <Image
-                  src="/images/jennifer-headshot.jpg"
+                  src="/images/jenna-headshot.jpg"
                   alt="Jenna Shapiro - Creative Director"
                   width={350}
                   height={350}
-                  priority
+                  sizes={HEADSHOT_SIZES}
                 />
               </PhotoFrame>
               <NameLabel

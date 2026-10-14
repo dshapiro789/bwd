@@ -1,8 +1,10 @@
 'use client';
 
 import { motion, useMotionValue, useSpring } from 'framer-motion';
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 import styled from 'styled-components';
+import { CUSTOM_CURSOR_QUERY } from '@/lib/motion';
+import { useMediaQuery } from '@/lib/useMediaQuery';
 
 const CursorOuter = styled(motion.div)`
   position: fixed;
@@ -15,14 +17,6 @@ const CursorOuter = styled(motion.div)`
   pointer-events: none;
   z-index: 9998;
   mix-blend-mode: difference;
-  
-  @media (max-width: 768px) {
-    display: none;
-  }
-  
-  @media (pointer: coarse) {
-    display: none;
-  }
 `;
 
 const CursorInner = styled(motion.div)`
@@ -36,18 +30,12 @@ const CursorInner = styled(motion.div)`
   pointer-events: none;
   z-index: 9999;
   box-shadow: 0 0 20px ${({ theme }) => theme.colors.primary};
-  
-  @media (max-width: 768px) {
-    display: none;
-  }
-  
-  @media (pointer: coarse) {
-    display: none;
-  }
 `;
 
 export default function CursorGlow() {
-  const [isMounted, setIsMounted] = useState(false);
+  // Same query GlobalStyle uses to hide the native cursor. False on the server
+  // and during hydration, so nothing renders until the client confirms a match.
+  const enabled = useMediaQuery(CUSTOM_CURSOR_QUERY);
 
   const cursorX = useMotionValue(0);
   const cursorY = useMotionValue(0);
@@ -56,19 +44,15 @@ export default function CursorGlow() {
   const springConfig = { damping: 25, stiffness: 200, mass: 0.5 };
   const cursorXSpring = useSpring(cursorX, springConfig);
   const cursorYSpring = useSpring(cursorY, springConfig);
-  const scaleSpring = useSpring(scale, { damping: 20, stiffness: 300 });
+  // Critically damped (damping >= 2 * sqrt(stiffness * mass) = 34.6) so the ring settles without a bounce
+  const scaleSpring = useSpring(scale, { damping: 35, stiffness: 300 });
 
   const innerSpringConfig = { damping: 30, stiffness: 400, mass: 0.1 };
   const innerX = useSpring(cursorX, innerSpringConfig);
   const innerY = useSpring(cursorY, innerSpringConfig);
 
   useEffect(() => {
-    // eslint-disable-next-line react-hooks/set-state-in-effect
-    setIsMounted(true);
-  }, []);
-
-  useEffect(() => {
-    if (!isMounted) return;
+    if (!enabled) return;
 
     const moveCursor = (e: MouseEvent) => {
       cursorX.set(e.clientX - 20);
@@ -87,9 +71,9 @@ export default function CursorGlow() {
 
     window.addEventListener('mousemove', moveCursor);
     return () => window.removeEventListener('mousemove', moveCursor);
-  }, [isMounted, cursorX, cursorY, scale]);
+  }, [enabled, cursorX, cursorY, scale]);
 
-  if (!isMounted) return null;
+  if (!enabled) return null;
 
   return (
     <>

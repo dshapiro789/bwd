@@ -3,9 +3,12 @@
 import styled from 'styled-components';
 import { Section } from '../layout/Container';
 import { motion, useScroll, useTransform } from 'framer-motion';
+import Image from 'next/image';
 import { useRef } from 'react';
 import AnimatedCounter from '../common/AnimatedCounter';
 import GradientText from '../common/GradientText';
+import { useReducedMotionSafe } from '@/lib/useMediaQuery';
+import { DUR, EASE_OUT, RISE } from '@/lib/motion';
 
 const StudioWrapper = styled(Section)`
   background: linear-gradient(
@@ -15,7 +18,7 @@ const StudioWrapper = styled(Section)`
     rgba(16, 32, 24, 0.4) 100%
   );
   padding: ${({ theme }) => theme.spacing.xxxl} 0;
-  overflow: hidden;
+  overflow: clip;
   position: relative;
   min-height: 100vh;
   display: flex;
@@ -23,15 +26,14 @@ const StudioWrapper = styled(Section)`
   justify-content: center;
 `;
 
+// Holds a lazy next/image (optimized AVIF/WebP at the right width) instead of a
+// CSS background, which loaded the full 800 KB file on first view at every width
 const BackgroundImage = styled(motion.div)`
   position: absolute;
   top: 0;
   left: 0;
   right: 0;
   bottom: 0;
-  background-image: url('/images/studio-background.png');
-  background-size: cover;
-  background-position: center;
   opacity: 0.1;
   z-index: 0;
 `;
@@ -103,21 +105,34 @@ const StatLabel = styled.div`
 
 export default function StudioSection() {
   const ref = useRef(null);
+  const reduce = useReducedMotionSafe();
   const { scrollYProgress } = useScroll({
     target: ref,
     offset: ["start end", "end start"]
   });
 
-  // Fade in as it enters, fade out as it leaves
-  const opacity = useTransform(scrollYProgress, [0, 0.2, 0.8, 1], [0, 1, 1, 0]);
-  const scale = useTransform(scrollYProgress, [0, 0.2, 0.8, 1], [0.95, 1, 1, 0.95]);
+  // Background parallax only; the content reveals once and then stays put
   const y = useTransform(scrollYProgress, [0, 1], ["0%", "20%"]);
 
   return (
     <StudioWrapper id="studio" ref={ref}>
-      <BackgroundImage style={{ y }} />
+      <BackgroundImage style={{ y: reduce ? 0 : y }} aria-hidden="true">
+        <Image
+          src="/images/studio-background.png"
+          alt=""
+          fill
+          sizes="100vw"
+          quality={55}
+          style={{ objectFit: 'cover' }}
+        />
+      </BackgroundImage>
 
-      <ContentContainer style={{ opacity, scale }}>
+      <ContentContainer
+        initial={{ opacity: 0, y: RISE.item }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true, margin: '0px 0px -15% 0px' }}
+        transition={{ duration: DUR.reveal, ease: EASE_OUT }}
+      >
         <PreTitle
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}

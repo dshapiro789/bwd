@@ -16,5 +16,5 @@ export const Container = styled.div`
 export const Section = styled.section`
   padding: ${({ theme }) => theme.spacing.xxl} 0;
   position: relative;
-  overflow: hidden;
+  overflow: clip;
 `;

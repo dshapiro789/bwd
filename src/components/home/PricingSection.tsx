@@ -6,7 +6,8 @@ import { motion, useMotionValue, useTransform, useSpring } from 'framer-motion';
 import { FaTools, FaLaptopCode, FaLayerGroup, FaCheck } from 'react-icons/fa';
 import GradientText from '../common/GradientText';
 import { useRef, useState } from 'react';
-import { useScroll, useTransform as useScrollTransform } from 'framer-motion';
+import { useReducedMotionSafe } from '@/lib/useMediaQuery';
+import { DUR, EASE_OUT, RISE, STAGGER } from '@/lib/motion';
 
 const PricingWrapper = styled(Section)`
   background: linear-gradient(
@@ -17,7 +18,7 @@ const PricingWrapper = styled(Section)`
   );
   padding-top: ${({ theme }) => theme.spacing.xxxl};
   padding-bottom: ${({ theme }) => theme.spacing.xxxl};
-  overflow: hidden;
+  overflow: clip;
 `;
 
 const Header = styled.div`
@@ -253,6 +254,7 @@ interface TiltCardProps {
 function TiltCard({ children, index }: TiltCardProps) {
   const ref = useRef<HTMLDivElement>(null);
   const [isHovered, setIsHovered] = useState(false);
+  const reduce = useReducedMotionSafe();
 
   const x = useMotionValue(0);
   const y = useMotionValue(0);
@@ -261,7 +263,7 @@ function TiltCard({ children, index }: TiltCardProps) {
   const rotateY = useSpring(useTransform(x, [-0.5, 0.5], [-8, 8]), { stiffness: 300, damping: 30 });
 
   const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
-    if (!ref.current) return;
+    if (!ref.current || reduce) return;
     const rect = ref.current.getBoundingClientRect();
     const centerX = rect.left + rect.width / 2;
     const centerY = rect.top + rect.height / 2;
@@ -275,21 +277,14 @@ function TiltCard({ children, index }: TiltCardProps) {
     setIsHovered(false);
   };
 
-  // Scroll-based reveal
-  const scrollRef = useRef(null);
-  const { scrollYProgress } = useScroll({
-    target: scrollRef,
-    offset: ["start end", "end start"]
-  });
-
-  const yOffset = 60 + (index * 20);
-  const opacity = useScrollTransform(scrollYProgress, [0, 0.2, 0.8, 1], [0, 1, 1, 0]);
-  const yPos = useScrollTransform(scrollYProgress, [0, 0.2, 0.8, 1], [yOffset, 0, 0, -yOffset]);
-
+  // Reveal once as the card enters view (staggered), then stay put. Under
+  // reduced motion MotionConfig drops the rise and keeps a plain fade.
   return (
     <CardWrapper
-      ref={scrollRef}
-      style={{ opacity, y: yPos }}
+      initial={{ opacity: 0, y: RISE.item }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true, margin: '0px 0px -10% 0px' }}
+      transition={{ duration: DUR.reveal, ease: EASE_OUT, delay: index * STAGGER.item * 2 }}
     >
       <motion.div
         ref={ref}
@@ -297,8 +292,8 @@ function TiltCard({ children, index }: TiltCardProps) {
         onMouseEnter={() => setIsHovered(true)}
         onMouseLeave={handleMouseLeave}
         style={{
-          rotateX,
-          rotateY,
+          rotateX: reduce ? 0 : rotateX,
+          rotateY: reduce ? 0 : rotateY,
           transformStyle: 'preserve-3d',
         }}
         animate={{
@@ -439,8 +434,8 @@ export default function PricingSection() {
               </PriceContainer>
 
               <Divider
-                initial={{ width: 0 }}
-                whileInView={{ width: 60 }}
+                initial={{ scaleX: 0 }}
+                whileInView={{ scaleX: 1 }}
                 viewport={{ once: true }}
                 transition={{ duration: 0.6, delay: 0.3 }}
               />

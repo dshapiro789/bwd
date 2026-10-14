@@ -6,89 +6,8 @@ import { useState, useRef, useEffect } from 'react';
 import { Section, Container } from '../layout/Container';
 import GradientText from '../common/GradientText';
 import { FiArrowUpRight } from 'react-icons/fi';
-
-// Featured client: every property we've built for the Healthspan Collective
-const featured = {
-  name: 'Healthspan Collective',
-  tagline: 'Where evidence-based longevity meets community & culture.',
-  summary:
-    'One longevity brand, five sites: its flagship home, an online academy, a community, and two live events.',
-  properties: [
-    { kind: 'Flagship Site', title: 'Healthspan Collective', url: 'https://healthspancollective.com' },
-    { kind: 'Summit', title: 'Healthspan Summit', url: 'https://hssummit.com' },
-    { kind: 'Conference', title: 'Longevity Leadership Conference', url: 'https://longevityleadershipconference.com' },
-    { kind: 'Academy', title: 'Healthspan Academy', url: 'https://academy.healthspancollective.com' },
-    { kind: 'Community', title: 'Healthspan Community', url: 'https://healthspan.community' },
-  ],
-};
-
-// Project Data
-const projects = [
-  {
-    id: 1,
-    title: 'AthleteXperience',
-    category: 'Feature Rich Mobile App',
-    description: 'Coming Soon - A premium mobile experience for athletes',
-    url: 'https://theathletexperience.com',
-    gradient: 'linear-gradient(135deg, #1a3a2a 0%, #0d1f15 100%)',
-  },
-  {
-    id: 2,
-    title: 'Emerald Grove Digital',
-    category: 'AI Services Demo',
-    description: 'Showcasing AI-powered digital solutions',
-    url: 'https://emeraldgrovedigital.com',
-    gradient: 'linear-gradient(135deg, #2a4a3a 0%, #152a1f 100%)',
-  },
-  {
-    id: 3,
-    title: 'Shapiro Works',
-    category: 'Digital Freelance Agency',
-    description: 'Professional digital services portfolio',
-    url: 'https://shapiroworks.com',
-    gradient: 'linear-gradient(135deg, #3a2a1a 0%, #1f150d 100%)',
-  },
-  {
-    id: 4,
-    title: 'UPrompt',
-    category: 'AI Prompt Engineering',
-    description: 'Tools for crafting perfect AI prompts',
-    url: 'https://uprompt.me',
-    gradient: 'linear-gradient(135deg, #2a2a3a 0%, #15151f 100%)',
-  },
-  {
-    id: 5,
-    title: 'AI Bitcoin Tutor',
-    category: 'EdTech / Crypto',
-    description: 'AI-powered cryptocurrency education',
-    url: 'https://aibitcointutor.com',
-    gradient: 'linear-gradient(135deg, #3a3a2a 0%, #1f1f15 100%)',
-  },
-  {
-    id: 6,
-    title: 'Crypto Apparel',
-    category: 'E-Commerce',
-    description: 'Premium cryptocurrency merchandise',
-    url: 'https://cryptoapparel.net',
-    gradient: 'linear-gradient(135deg, #2a3a3a 0%, #151f1f 100%)',
-  },
-  {
-    id: 7,
-    title: 'Luxury Vacation Rental',
-    category: 'Rental Property Demo',
-    description: 'Premium vacation rental booking experience',
-    url: 'https://rental-property-booking-template.vercel.app',
-    gradient: 'linear-gradient(135deg, #2a2a2a 0%, #151515 100%)',
-  },
-  {
-    id: 8,
-    title: 'Live Pura Vida',
-    category: 'Travel Agency Demo',
-    description: 'Costa Rica travel experiences',
-    url: 'https://livepuravida.net',
-    gradient: 'linear-gradient(135deg, #1a3a3a 0%, #0d1f1f 100%)',
-  },
-];
+import { featured, projects } from '@/data/work';
+import { useReducedMotionSafe } from '@/lib/useMediaQuery';
 
 const displayDomain = (url: string) => new URL(url).hostname.replace(/^www\./, '');
 const pad = (n: number) => String(n).padStart(2, '0');
@@ -107,7 +26,7 @@ const PortfolioWrapper = styled(Section)`
   );
   padding: ${({ theme }) => theme.spacing.xxxl} 0;
   position: relative;
-  overflow: hidden;
+  overflow: clip;
 
   @media (max-width: 768px) {
     padding: ${({ theme }) => theme.spacing.xxl} 0;
@@ -359,6 +278,11 @@ const BranchLink = styled(motion.a)`
     color: ${({ theme }) => theme.colors.primary};
   }
 
+  &:focus-visible {
+    outline: 1px solid ${({ theme }) => theme.colors.primary};
+    outline-offset: 3px;
+  }
+
   @media (max-width: 768px) {
     gap: ${({ theme }) => theme.spacing.md};
     padding: 16px 0;
@@ -517,6 +441,11 @@ const Row = styled(motion.a)<{ $dimmed: boolean }>`
     transform: translate(3px, -3px);
   }
 
+  &:focus-visible {
+    outline: 1px solid ${({ theme }) => theme.colors.primary};
+    outline-offset: -1px;
+  }
+
   /* Dim the children, not the row: the reveal animation owns the row's opacity */
   > * {
     position: relative;
@@ -638,12 +567,16 @@ export default function PortfolioSection() {
   const [canHover, setCanHover] = useState(false);
   const listRef = useRef<HTMLDivElement>(null);
 
-  // Plate follows the pointer with a soft spring
+  // Plate follows the pointer with a soft spring; under reduced motion it
+  // tracks the pointer directly, with no trailing inertia
+  const reduce = useReducedMotionSafe();
   const plateX = useMotionValue(0);
   const plateY = useMotionValue(0);
   const springConfig = { damping: 28, stiffness: 220, mass: 0.6 };
-  const x = useSpring(plateX, springConfig);
-  const y = useSpring(plateY, springConfig);
+  const springX = useSpring(plateX, springConfig);
+  const springY = useSpring(plateY, springConfig);
+  const x = reduce ? plateX : springX;
+  const y = reduce ? plateY : springY;
 
   useEffect(() => {
     const query = window.matchMedia('(hover: hover) and (pointer: fine)');

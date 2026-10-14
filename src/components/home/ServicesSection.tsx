@@ -5,9 +5,7 @@ import { Section, Container } from '../layout/Container';
 import { motion } from 'framer-motion';
 import { SiReact, SiFigma, SiShopify, SiNextdotjs } from 'react-icons/si';
 import GradientText from '../common/GradientText';
-
-import { useRef } from 'react';
-import { useScroll, useTransform, useMotionTemplate } from 'framer-motion';
+import { DUR, EASE_OUT, RISE, STAGGER } from '@/lib/motion';
 
 const ServicesWrapper = styled(Section)`
   background: linear-gradient(
@@ -18,7 +16,7 @@ const ServicesWrapper = styled(Section)`
   );
   padding-top: ${({ theme }) => theme.spacing.xxxl};
   padding-bottom: ${({ theme }) => theme.spacing.xxxl};
-  overflow: hidden;
+  overflow: clip;
 `;
 
 const Header = styled.div`
@@ -139,28 +137,13 @@ const ServiceDescription = styled.p`
 `;
 
 function ScrollRevealCard({ children, index }: { children: React.ReactNode; index: number }) {
-  const ref = useRef(null);
-  const { scrollYProgress } = useScroll({
-    target: ref,
-    offset: ["start end", "end start"]
-  });
-
-  // Alternating entry sides: even from left (-50), odd from right (50)
-  // Reduced offset for more subtle movement
-  const xOffset = index % 2 === 0 ? -50 : 50;
-
-  const opacity = useTransform(scrollYProgress, [0, 0.25, 0.75, 1], [0, 1, 1, 0]);
-  const x = useTransform(scrollYProgress, [0, 0.25, 0.75, 1], [xOffset, 0, 0, xOffset]);
-  const scale = useTransform(scrollYProgress, [0, 0.25, 0.75, 1], [0.9, 1, 1, 0.9]);
-
-  // Feathered blur effect
-  const blur = useTransform(scrollYProgress, [0, 0.25, 0.75, 1], [10, 0, 0, 10]);
-  const filter = useMotionTemplate`blur(${blur}px)`;
-
+  // Reveal once on entry; the second card in a desktop row follows by one stagger step
   return (
     <CardWrapper
-      ref={ref}
-      style={{ opacity, x, scale, filter }}
+      initial={{ opacity: 0, y: RISE.item }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true, margin: '0px 0px -10% 0px' }}
+      transition={{ duration: DUR.reveal, ease: EASE_OUT, delay: (index % 2) * STAGGER.item }}
     >
       {children}
     </CardWrapper>
