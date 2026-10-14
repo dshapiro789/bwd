@@ -27,8 +27,13 @@ const entrance = (delayMs: number) => css`
   }
 `;
 
-/* Phones and short windows: the hero grows to fit its CTAs instead of clipping them */
-const COMPACT = '(max-width: 767px), (max-height: 760px)';
+/*
+ * Phones and short windows: the hero grows to fit its CTAs instead of clipping
+ * them, and the scroll cue is hidden. From 768px wide the centred content is
+ * about 444px tall and the cue 88px tall, 40px from the bottom, so the cue
+ * clears the price line by at least 16px from 736px tall.
+ */
+const COMPACT = '(max-width: 767px), (max-height: 735px)';
 
 const HeroWrapper = styled.section`
   height: 100vh;
