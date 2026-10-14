@@ -107,7 +107,7 @@ const PortfolioWrapper = styled(Section)`
   );
   padding: ${({ theme }) => theme.spacing.xxxl} 0;
   position: relative;
-  overflow: hidden;
+  overflow: clip;
 
   @media (max-width: 768px) {
     padding: ${({ theme }) => theme.spacing.xxl} 0;

@@ -1,5 +1,6 @@
 import { createGlobalStyle } from 'styled-components';
 import { theme } from './theme';
+import { CUSTOM_CURSOR_QUERY } from '@/lib/motion';
 
 export const GlobalStyle = createGlobalStyle`
   *, *::before, *::after {
@@ -9,8 +10,20 @@ export const GlobalStyle = createGlobalStyle`
   }
 
   html {
-    scroll-behavior: smooth;
     font-size: 16px;
+  }
+
+  /* Smooth anchor jumps only for readers who have not asked for less motion */
+  @media (prefers-reduced-motion: no-preference) {
+    html {
+      scroll-behavior: smooth;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    html {
+      scroll-behavior: auto;
+    }
   }
 
   body {
@@ -50,8 +63,8 @@ export const GlobalStyle = createGlobalStyle`
     font-family: inherit;
   }
   
-  /* Hide cursor on ALL elements for non-touch devices */
-  @media (hover: hover) and (pointer: fine) {
+  /* Hide the native cursor only where CursorGlow renders (same query string) */
+  @media ${CUSTOM_CURSOR_QUERY} {
     *, *::before, *::after {
       cursor: none !important;
     }

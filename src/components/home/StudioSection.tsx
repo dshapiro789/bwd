@@ -6,6 +6,7 @@ import { motion, useScroll, useTransform } from 'framer-motion';
 import { useRef } from 'react';
 import AnimatedCounter from '../common/AnimatedCounter';
 import GradientText from '../common/GradientText';
+import { useReducedMotionSafe } from '@/lib/useMediaQuery';
 
 const StudioWrapper = styled(Section)`
   background: linear-gradient(
@@ -15,7 +16,7 @@ const StudioWrapper = styled(Section)`
     rgba(16, 32, 24, 0.4) 100%
   );
   padding: ${({ theme }) => theme.spacing.xxxl} 0;
-  overflow: hidden;
+  overflow: clip;
   position: relative;
   min-height: 100vh;
   display: flex;
@@ -103,6 +104,7 @@ const StatLabel = styled.div`
 
 export default function StudioSection() {
   const ref = useRef(null);
+  const reduce = useReducedMotionSafe();
   const { scrollYProgress } = useScroll({
     target: ref,
     offset: ["start end", "end start"]
@@ -115,7 +117,7 @@ export default function StudioSection() {
 
   return (
     <StudioWrapper id="studio" ref={ref}>
-      <BackgroundImage style={{ y }} />
+      <BackgroundImage style={{ y: reduce ? 0 : y }} />
 
       <ContentContainer style={{ opacity, scale }}>
         <PreTitle

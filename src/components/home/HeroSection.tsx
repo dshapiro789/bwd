@@ -5,12 +5,13 @@ import { motion, useScroll, useTransform } from 'framer-motion';
 import { Container } from '../layout/Container';
 import { useRef } from 'react';
 import GradientText from '../common/GradientText';
+import { useReducedMotionSafe } from '@/lib/useMediaQuery';
 
 const HeroWrapper = styled.section`
   height: 100vh;
   width: 100%;
   position: relative;
-  overflow: hidden;
+  overflow: clip;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -106,6 +107,7 @@ const Line = styled.div`
 
 export default function HeroSection() {
   const ref = useRef(null);
+  const reduce = useReducedMotionSafe();
   const { scrollYProgress } = useScroll({
     target: ref,
     offset: ["start start", "end start"]
@@ -116,7 +118,7 @@ export default function HeroSection() {
 
   return (
     <HeroWrapper ref={ref}>
-      <BackgroundImage style={{ y, opacity }} />
+      <BackgroundImage style={{ y: reduce ? 0 : y, opacity: reduce ? 1 : opacity }} />
 
       <Content>
         <PreTitle

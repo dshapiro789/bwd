@@ -17,7 +17,7 @@ const AboutWrapper = styled(Section)`
   );
   padding-top: ${({ theme }) => theme.spacing.xxxl};
   padding-bottom: ${({ theme }) => theme.spacing.xxxl};
-  overflow: hidden;
+  overflow: clip;
 `;
 
 const Header = styled.div`
