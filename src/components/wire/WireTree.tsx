@@ -1,8 +1,16 @@
 'use client';
 
-import { forwardRef, useRef, type CSSProperties } from 'react';
+import { forwardRef, useEffect, useRef, type CSSProperties } from 'react';
 import styled, { keyframes } from 'styled-components';
-import { easeIn, easeOut, motion, useMotionValueEvent, useTransform, type MotionStyle, type MotionValue } from 'framer-motion';
+import {
+  easeIn,
+  easeOut,
+  motion,
+  useMotionValueEvent,
+  useTransform,
+  type MotionStyle,
+  type MotionValue,
+} from 'framer-motion';
 import { EASE_OUT } from '@/lib/motion';
 import { BARK, BRANCHES, CROWN, LIMBS, PADS, POT, ROOTS, SHOOTS, TRUNK, TRUNK_COILS, VIEW, type Box } from './treeArt';
 
@@ -115,8 +123,9 @@ const Bark = styled.path`
   opacity: 0.5;
 `;
 
-/* A moving part of the tree: an HTML box (so transforms stay on the
-   compositor) holding an SVG cropped to the part's own viewBox box. */
+/* A moving part of the tree: an HTML box holding its own small SVG,
+   cropped to the part's box, so a transform moves it as one piece and the
+   static tree's paths are never touched. */
 const Layer = styled(motion.div)`
   position: absolute;
 
@@ -181,7 +190,7 @@ const TickMark = styled(motion.span)`
 /* Specimen tag: steps through Pruned, Wired, Shaped as the story plays */
 const Tag = styled.p`
   position: absolute;
-  top: calc(${(704 / VH) * 100}%);
+  top: ${(704 / VH) * 100}%;
   right: ${((VW - 468) / VW) * 100}%;
   display: flex;
   align-items: center;
@@ -273,11 +282,11 @@ function Shoot({ index, progress }: { index: number; progress: MotionValue<numbe
   // Snip, then it tumbles: drops 60px (gravity), drifts a little away from
   // the trunk, turns 18 degrees and is gone before it crosses much foliage
   const fall = [start + 0.008, start + 0.052];
-  const fade = [start + 0.014, start + 0.046];
+  const gone = [start + 0.014, start + 0.046];
   const y = useTransform(progress, fall, [0, 60], { ease: easeIn });
   const x = useTransform(progress, fall, [0, 12 * shoot.swing], { ease: easeOut });
   const rotate = useTransform(progress, fall, [0, 18 * shoot.swing]);
-  const opacity = useTransform(progress, fade, [1, 0]);
+  const opacity = useTransform(progress, gone, [1, 0]);
   const tick = useTransform(progress, [start, start + 0.006, start + 0.02, start + 0.034], [0, 1, 1, 0]);
   const tickScale = useTransform(progress, [start, start + 0.006], [0.3, 1]);
   const [x0, y0, w, h] = shoot.box;
@@ -339,7 +348,6 @@ function Limb({ index, progress }: { index: number; progress: MotionValue<number
 interface WireTreeProps {
   /** Story progress, 0 (rest) to 1 (shaped). */
   progress: MotionValue<number>;
-  className?: string;
 }
 
 /**
@@ -348,17 +356,20 @@ interface WireTreeProps {
  * progress prunes the stray shoots, wires the trunk and two limbs, and sets
  * those limbs. Under reduced motion the shaped tree is shown, static.
  */
-const WireTree = forwardRef<HTMLDivElement, WireTreeProps>(function WireTree({ progress, className }, ref) {
+const WireTree = forwardRef<HTMLDivElement, WireTreeProps>(function WireTree({ progress }, ref) {
   const tagRef = useRef<HTMLParagraphElement>(null);
   const trunkWire = useTransform(progress, [...BEATS.trunkWire], [0, 1]);
 
-  useMotionValueEvent(progress, 'change', (p) => {
-    const step = p >= BEATS.shaped ? 3 : p >= BEATS.trunkWire[0] ? 2 : p >= BEATS.prune ? 1 : 0;
-    if (tagRef.current && tagRef.current.dataset.step !== String(step)) tagRef.current.dataset.step = String(step);
-  });
+  // The tag's step is set on the element directly: no React render per frame
+  const showStep = (p: number) => {
+    const step = String(p >= BEATS.shaped ? 3 : p >= BEATS.trunkWire[0] ? 2 : p >= BEATS.prune ? 1 : 0);
+    if (tagRef.current && tagRef.current.dataset.step !== step) tagRef.current.dataset.step = step;
+  };
+  useMotionValueEvent(progress, 'change', showStep);
+  useEffect(() => showStep(progress.get()));
 
   return (
-    <Figure ref={ref} className={className} role="img" aria-label="Line drawing of a juniper bonsai in a shallow pot">
+    <Figure ref={ref} role="img" aria-label="Line drawing of a juniper bonsai in a shallow pot">
       <Full viewBox={`0 0 ${VW} ${VH}`} aria-hidden="true">
         <path d={POT} />
         <path d={ROOTS} pathLength={1} data-draw="" style={timing(0.05, 0.45)} />
