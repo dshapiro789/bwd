@@ -337,7 +337,7 @@ const pricingOptions: PricingOption[] = [
   {
     id: 1,
     title: 'Hourly Project & Maintenance Rate',
-    price: '$45',
+    price: '$120',
     description: '',
     icon: <FaTools />,
     features: [
@@ -353,7 +353,7 @@ const pricingOptions: PricingOption[] = [
   {
     id: 2,
     title: 'Custom Website',
-    price: '$500-$1k',
+    price: '$1,500',
     pricePrefix: 'Starting at',
     description: 'Per Page',
     icon: <FaLaptopCode />,
