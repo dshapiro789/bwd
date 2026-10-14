@@ -353,7 +353,7 @@ const pricingOptions: PricingOption[] = [
   {
     id: 2,
     title: 'Custom Website',
-    price: '$1,500',
+    price: '$1500',
     pricePrefix: 'Starting at',
     description: 'Per Page',
     icon: <FaLaptopCode />,
