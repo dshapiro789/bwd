@@ -54,6 +54,8 @@ const Logo = styled(Link)`
   color: ${({ theme }) => theme.colors.text};
   text-transform: uppercase;
   position: relative;
+  /* Override GlobalStyle's a { transition: all } so the focus ring appears at once */
+  transition: none;
   ${focusRing}
 `;
 

@@ -157,6 +157,8 @@ const PrimaryCta = styled.a`
   letter-spacing: 0.15em;
   text-transform: uppercase;
   border-radius: 0;
+  /* Override GlobalStyle's a { transition: all }; only the halo below fades */
+  transition: none;
 
   @media (max-width: 767px) {
     padding: 0 ${({ theme }) => theme.spacing.lg};
