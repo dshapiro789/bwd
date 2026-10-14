@@ -17,7 +17,9 @@ const FooterContent = styled.div`
   gap: ${({ theme }) => theme.spacing.xl};
 
   @media (min-width: ${({ theme }) => theme.breakpoints.tablet}) {
-    grid-template-columns: repeat(4, 1fr);
+    /* minmax(0, 1fr): a plain 1fr track will not shrink below its content, so the
+       unwrappable payment-icon row pushed the page wider than 768–786px viewports */
+    grid-template-columns: repeat(4, minmax(0, 1fr));
   }
 `;
 
@@ -63,6 +65,7 @@ const FooterLink = styled.a`
 
 const PaymentIcons = styled.div`
   display: flex;
+  flex-wrap: wrap;
   gap: ${({ theme }) => theme.spacing.md};
   margin-top: ${({ theme }) => theme.spacing.sm};
   font-size: 1.8rem; // Increased base size
