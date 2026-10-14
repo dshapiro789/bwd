@@ -34,8 +34,8 @@ const TailSvg = styled.svg`
 `;
 
 const Wire = styled.path`
-  stroke-dasharray: 1;
-  stroke-dashoffset: calc(1 - var(--t, 0));
+  stroke-dasharray: 1 2;
+  stroke-dashoffset: calc(1.01 * (1 - var(--t, 0)));
 `;
 
 type Pt = [number, number];

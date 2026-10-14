@@ -35,8 +35,9 @@ const SPROUTS = [
   },
 ] as const;
 
+/* 1.01 and a long gap keep the undrawn stroke fully off (no round-cap dot) */
 const grow = keyframes`
-  from { stroke-dashoffset: 1; }
+  from { stroke-dashoffset: 1.01; }
   to { stroke-dashoffset: 0; }
 `;
 
@@ -83,7 +84,7 @@ const Svg = styled.svg`
   @supports (animation-timeline: view()) {
     @media (prefers-reduced-motion: no-preference) {
       .stem {
-        stroke-dasharray: 1;
+        stroke-dasharray: 1 2;
         animation: ${grow} linear both;
         animation-timeline: --sprout;
         animation-range: entry 20% cover 42%;
@@ -125,16 +126,20 @@ export default function WireRule({ variant = 0 }: { variant?: number }) {
             <motion.path
               className="stem"
               d={sprout.main}
-              initial={{ pathLength: 0 }}
-              whileInView={{ pathLength: 1 }}
+              pathLength={1}
+              strokeDasharray="1 2"
+              initial={{ strokeDashoffset: 1.01 }}
+              whileInView={{ strokeDashoffset: 0 }}
               viewport={{ once: true, margin: '0px 0px -20% 0px' }}
               transition={{ duration: 1.1, ease: [0.65, 0, 0.35, 1] }}
             />
             <motion.path
               className="stem"
               d={sprout.twig}
-              initial={{ pathLength: 0 }}
-              whileInView={{ pathLength: 1 }}
+              pathLength={1}
+              strokeDasharray="1 2"
+              initial={{ strokeDashoffset: 1.01 }}
+              whileInView={{ strokeDashoffset: 0 }}
               viewport={{ once: true, margin: '0px 0px -20% 0px' }}
               transition={{ duration: 0.5, delay: 0.7, ease: [0.65, 0, 0.35, 1] }}
             />

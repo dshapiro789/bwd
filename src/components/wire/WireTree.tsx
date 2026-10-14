@@ -40,8 +40,10 @@ const cssVars = (style: Record<string, unknown>) => style as MotionStyle;
 const timing = (delay: number, duration?: number) =>
   ({ '--d': `${delay}s`, ...(duration ? { '--t': `${duration}s` } : {}) }) as CSSProperties;
 
+/* Undrawn strokes sit just before the path start (1.01) with a long gap
+   after the dash: at exactly 1, round caps paint a dot at the start. */
 const draw = keyframes`
-  from { stroke-dashoffset: 1; }
+  from { stroke-dashoffset: 1.01; }
   to { stroke-dashoffset: 0; }
 `;
 
@@ -80,7 +82,7 @@ const Figure = styled.div`
 
   @media (prefers-reduced-motion: no-preference) {
     [data-draw] {
-      stroke-dasharray: 1;
+      stroke-dasharray: 1 2;
       animation: ${draw} var(--t, 0.6s) var(--e, cubic-bezier(0.33, 0, 0.2, 1)) var(--d, 0s) both;
     }
 
@@ -129,8 +131,8 @@ const Layer = styled(motion.div)`
    One coil is mid-draw at a time. */
 const Coil = styled.path`
   stroke-width: calc(1.6px / var(--s));
-  stroke-dasharray: 1;
-  stroke-dashoffset: clamp(0, calc(var(--i) + 1 - var(--n) * var(--w, 0)), 1);
+  stroke-dasharray: 1 2;
+  stroke-dashoffset: calc(1.01 * clamp(0, var(--i) + 1 - var(--n) * var(--w, 0), 1));
 `;
 
 const LimbLayer = styled(Layer)`
