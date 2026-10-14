@@ -7,6 +7,7 @@ import { Section, Container } from '../layout/Container';
 import GradientText from '../common/GradientText';
 import { FiArrowUpRight } from 'react-icons/fi';
 import { featured, projects } from '@/data/work';
+import { useReducedMotionSafe } from '@/lib/useMediaQuery';
 
 const displayDomain = (url: string) => new URL(url).hostname.replace(/^www\./, '');
 const pad = (n: number) => String(n).padStart(2, '0');
@@ -277,6 +278,11 @@ const BranchLink = styled(motion.a)`
     color: ${({ theme }) => theme.colors.primary};
   }
 
+  &:focus-visible {
+    outline: 1px solid ${({ theme }) => theme.colors.primary};
+    outline-offset: 3px;
+  }
+
   @media (max-width: 768px) {
     gap: ${({ theme }) => theme.spacing.md};
     padding: 16px 0;
@@ -435,6 +441,11 @@ const Row = styled(motion.a)<{ $dimmed: boolean }>`
     transform: translate(3px, -3px);
   }
 
+  &:focus-visible {
+    outline: 1px solid ${({ theme }) => theme.colors.primary};
+    outline-offset: -1px;
+  }
+
   /* Dim the children, not the row: the reveal animation owns the row's opacity */
   > * {
     position: relative;
@@ -556,12 +567,16 @@ export default function PortfolioSection() {
   const [canHover, setCanHover] = useState(false);
   const listRef = useRef<HTMLDivElement>(null);
 
-  // Plate follows the pointer with a soft spring
+  // Plate follows the pointer with a soft spring; under reduced motion it
+  // tracks the pointer directly, with no trailing inertia
+  const reduce = useReducedMotionSafe();
   const plateX = useMotionValue(0);
   const plateY = useMotionValue(0);
   const springConfig = { damping: 28, stiffness: 220, mass: 0.6 };
-  const x = useSpring(plateX, springConfig);
-  const y = useSpring(plateY, springConfig);
+  const springX = useSpring(plateX, springConfig);
+  const springY = useSpring(plateY, springConfig);
+  const x = reduce ? plateX : springX;
+  const y = reduce ? plateY : springY;
 
   useEffect(() => {
     const query = window.matchMedia('(hover: hover) and (pointer: fine)');

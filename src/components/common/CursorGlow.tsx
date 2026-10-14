@@ -44,7 +44,8 @@ export default function CursorGlow() {
   const springConfig = { damping: 25, stiffness: 200, mass: 0.5 };
   const cursorXSpring = useSpring(cursorX, springConfig);
   const cursorYSpring = useSpring(cursorY, springConfig);
-  const scaleSpring = useSpring(scale, { damping: 20, stiffness: 300 });
+  // Critically damped (damping >= 2 * sqrt(stiffness * mass) = 34.6) so the ring settles without a bounce
+  const scaleSpring = useSpring(scale, { damping: 35, stiffness: 300 });
 
   const innerSpringConfig = { damping: 30, stiffness: 400, mass: 0.1 };
   const innerX = useSpring(cursorX, innerSpringConfig);

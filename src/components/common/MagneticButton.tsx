@@ -3,6 +3,7 @@
 import { motion, useMotionValue, useSpring } from 'framer-motion';
 import { useRef, MouseEvent, ReactNode } from 'react';
 import styled from 'styled-components';
+import { useReducedMotionSafe } from '@/lib/useMediaQuery';
 
 interface MagneticButtonProps {
     children: ReactNode;
@@ -33,6 +34,7 @@ export default function MagneticButton({
     disabled = false,
 }: MagneticButtonProps) {
     const ref = useRef<HTMLButtonElement>(null);
+    const reduce = useReducedMotionSafe();
 
     const x = useMotionValue(0);
     const y = useMotionValue(0);
@@ -42,7 +44,8 @@ export default function MagneticButton({
     const springY = useSpring(y, springConfig);
 
     const handleMouseMove = (e: MouseEvent<HTMLButtonElement>) => {
-        if (!ref.current || disabled) return;
+        // No pull toward the pointer for readers who prefer reduced motion
+        if (!ref.current || disabled || reduce) return;
 
         const rect = ref.current.getBoundingClientRect();
         const centerX = rect.left + rect.width / 2;
