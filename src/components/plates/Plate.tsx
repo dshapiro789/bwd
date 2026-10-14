@@ -36,6 +36,8 @@ export const captionText = css`
   line-height: 1.6;
   letter-spacing: 0.04em;
   color: ${({ theme }) => theme.colors.textSecondary};
+  /* No one-word last lines where the browser supports it */
+  text-wrap: pretty;
 `;
 
 export const PlateCaption = styled.figcaption`

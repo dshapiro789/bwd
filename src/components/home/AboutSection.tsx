@@ -1,17 +1,51 @@
 'use client';
 
-import styled from 'styled-components';
-import { Section, Container } from '../layout/Container';
-import { motion } from 'framer-motion';
+import { useRef, useSyncExternalStore, type ReactNode } from 'react';
 import Image from 'next/image';
+import styled, { keyframes } from 'styled-components';
+import {
+  motion,
+  useScroll,
+  useTransform,
+  type MotionStyle,
+  type MotionValue,
+} from 'framer-motion';
+import { Section, Container } from '../layout/Container';
 import GradientText from '../common/GradientText';
-import AnimatedCounter from '../common/AnimatedCounter';
+import { useMediaQuery, useReducedMotionSafe } from '@/lib/useMediaQuery';
 import { DUR, EASE_OUT, RISE } from '@/lib/motion';
+import { CaptionDot, PlateFrame, PlateNo, captionText } from '../plates/Plate';
+import { SPLIT_QUERY } from '../plates/queries';
 
-// Headshots render at up to 350px: full container width on small phones, and
-// the 1fr column of a 1fr / 1.5fr grid (128px gap) between 768px and ~1046px.
-const HEADSHOT_SIZES =
-  '(min-width: 1047px) 350px, (min-width: 768px) calc(40vw - 70px), (min-width: 382px) 350px, calc(100vw - 32px)';
+/*
+ * About as "Plate II": a diptych of the two of them, matched 4:5 crops with
+ * square corners and a bone hairline, captioned like art-book plates.
+ *
+ * Exposure & Drift (two columns, motion welcome): as the section scrolls
+ * through, a background-coloured overlay on each portrait lifts from 0.7 to
+ * 0, so the key light seems to come up as they step into frame; the two
+ * columns drift at different rates (David 4vh to -4vh, Jenna 10vh to -6vh)
+ * so Jenna's offset closes as you pass; each caption rises 8px and fades in
+ * as it enters. Phones: stacked, the overlay only (a CSS view timeline per
+ * portrait), no drift. Reduced motion: no overlay, no drift, captions shown.
+ */
+
+/*
+ * Rendered widths. David: columns 2-6 (5 of 12) from 1024px, 1-6 on tablets,
+ * 88% of the column on phones; his 824x1024 source is already 4:5. Jenna:
+ * columns 8-11 from 1024px, 8-12 on tablets, 88% on phones; her square
+ * source is cropped by height, so it draws 1.25x the frame's width.
+ */
+const DAVID_SIZES = '(min-width: 1024px) 40vw, (min-width: 768px) 48vw, 82vw';
+const JENNA_SIZES = '(min-width: 1024px) 40vw, (min-width: 768px) 50vw, 102vw';
+
+const noopSubscribe = () => () => {};
+const useHydrated = () =>
+  useSyncExternalStore(
+    noopSubscribe,
+    () => true,
+    () => false
+  );
 
 const AboutWrapper = styled(Section)`
   background: linear-gradient(
@@ -28,377 +62,291 @@ const AboutWrapper = styled(Section)`
 const Header = styled.div`
   text-align: center;
   margin-bottom: ${({ theme }) => theme.spacing.xxl};
+
+  @media ${SPLIT_QUERY} {
+    margin-bottom: 96px;
+  }
 `;
 
 const Title = styled(motion.h2)`
   font-family: ${({ theme }) => theme.fonts.heading};
   font-size: 3.5rem;
-  font-weight: 300;
+  font-weight: 400;
   color: ${({ theme }) => theme.colors.primary};
-  margin-bottom: ${({ theme }) => theme.spacing.xl};
+  margin-bottom: 0;
   letter-spacing: 0.05em;
-  text-shadow: 0 2px 12px rgba(200, 159, 129, 0.2);
-  
+
   @media (max-width: 768px) {
     font-size: 2.5rem;
   }
 `;
 
-const TeamContainer = styled(motion.div)`
-  display: flex;
-  flex-direction: column;
-  gap: ${({ theme }) => theme.spacing.xl};
-  max-width: 1200px;
-  margin: 0 auto;
-`;
+/* ---------- Diptych ---------- */
 
-const MemberSection = styled(motion.div) <{ $reverse?: boolean }>`
+const Diptych = styled.div`
   display: grid;
-  grid-template-columns: 1fr;
-  gap: ${({ theme }) => theme.spacing.xxl};
-  align-items: center;
+  grid-template-columns: minmax(0, 1fr);
+  row-gap: 96px;
 
-  @media (min-width: ${({ theme }) => theme.breakpoints.tablet}) {
-    grid-template-columns: ${({ $reverse }) => $reverse ? '1.5fr 1fr' : '1fr 1.5fr'};
-    gap: ${({ theme }) => theme.spacing.xxxl};
+  @media ${SPLIT_QUERY} {
+    grid-template-columns: repeat(12, minmax(0, 1fr));
+    column-gap: ${({ theme }) => theme.spacing.lg};
+    align-items: start;
   }
 `;
 
-const PhotoContainer = styled.div<{ $order?: number }>`
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: ${({ theme }) => theme.spacing.md};
-  
-  @media (min-width: ${({ theme }) => theme.breakpoints.tablet}) {
-    order: ${({ $order }) => $order || 0};
+const Column = styled(motion.div)<{ $side: 'a' | 'b' }>`
+  min-width: 0;
+
+  /* Phones: a gentle stagger, David to the left and Jenna to the right */
+  @media (max-width: 767px) {
+    width: 88%;
+    justify-self: ${({ $side }) => ($side === 'a' ? 'start' : 'end')};
+  }
+
+  @media ${SPLIT_QUERY} {
+    grid-column: ${({ $side }) => ($side === 'a' ? '1 / 7' : '8 / 13')};
+    /* Jenna hangs lower; the drift closes part of the gap as you pass */
+    margin-top: ${({ $side }) => ($side === 'a' ? '0' : '12vh')};
+  }
+
+  @media (min-width: ${({ theme }) => theme.breakpoints.desktop}) {
+    grid-column: ${({ $side }) => ($side === 'a' ? '2 / 7' : '8 / 12')};
+  }
+
+  @media ${SPLIT_QUERY} and (prefers-reduced-motion: no-preference) {
+    will-change: transform;
   }
 `;
 
-const PhotoFrame = styled(motion.div)`
-  position: relative;
-  width: 100%;
-  max-width: 350px;
-  margin: 0 auto;
-  aspect-ratio: 1;
-  border-radius: 20px;
-  overflow: hidden;
-  background: rgba(20, 30, 25, 0.6);
-  backdrop-filter: blur(12px);
-  border: 2px solid rgba(200, 159, 129, 0.2);
-  box-shadow: 
-    0 20px 40px rgba(0, 0, 0, 0.3),
-    0 0 30px rgba(200, 159, 129, 0.1);
-  
-  &::before {
-    content: '';
-    position: absolute;
-    inset: 0;
-    border-radius: 20px;
-    padding: 2px;
-    background: linear-gradient(
-      135deg,
-      rgba(200, 159, 129, 0.5),
-      transparent 50%,
-      rgba(200, 159, 129, 0.5)
-    );
-    -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
-    -webkit-mask-composite: xor;
-    mask-composite: exclude;
-    opacity: 0.6;
-  }
+const Figure = styled.figure`
+  margin: 0;
+`;
 
+const Portrait = styled(PlateFrame)`
   img {
-    width: 100%;
-    height: 100%;
     object-fit: cover;
-    object-position: top;
+    object-position: 50% 15%;
   }
 `;
 
-const NameLabel = styled(motion.div)`
-  font-family: ${({ theme }) => theme.fonts.heading};
-  font-size: 1.8rem;
-  font-weight: 300;
-  text-align: center;
-  letter-spacing: 0.15em;
-  text-transform: uppercase;
-  background: linear-gradient(
-    135deg,
-    ${({ theme }) => theme.colors.primary},
-    ${({ theme }) => theme.colors.accent}
+/*
+ * One shared grade for both plates: a soft falloff into the page colour at
+ * the edges. David's seamless is already black; on Jenna's brighter bokeh it
+ * brings the corners down so the pair reads as one low-key light.
+ */
+const Grade = styled.div`
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: radial-gradient(
+    ellipse 80% 72% at 50% 40%,
+    transparent 52%,
+    ${({ theme }) => `color-mix(in srgb, ${theme.colors.background} 62%, transparent)`} 100%
   );
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-  position: relative;
-  
-  &::after {
-    content: '';
-    position: absolute;
-    bottom: -8px;
-    left: 50%;
-    transform: translateX(-50%);
-    width: 60px;
-    height: 1px;
-    background: linear-gradient(
-      90deg,
-      transparent,
-      ${({ theme }) => theme.colors.primary},
-      transparent
-    );
-  }
+`;
 
-  @media (max-width: 768px) {
-    font-size: 1.4rem;
-    letter-spacing: 0.1em;
+const keyLight = keyframes`
+  from { opacity: 0.7; }
+  to { opacity: 0; }
+`;
+
+/** The key light coming up: a background-coloured veil that lifts. */
+const Veil = styled(motion.div)`
+  position: absolute;
+  inset: 0;
+  background-color: ${({ theme }) => theme.colors.background};
+  opacity: 0;
+  pointer-events: none;
+
+  /* Phones: each portrait lifts its own veil as it enters (no JS) */
+  @media (max-width: 767px) and (prefers-reduced-motion: no-preference) {
+    @supports (animation-timeline: view()) {
+      animation: ${keyLight} linear both;
+      animation-timeline: view();
+      animation-range: entry 0% cover 40%;
+    }
   }
 `;
 
-const RoleLabel = styled(motion.div)`
+const Caption = styled(motion.figcaption)`
+  ${captionText}
+  margin: ${({ theme }) => theme.spacing.md} 0 0;
+`;
+
+const Bio = styled.div`
+  margin-top: ${({ theme }) => theme.spacing.xl};
+  max-width: 32rem;
+`;
+
+const BioText = styled.p`
   font-family: ${({ theme }) => theme.fonts.main};
-  font-size: 1rem;
+  font-size: 1.0625rem;
   font-weight: 400;
-  text-align: center;
-  letter-spacing: 0.2em;
-  text-transform: uppercase;
+  line-height: 1.75;
   color: ${({ theme }) => theme.colors.textSecondary};
-  opacity: 0.7;
-
-  @media (max-width: 768px) {
-    font-size: 0.9rem;
-  }
+  margin: 0;
 `;
 
-const BioContent = styled(motion.div)`
+const Credential = styled.p`
   display: flex;
-  flex-direction: column;
-  gap: ${({ theme }) => theme.spacing.lg};
+  align-items: baseline;
+  gap: ${({ theme }) => theme.spacing.md};
+  margin: ${({ theme }) => theme.spacing.lg} 0 0;
+  padding-top: ${({ theme }) => theme.spacing.md};
+  border-top: 1px solid rgba(200, 159, 129, 0.15);
 `;
 
-const IntroText = styled.p`
+const CredentialMark = styled.span`
   font-family: ${({ theme }) => theme.fonts.heading};
-  font-size: 1.3rem;
-  line-height: 1.9;
-  color: ${({ theme }) => theme.colors.text};
-  font-weight: 300;
-  letter-spacing: 0.02em;
-  background: rgba(20, 30, 25, 0.3);
-  padding: ${({ theme }) => theme.spacing.lg};
-  border-radius: 12px;
-  border: 1px solid rgba(200, 159, 129, 0.1);
-  backdrop-filter: blur(8px);
-  position: relative;
-  
-  &::before {
-    content: '';
-    position: absolute;
-    left: 0;
-    top: 0;
-    bottom: 0;
-    width: 3px;
-    background: linear-gradient(
-      180deg,
-      ${({ theme }) => theme.colors.primary},
-      ${({ theme }) => theme.colors.accent}
-    );
-    border-radius: 12px 0 0 12px;
-  }
-
-  @media (max-width: 768px) {
-    font-size: 1.15rem;
-    line-height: 1.8;
-    padding: ${({ theme }) => theme.spacing.md};
-  }
-`;
-
-const PhilosophyText = styled.p`
-  font-size: 1.15rem;
-  line-height: 1.7;
-  color: ${({ theme }) => theme.colors.textSecondary};
-  font-weight: 300;
-  font-style: italic;
-  padding-left: ${({ theme }) => theme.spacing.md};
-  border-left: 2px solid ${({ theme }) => theme.colors.primary};
-`;
-
-const StatsGrid = styled.div`
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: ${({ theme }) => theme.spacing.lg};
-  margin-top: ${({ theme }) => theme.spacing.lg};
-`;
-
-const StatCard = styled(motion.div)`
-  background: rgba(20, 30, 25, 0.4);
-  padding: ${({ theme }) => theme.spacing.lg};
-  border-radius: 12px;
-  border: 1px solid rgba(200, 159, 129, 0.1);
-  backdrop-filter: blur(8px);
-  text-align: center;
-  transition: all 0.3s ease;
-
-  &:hover {
-    background: rgba(25, 35, 30, 0.6);
-    border-color: rgba(200, 159, 129, 0.3);
-    transform: translateY(-2px);
-  }
-`;
-
-const StatNumber = styled.div`
-  font-family: ${({ theme }) => theme.fonts.heading};
-  font-size: 2.5rem;
-  font-weight: 300;
+  font-size: 1.5rem;
+  font-weight: 400;
+  line-height: 1;
   color: ${({ theme }) => theme.colors.primary};
-  margin-bottom: ${({ theme }) => theme.spacing.xs};
 `;
 
-const StatLabel = styled.div`
-  font-size: 0.9rem;
-  color: ${({ theme }) => theme.colors.textSecondary};
+const CredentialLabel = styled.span`
+  font-family: ${({ theme }) => theme.fonts.main};
+  font-size: 0.75rem;
+  letter-spacing: 0.14em;
+  line-height: 1.5;
   text-transform: uppercase;
-  letter-spacing: 0.05em;
+  color: ${({ theme }) => theme.colors.textSecondary};
 `;
 
-const Divider = styled.div`
-  width: 100%;
-  height: 1px;
-  background: linear-gradient(
-    90deg,
-    transparent,
-    rgba(200, 159, 129, 0.3),
-    transparent
+interface PlateProps {
+  captionRef: React.RefObject<HTMLElement | null>;
+  no: string;
+  name: string;
+  role: string;
+  src: string;
+  sizes: string;
+  veil?: MotionStyle;
+  caption?: MotionStyle;
+}
+
+function PortraitPlate({ captionRef, no, name, role, src, sizes, veil, caption }: PlateProps) {
+  return (
+    <Figure>
+      <Portrait>
+        <Image src={src} alt={`${name}, ${role}`} fill sizes={sizes} />
+        <Grade />
+        <Veil style={veil} />
+      </Portrait>
+      <Caption ref={captionRef} style={caption}>
+        <PlateNo>{no}</PlateNo> <CaptionDot>·</CaptionDot> {name}, {role}
+      </Caption>
+    </Figure>
   );
-  margin: 0 auto;
-`;
+}
+
+/** Each caption rises 8px and fades in as it comes into view. */
+function useCaptionReveal(target: React.RefObject<HTMLElement | null>) {
+  const { scrollYProgress } = useScroll({ target, offset: ['start 0.98', 'start 0.82'] });
+  const opacity = useTransform(scrollYProgress, [0, 1], [0, 1]);
+  const y = useTransform(scrollYProgress, [0, 1], [RISE.word, 0]);
+  return { opacity, y };
+}
+
+function Member({
+  side,
+  drift,
+  children,
+}: {
+  side: 'a' | 'b';
+  drift?: MotionValue<string> | 0;
+  children: ReactNode;
+}) {
+  return (
+    <Column $side={side} style={drift === undefined ? undefined : { y: drift }}>
+      {children}
+    </Column>
+  );
+}
 
 export default function AboutSection() {
+  const sectionRef = useRef<HTMLElement>(null);
+  const davidCaptionRef = useRef<HTMLElement>(null);
+  const jennaCaptionRef = useRef<HTMLElement>(null);
+
+  const hydrated = useHydrated();
+  const split = useMediaQuery(SPLIT_QUERY);
+  const reduce = useReducedMotionSafe();
+  // Exposure & Drift runs in two columns with motion; phones get the CSS veil only
+  const drifting = hydrated && split && !reduce;
+
+  const { scrollYProgress: p } = useScroll({ target: sectionRef, offset: ['start end', 'end start'] });
+  const veilOpacity = useTransform(p, [0, 0.35], [0.7, 0]);
+  const davidY = useTransform(p, [0, 1], ['4vh', '-4vh']);
+  const jennaY = useTransform(p, [0, 1], ['10vh', '-6vh']);
+
+  const davidCaption = useCaptionReveal(davidCaptionRef);
+  const jennaCaption = useCaptionReveal(jennaCaptionRef);
+
+  // Once hydrated, every element always gets the same keys (live or resting)
+  const veil: MotionStyle | undefined = hydrated ? { opacity: drifting ? veilOpacity : 0 } : undefined;
+  const captionStyle = (c: { opacity: MotionValue<number>; y: MotionValue<number> }): MotionStyle | undefined =>
+    hydrated ? { opacity: drifting ? c.opacity : 1, y: drifting ? c.y : 0 } : undefined;
+
   return (
-    <AboutWrapper id="about">
+    <AboutWrapper id="about" ref={sectionRef}>
       <Container>
         <Header>
           <Title
-            initial={{ opacity: 0, y: 30 }}
+            initial={{ opacity: 0, y: RISE.item }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
-            transition={{ duration: 0.8, ease: "easeOut" }}
+            transition={{ duration: DUR.reveal, ease: EASE_OUT }}
           >
             <GradientText>Meet The Team</GradientText>
           </Title>
         </Header>
 
-        {/* Taller than the viewport, so reveal on a margin rather than viewport.amount */}
-        <TeamContainer
-          initial={{ opacity: 0, y: RISE.item }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true, margin: '0px 0px -15% 0px' }}
-          transition={{ duration: DUR.reveal, ease: EASE_OUT }}
-        >
-          {/* David Shapiro - Image Left, Bio Right */}
-          <MemberSection>
-            <PhotoContainer>
-              <PhotoFrame
-                initial={{ opacity: 0, scale: 0.9 }}
-                whileInView={{ opacity: 1, scale: 1 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.8, delay: 0.2 }}
-              >
-                <Image
-                  src="/images/headshot.png"
-                  alt="David Aaron Shapiro - Bonsai Web Designer"
-                  width={350}
-                  height={350}
-                  sizes={HEADSHOT_SIZES}
-                />
-              </PhotoFrame>
-              <NameLabel
-                initial={{ opacity: 0, y: 10 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.8, delay: 0.4 }}
-              >
-                David Aaron Shapiro
-              </NameLabel>
-              <RoleLabel
-                initial={{ opacity: 0 }}
-                whileInView={{ opacity: 0.7 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.8, delay: 0.5 }}
-              >
-                Bonsai Web Designer
-              </RoleLabel>
-            </PhotoContainer>
+        <Diptych>
+          <Member side="a" drift={hydrated ? (drifting ? davidY : 0) : undefined}>
+            <PortraitPlate
+              captionRef={davidCaptionRef}
+              no="Pl. II a"
+              name="David Aaron Shapiro"
+              role="Bonsai Web Designer"
+              src="/images/headshot.png"
+              sizes={DAVID_SIZES}
+              veil={veil}
+              caption={captionStyle(davidCaption)}
+            />
+            <Bio>
+              <BioText>
+                With years of experience building for the web and a Software Engineering degree from
+                Western Governors University, David has dedicated his career to transforming ideas
+                into refined digital realities.
+              </BioText>
+              <Credential>
+                <CredentialMark>WGU</CredentialMark>
+                <CredentialLabel>Bachelor of Science in Software Engineering</CredentialLabel>
+              </Credential>
+            </Bio>
+          </Member>
 
-            <BioContent
-              initial={{ opacity: 0, x: 50 }}
-              whileInView={{ opacity: 1, x: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.8, delay: 0.3 }}
-            >
-              <IntroText>
-                With years of experience building for the web and a Software Engineering degree from Western Governors University, David has dedicated his career to transforming ideas into refined digital realities.
-              </IntroText>
-
-              <StatCard
-                whileHover={{ scale: 1.05 }}
-                transition={{ duration: 0.2 }}
-                style={{ maxWidth: '400px', margin: '0 auto', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '16px' }}
-              >
-                <StatNumber style={{ marginBottom: 0 }}>WGU</StatNumber>
-                <StatLabel>Bachelor of Science in Software Engineering</StatLabel>
-              </StatCard>
-            </BioContent>
-          </MemberSection>
-
-          <Divider />
-
-          {/* Jenna Shapiro - Image Left, Bio Right (same as David) */}
-          <MemberSection>
-            <PhotoContainer>
-              <PhotoFrame
-                initial={{ opacity: 0, scale: 0.9 }}
-                whileInView={{ opacity: 1, scale: 1 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.8, delay: 0.2 }}
-              >
-                <Image
-                  src="/images/jenna-headshot.jpg"
-                  alt="Jenna Shapiro - Creative Director"
-                  width={350}
-                  height={350}
-                  sizes={HEADSHOT_SIZES}
-                />
-              </PhotoFrame>
-              <NameLabel
-                initial={{ opacity: 0, y: 10 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.8, delay: 0.4 }}
-              >
-                Jenna Shapiro
-              </NameLabel>
-              <RoleLabel
-                initial={{ opacity: 0 }}
-                whileInView={{ opacity: 0.7 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.8, delay: 0.5 }}
-              >
-                Creative Director
-              </RoleLabel>
-            </PhotoContainer>
-
-            <BioContent
-              initial={{ opacity: 0, x: 50 }}
-              whileInView={{ opacity: 1, x: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.8, delay: 0.3 }}
-            >
-              <IntroText>
-                With an eye for elegance and a passion for visual storytelling, Jenna brings a refined creative vision to every project. Her expertise in design aesthetics ensures each website captures the essence of your brand.
-              </IntroText>
-            </BioContent>
-          </MemberSection>
-        </TeamContainer>
+          <Member side="b" drift={hydrated ? (drifting ? jennaY : 0) : undefined}>
+            <PortraitPlate
+              captionRef={jennaCaptionRef}
+              no="Pl. II b"
+              name="Jenna Shapiro"
+              role="Creative Director"
+              src="/images/jenna-headshot.jpg"
+              sizes={JENNA_SIZES}
+              veil={veil}
+              caption={captionStyle(jennaCaption)}
+            />
+            <Bio>
+              <BioText>
+                With an eye for elegance and a passion for visual storytelling, Jenna brings a refined
+                creative vision to every project. Her expertise in design aesthetics ensures each
+                website captures the essence of your brand.
+              </BioText>
+            </Bio>
+          </Member>
+        </Diptych>
       </Container>
     </AboutWrapper>
   );
