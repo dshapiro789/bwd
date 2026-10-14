@@ -8,6 +8,11 @@ import GradientText from '../common/GradientText';
 import AnimatedCounter from '../common/AnimatedCounter';
 import { DUR, EASE_OUT, RISE } from '@/lib/motion';
 
+// Headshots render at up to 350px: full container width on small phones, and
+// the 1fr column of a 1fr / 1.5fr grid (128px gap) between 768px and ~1046px.
+const HEADSHOT_SIZES =
+  '(min-width: 1047px) 350px, (min-width: 768px) calc(40vw - 70px), (min-width: 382px) 350px, calc(100vw - 32px)';
+
 const AboutWrapper = styled(Section)`
   background: linear-gradient(
     180deg,
@@ -303,7 +308,7 @@ export default function AboutSection() {
                   alt="David Aaron Shapiro - Bonsai Web Designer"
                   width={350}
                   height={350}
-                  priority
+                  sizes={HEADSHOT_SIZES}
                 />
               </PhotoFrame>
               <NameLabel
@@ -347,7 +352,7 @@ export default function AboutSection() {
 
           <Divider />
 
-          {/* Jennifer Shapiro - Image Left, Bio Right (same as David) */}
+          {/* Jenna Shapiro - Image Left, Bio Right (same as David) */}
           <MemberSection>
             <PhotoContainer>
               <PhotoFrame
@@ -357,11 +362,11 @@ export default function AboutSection() {
                 transition={{ duration: 0.8, delay: 0.2 }}
               >
                 <Image
-                  src="/images/jennifer-headshot.jpg"
+                  src="/images/jenna-headshot.jpg"
                   alt="Jenna Shapiro - Creative Director"
                   width={350}
                   height={350}
-                  priority
+                  sizes={HEADSHOT_SIZES}
                 />
               </PhotoFrame>
               <NameLabel
