@@ -305,6 +305,36 @@ export default function Header() {
     };
   }, [mobileMenuOpen]);
 
+  // Keyboard focus must never sit under the bar. When Tab or Shift+Tab lands on
+  // a control that is technically in view but covered by the header, the
+  // browser does not scroll, so nudge the page until the control clears it.
+  const headerRef = useRef<HTMLElement>(null);
+  useEffect(() => {
+    let frame = 0;
+    const onFocusIn = (e: FocusEvent) => {
+      const target = e.target;
+      if (!(target instanceof HTMLElement) || !target.matches(':focus-visible')) return;
+      cancelAnimationFrame(frame);
+      // Measure after the browser's own focus scroll has run
+      frame = requestAnimationFrame(() => {
+        const header = headerRef.current;
+        if (!header || header.contains(target)) return;
+        const bar = header.getBoundingClientRect();
+        if (bar.bottom <= 0) return; // the bar is slid out of view
+        const box = target.getBoundingClientRect();
+        const gap = 16;
+        if (box.top < bar.bottom + gap && box.bottom > 0) {
+          window.scrollBy({ top: box.top - bar.bottom - gap, behavior: 'instant' });
+        }
+      });
+    };
+    document.addEventListener('focusin', onFocusIn);
+    return () => {
+      document.removeEventListener('focusin', onFocusIn);
+      cancelAnimationFrame(frame);
+    };
+  }, []);
+
   const toggleMobileMenu = () => {
     setMobileMenuOpen(!mobileMenuOpen);
   };
@@ -323,7 +353,7 @@ export default function Header() {
 
   return (
     <>
-      <HeaderWrapper $hidden={hidden} $scrolled={scrolled}>
+      <HeaderWrapper ref={headerRef} $hidden={hidden} $scrolled={scrolled}>
         <Container>
           <Nav>
             <Logo href="/">Bonsai</Logo>

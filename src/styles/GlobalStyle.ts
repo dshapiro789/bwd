@@ -62,7 +62,14 @@ export const GlobalStyle = createGlobalStyle`
     outline: none;
     font-family: inherit;
   }
-  
+
+  /* When the browser scrolls a focused control into view (Tab, Shift+Tab), keep
+     it clear of the fixed header instead of tucking it underneath. Section
+     anchors (#portfolio, #contact) are not matched, so jump targets are unchanged. */
+  a, button, input, select, textarea, [tabindex] {
+    scroll-margin-top: 104px;
+  }
+
   /* Hide the native cursor only where CursorGlow renders (same query string) */
   @media ${CUSTOM_CURSOR_QUERY} {
     *, *::before, *::after {
