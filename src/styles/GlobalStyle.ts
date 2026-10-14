@@ -19,6 +19,8 @@ export const GlobalStyle = createGlobalStyle`
     font-family: ${theme.fonts.main};
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
+    /* Playfair defaults to old-style figures; keep prices and numbers full height */
+    font-variant-numeric: lining-nums;
     overflow-x: hidden;
     line-height: 1.6;
   }
