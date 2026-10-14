@@ -21,6 +21,11 @@ const GradientSpan = styled(motion.span)`
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   display: inline-block;
+  /* background-clip: text only paints inside this box, so extend it past the
+     line box to keep italic overhangs and descenders (g, j, y) from being
+     clipped; the negative margins cancel the padding so layout is unchanged */
+  padding: 0 0.08em 0.2em;
+  margin: 0 -0.08em -0.2em;
 `;
 
 export default function GradientText({ children, className }: GradientTextProps) {
