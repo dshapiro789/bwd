@@ -66,6 +66,23 @@ const FormContainer = styled(Container)`
   z-index: 1;
 `;
 
+/* The old hero tagline, kept as the quiet line that closes the page */
+const EndCard = styled.p`
+  font-family: ${({ theme }) => theme.fonts.heading};
+  font-size: clamp(1.375rem, 2.4vw, 1.75rem);
+  font-style: italic;
+  font-weight: 400;
+  line-height: 1.45;
+  text-align: center;
+  color: ${({ theme }) => theme.colors.textSecondary};
+  margin: 0 auto ${({ theme }) => theme.spacing.xxl};
+  max-width: 34ch;
+
+  @media (min-width: ${({ theme }) => theme.breakpoints.tablet}) {
+    max-width: none;
+  }
+`;
+
 const FormCard = styled.div`
   background: rgba(26, 38, 30, 0.4);
   backdrop-filter: blur(10px);
@@ -400,6 +417,7 @@ export default function ContactWizard() {
     return (
         <WizardWrapper id="contact">
             <FormContainer>
+                <EndCard>Crafting timeless digital legacies. Let&apos;s begin yours.</EndCard>
                 <FormCard>
                     <FormTitle>Start Your Journey</FormTitle>
 
