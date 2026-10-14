@@ -3,6 +3,7 @@
 import styled from 'styled-components';
 import { Section } from '../layout/Container';
 import { motion, useScroll, useTransform } from 'framer-motion';
+import Image from 'next/image';
 import { useRef } from 'react';
 import AnimatedCounter from '../common/AnimatedCounter';
 import GradientText from '../common/GradientText';
@@ -25,15 +26,14 @@ const StudioWrapper = styled(Section)`
   justify-content: center;
 `;
 
+// Holds a lazy next/image (optimized AVIF/WebP at the right width) instead of a
+// CSS background, which loaded the full 800 KB file on first view at every width
 const BackgroundImage = styled(motion.div)`
   position: absolute;
   top: 0;
   left: 0;
   right: 0;
   bottom: 0;
-  background-image: url('/images/studio-background.png');
-  background-size: cover;
-  background-position: center;
   opacity: 0.1;
   z-index: 0;
 `;
@@ -116,7 +116,16 @@ export default function StudioSection() {
 
   return (
     <StudioWrapper id="studio" ref={ref}>
-      <BackgroundImage style={{ y: reduce ? 0 : y }} />
+      <BackgroundImage style={{ y: reduce ? 0 : y }} aria-hidden="true">
+        <Image
+          src="/images/studio-background.png"
+          alt=""
+          fill
+          sizes="100vw"
+          quality={55}
+          style={{ objectFit: 'cover' }}
+        />
+      </BackgroundImage>
 
       <ContentContainer
         initial={{ opacity: 0, y: RISE.item }}
