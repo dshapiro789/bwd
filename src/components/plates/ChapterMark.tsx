@@ -19,9 +19,10 @@ import { PIN_QUERY } from './queries';
 
 const pad = (n: number) => String(n).padStart(2, '0');
 
+/* Numeral and label share a baseline */
 export const MarkRow = styled.div`
   display: flex;
-  align-items: center;
+  align-items: baseline;
   min-width: 0;
 `;
 
@@ -58,6 +59,11 @@ export const MarkLabel = styled(motion.span)`
 const ruleLine = css`
   display: block;
   flex: 1 1 auto;
+  /* On the shared baseline, lifted to the middle of the label's capitals
+     (offset, not transform: the transform carries the draw) */
+  align-self: baseline;
+  position: relative;
+  top: -4px;
   min-width: 48px;
   height: 1px;
   margin-left: ${({ theme }) => theme.spacing.lg};
