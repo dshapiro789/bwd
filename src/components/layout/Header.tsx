@@ -38,6 +38,11 @@ const HeaderWrapper = styled.header<{ $hidden: boolean; $scrolled: boolean }>`
       background-color ${DUR.state}s ${EASE},
       border-color ${DUR.state}s ${EASE};
   }
+
+  /* Never keep the bar off-screen while a keyboard user is focused inside it */
+  &:has(:focus-visible) {
+    transform: none;
+  }
 `;
 
 const Nav = styled.nav`
