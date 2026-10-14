@@ -1,130 +1,94 @@
 'use client';
 
+import { useEffect, useRef, useSyncExternalStore } from 'react';
 import styled, { css, keyframes } from 'styled-components';
-import { motion, useScroll, useTransform } from 'framer-motion';
+import {
+  cubicBezier,
+  motion,
+  useMotionTemplate,
+  useMotionValue,
+  useMotionValueEvent,
+  useScroll,
+  useTransform,
+  type MotionStyle,
+} from 'framer-motion';
 import { Container } from '../layout/Container';
-import { useRef } from 'react';
-import { useReducedMotionSafe } from '@/lib/useMediaQuery';
+import { useMediaQuery, useReducedMotionSafe } from '@/lib/useMediaQuery';
 import { DUR, EASE_OUT, RISE } from '@/lib/motion';
+import {
+  BAND_REST,
+  BAND_START,
+  Cord,
+  CordSlot,
+  HangingCaption,
+  HangingPlate,
+  type PlateStyles,
+} from '../plates/HangingScroll';
+import { MarkLabel, MarkNumeral, MarkRow, MarkRule } from '../plates/ChapterMark';
+import { PIN_QUERY, SPLIT_QUERY } from '../plates/queries';
 
 /*
- * The hero entrance runs on CSS keyframes, not framer initial/animate, so the
- * headline, subtext and CTAs are visible in the server HTML before hydration.
- * The H1 is never delayed; supporting elements follow in 100ms steps.
+ * Hero: "The Hanging Scroll".
+ *
+ * Desktop (PIN_QUERY): a 160svh runway with a sticky 100svh stage. As the
+ * reader scrolls, the light comes up on the bark, then the scroll is taken
+ * down: the plate rolls up onto its rod, the cord lifts it away, the copy
+ * fades (calls to action last), and the running header for the work draws in
+ * where the plate hung. Everywhere else the hero is a plain section with a
+ * light scroll-linked exit on the plate, and under reduced motion it is still.
+ *
+ * Copy is server-rendered and visible; the entrance runs on CSS keyframes.
+ * Scroll values attach only after hydration, so the server HTML carries no
+ * inline transforms and CSS alone sets each layout's resting frame.
  */
+
+type Range = [number, number];
+
+/** Runway choreography, as fractions of the pinned scroll. p = 0 is the resting hero. */
+const RUN: Record<string, Range> = {
+  band: [0.04, 0.42], // the light comes up and settles on the trunk
+  caption: [0.42, 0.5],
+  roll: [0.44, 0.72], // the plate rolls up onto its rod
+  lift: [0.7, 0.84], // the cord draws the rolled scroll up and away
+  head: [0.48, 0.62], // eyebrow, headline, subhead: a short fade, no muddy middle
+  actions: [0.8, 0.92], // calls to action, price, colophon: last to leave
+  rule: [0.78, 0.96], // "01 / 07 · Selected work" draws in where the plate hung
+  label: [0.84, 1],
+};
+
+/** Unpinned layouts: a light exit on the plate over ['start start', 'end start']. */
+const EXIT = {
+  scale: 0.94,
+  rise: '-3vh',
+  fade: [0.15, 0.75] as Range,
+};
+
+/** The band arrives steadily and takes its time to come to rest. */
+const settle = cubicBezier(0.3, 0, 0.15, 1);
+/** Rolling and lifting: an even hand, gentle at both ends. */
+const steady = cubicBezier(0.35, 0, 0.65, 1);
+const draw = cubicBezier(0.65, 0, 0.35, 1);
+
+const noopSubscribe = () => () => {};
+/** False on the server and during hydration, true after: gates client-only styles. */
+const useHydrated = () =>
+  useSyncExternalStore(
+    noopSubscribe,
+    () => true,
+    () => false
+  );
+
+/* ---------- Entrance (CSS, before hydration) ---------- */
+
 const heroIn = keyframes`
   from { opacity: 0; transform: translateY(${RISE.item}px); }
   to { opacity: 1; transform: none; }
-`;
-
-const fadeIn = keyframes`
-  from { opacity: 0; }
 `;
 
 const entrance = (delayMs: number) => css`
   @media (prefers-reduced-motion: no-preference) {
     animation: ${heroIn} ${DUR.hero}s cubic-bezier(${EASE_OUT.join(', ')}) ${delayMs}ms both;
   }
-`;
-
-/*
- * Phones and short windows: the hero grows to fit its CTAs instead of clipping
- * them, and the scroll cue is hidden. From 768px wide the centred content is
- * about 444px tall and the cue 88px tall, 40px from the bottom, so the cue
- * clears the price line by at least 16px from 736px tall.
- */
-const COMPACT = '(max-width: 767px), (max-height: 735px)';
-
-const HeroWrapper = styled.section`
-  height: 100vh;
-  height: 100svh;
-  width: 100%;
-  position: relative;
-  overflow: clip;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background-color: ${({ theme }) => theme.colors.background};
-
-  @media ${COMPACT} {
-    height: auto;
-    min-height: 100vh;
-    min-height: 100svh;
-    padding: 104px 0 ${({ theme }) => theme.spacing.xxl};
-  }
-`;
-
-const BackgroundImage = styled(motion.div)`
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  /* Elegant Multi-layered Gradient */
-  background:
-    /* Subtle vignette with deep green */
-    radial-gradient(ellipse at center, transparent 0%, rgba(16, 32, 24, 0.5) 100%),
-    /* Primary gold accent - top left */
-    radial-gradient(circle at 15% 20%, rgba(200, 159, 129, 0.15) 0%, transparent 40%),
-    /* Secondary emerald accent - bottom right */
-    radial-gradient(circle at 85% 80%, rgba(93, 117, 102, 0.18) 0%, transparent 40%),
-    /* Tertiary gold accent - center right */
-    radial-gradient(circle at 90% 40%, rgba(200, 159, 129, 0.08) 0%, transparent 35%),
-    /* Ambient depth - subtle overall glow */
-    radial-gradient(ellipse at 50% 50%, rgba(93, 117, 102, 0.06) 0%, transparent 60%),
-    /* Base gradient for depth with deep greens */
-    linear-gradient(180deg, rgba(20, 40, 30, 0.6) 0%, transparent 50%, rgba(16, 32, 24, 0.8) 100%);
-  z-index: 1;
-`;
-
-const Content = styled(Container)`
-  position: relative;
-  z-index: 2;
-  text-align: center;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-`;
-
-const PreTitle = styled.span`
-  font-family: ${({ theme }) => theme.fonts.main};
-  font-size: 0.9rem;
-  letter-spacing: 0.2em;
-  text-transform: uppercase;
-  color: ${({ theme }) => theme.colors.gold};
-  margin-bottom: ${({ theme }) => theme.spacing.lg};
-  display: block;
-  ${entrance(0)}
-`;
-
-const Tagline = styled.h1`
-  font-size: 3.5rem;
-  line-height: 1.1;
-  color: ${({ theme }) => theme.colors.text};
-  margin-bottom: ${({ theme }) => theme.spacing.xl};
-  max-width: 900px;
-  font-weight: 400;
-  ${entrance(0)}
-
-  em {
-    font-family: ${({ theme }) => theme.fonts.heading};
-    font-style: italic;
-    color: ${({ theme }) => theme.colors.primary};
-  }
-
-  @media (min-width: ${({ theme }) => theme.breakpoints.tablet}) {
-    font-size: 5rem;
-  }
-`;
-
-const SubText = styled.p`
-  font-size: 1.1rem;
-  color: ${({ theme }) => theme.colors.textSecondary};
-  margin-bottom: ${({ theme }) => theme.spacing.xl};
-  max-width: 500px;
-  line-height: 1.8;
-  font-weight: 300;
-  ${entrance(100)}
 `;
 
 const focusRing = css`
@@ -134,11 +98,201 @@ const focusRing = css`
   }
 `;
 
+/* ---------- Runway and stage ---------- */
+
+const Runway = styled.section`
+  position: relative;
+  background-color: ${({ theme }) => theme.colors.background};
+
+  @media ${PIN_QUERY} {
+    height: 160svh;
+  }
+`;
+
+/*
+ * The stage is a 12-column grid. Rows: the cord's drop, the plate, its
+ * caption, and the floor. The copy spans the first two rows and sits on the
+ * plate's bottom edge, so the headline block and the rod share one line.
+ */
+const Stage = styled(Container)`
+  position: relative;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  grid-template-rows: [top] 128px [plate-top] auto [plate-bottom] auto [caption-bottom] auto [end];
+  padding-bottom: ${({ theme }) => theme.spacing.xxl};
+
+  @media ${SPLIT_QUERY} {
+    min-height: 100vh;
+    min-height: 100svh;
+    padding-bottom: 0;
+    grid-template-columns: repeat(12, minmax(0, 1fr));
+    column-gap: ${({ theme }) => theme.spacing.lg};
+    /* The plate hangs a little below centre, like a picture at eye level */
+    grid-template-rows:
+      [top] minmax(120px, 1.5fr)
+      [plate-top] auto
+      [plate-bottom] auto
+      [caption-bottom] minmax(${({ theme }) => theme.spacing.xl}, 0.5fr)
+      [end];
+  }
+
+  @media ${PIN_QUERY} {
+    position: sticky;
+    top: 0;
+    height: 100vh;
+    height: 100svh;
+    min-height: 0;
+    overflow: clip;
+  }
+`;
+
+/* Columns: stacked on phones; copy 1-6 / plate 7-12 on tablets; copy 1-6 /
+   plate 7-11 from 1024px, with column 12 left empty. */
+const plateColumns = css`
+  grid-column: 1 / -1;
+  justify-self: end;
+
+  @media ${SPLIT_QUERY} {
+    grid-column: 7 / 13;
+    justify-self: center;
+  }
+
+  @media (min-width: ${({ theme }) => theme.breakpoints.desktop}) {
+    grid-column: 7 / 12;
+  }
+`;
+
+/* Plate width: on phones a modest frontispiece that leaves the headline above
+   the fold; in two columns 72svh tall (4:5) unless the column is narrower. */
+const plateWidth = css`
+  width: clamp(168px, calc((100svh - 460px) * 0.8), 56vw);
+  max-width: 300px;
+
+  @media ${SPLIT_QUERY} {
+    width: min(57.6svh, 100%);
+    max-width: none;
+  }
+`;
+
+const CordCell = styled.div`
+  ${plateColumns}
+  grid-row: top / plate-top;
+  display: flex;
+  justify-content: center;
+  ${plateWidth}
+`;
+
+const PlateCell = styled(HangingPlate)`
+  ${plateColumns}
+  grid-row: plate-top / plate-bottom;
+  ${plateWidth}
+`;
+
+const CaptionCell = styled(HangingCaption)`
+  ${plateColumns}
+  grid-row: plate-bottom / caption-bottom;
+  ${plateWidth}
+  padding-top: ${({ theme }) => theme.spacing.md};
+`;
+
+/* ---------- Copy ---------- */
+
+const Copy = styled.div`
+  grid-column: 1 / -1;
+  grid-row: caption-bottom / end;
+  padding-top: ${({ theme }) => theme.spacing.xl};
+
+  @media ${SPLIT_QUERY} {
+    grid-column: 1 / 7;
+    grid-row: top / plate-bottom;
+    align-self: end;
+    padding-top: 112px;
+  }
+`;
+
+const Head = styled(motion.div)``;
+
+const Actions = styled(motion.div)``;
+
+const Eyebrow = styled.p`
+  font-family: ${({ theme }) => theme.fonts.main};
+  font-size: 0.75rem;
+  font-weight: 400;
+  letter-spacing: 0.24em;
+  line-height: 1.6;
+  text-transform: uppercase;
+  color: ${({ theme }) => theme.colors.primary};
+  margin: 0 0 ${({ theme }) => theme.spacing.lg};
+  ${entrance(0)}
+
+  @media (max-width: 767px) {
+    font-size: 0.6875rem;
+    letter-spacing: 0.2em;
+  }
+`;
+
+/* Real spaces sit either side of each dot, so the text reads naturally aloud */
+const EyebrowDot = styled.span.attrs({ 'aria-hidden': true })`
+  margin: 0 0.25em;
+`;
+
+/* Below 1024px the copy column is narrower than the whole line, so the
+   studio's name takes its own line rather than leaving "2022" orphaned. */
+const EyebrowName = styled.span`
+  @media (max-width: 1023px) {
+    display: block;
+
+    & + ${EyebrowDot} {
+      display: none;
+    }
+  }
+`;
+
+const Headline = styled.h1`
+  font-family: ${({ theme }) => theme.fonts.heading};
+  font-size: clamp(2.25rem, 9.4vw, 3rem);
+  font-weight: 400;
+  line-height: 1.06;
+  letter-spacing: -0.01em;
+  color: ${({ theme }) => theme.colors.text};
+  margin: 0 0 ${({ theme }) => theme.spacing.lg};
+  ${entrance(0)}
+
+  span,
+  em {
+    display: block;
+  }
+
+  em {
+    font-style: italic;
+    color: ${({ theme }) => theme.colors.primary};
+  }
+
+  @media ${SPLIT_QUERY} {
+    font-size: clamp(2.5rem, 4.4vw, 4.5rem);
+  }
+`;
+
+const Subhead = styled.p`
+  font-family: ${({ theme }) => theme.fonts.main};
+  font-size: 1rem;
+  font-weight: 400;
+  line-height: 1.7;
+  color: ${({ theme }) => theme.colors.textSecondary};
+  max-width: 34rem;
+  margin: 0 0 ${({ theme }) => theme.spacing.xl};
+  ${entrance(100)}
+
+  @media (min-width: ${({ theme }) => theme.breakpoints.desktop}) {
+    font-size: 1.0625rem;
+    max-width: 30rem;
+  }
+`;
+
 const CtaRow = styled.div`
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  justify-content: center;
   gap: ${({ theme }) => theme.spacing.md} ${({ theme }) => theme.spacing.xl};
   ${entrance(200)}
 
@@ -220,8 +374,10 @@ const PriceLine = styled.p`
   ${entrance(300)}
 `;
 
+/* Below 1024px the copy column is too narrow for one line, so the two
+   clauses stack and the dot between them goes */
 const PriceClause = styled.span`
-  @media (max-width: 767px) {
+  @media (max-width: 1023px) {
     display: block;
   }
 `;
@@ -229,82 +385,243 @@ const PriceClause = styled.span`
 const PriceSeparator = styled.span`
   color: ${({ theme }) => theme.colors.primary};
 
-  /* On phones the two clauses stack, so the dot is not needed */
-  @media (max-width: 767px) {
+  @media (max-width: 1023px) {
     display: none;
   }
 `;
 
-const ScrollIndicator = styled.div`
-  position: absolute;
-  bottom: 40px;
-  left: 50%;
-  transform: translateX(-50%);
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 8px;
-  opacity: 0.5;
+const ColophonLine = styled.p`
+  margin: ${({ theme }) => theme.spacing.md} 0 0;
+  ${entrance(400)}
+`;
 
-  /* Opacity only, so the centering transform is left alone */
-  @media (prefers-reduced-motion: no-preference) {
-    animation: ${fadeIn} ${DUR.hero}s cubic-bezier(${EASE_OUT.join(', ')}) 400ms both;
+const ColophonName = styled.span`
+  color: ${({ theme }) => theme.colors.text};
+`;
+
+const ColophonArrow = styled.span.attrs({ 'aria-hidden': true })`
+  display: inline-block;
+  margin-left: 0.4em;
+  color: ${({ theme }) => theme.colors.primary};
+  transition: transform ${DUR.hover}s cubic-bezier(${EASE_OUT.join(', ')});
+`;
+
+const Colophon = styled.a`
+  display: inline-block;
+  padding: ${({ theme }) => theme.spacing.xs} 0;
+  font-family: ${({ theme }) => theme.fonts.main};
+  font-size: 0.8125rem;
+  font-weight: 400;
+  letter-spacing: 0.02em;
+  line-height: 1.6;
+  color: ${({ theme }) => theme.colors.textSecondary};
+  transition: color ${DUR.hover}s cubic-bezier(${EASE_OUT.join(', ')});
+
+  &:hover {
+    color: ${({ theme }) => theme.colors.text};
   }
 
-  /* Where the hero is compact the cue would sit on the price line */
-  @media ${COMPACT} {
-    display: none;
+  &:hover ${ColophonArrow} {
+    transform: translateX(4px);
+  }
+
+  ${focusRing}
+`;
+
+/* ---------- The runway's closing running header ---------- */
+
+/* Drawn only by the pinned runway; elsewhere the page's own 01 mark shows */
+const StageMark = styled(MarkRow)`
+  display: none;
+  ${plateColumns}
+  ${plateWidth}
+  grid-row: plate-bottom / caption-bottom;
+  align-self: start;
+  /* Where the plate hung, centred on the line where its rod rested */
+  transform: translateY(-50%);
+
+  @media ${PIN_QUERY} {
+    display: flex;
+
+    /* Resting frame before hydration: not yet drawn */
+    ${MarkRule} {
+      transform: scaleX(0);
+    }
+
+    ${MarkNumeral}, ${MarkLabel} {
+      opacity: 0;
+    }
   }
 `;
 
-const Line = styled.div`
-  width: 1px;
-  height: 60px;
-  background: ${({ theme }) => theme.colors.textSecondary};
-`;
+type Mode = 'ssr' | 'pin' | 'exit' | 'still';
 
 export default function HeroSection() {
-  const ref = useRef(null);
-  const reduce = useReducedMotionSafe();
-  const { scrollYProgress } = useScroll({
-    target: ref,
-    offset: ["start start", "end start"]
-  });
+  const runwayRef = useRef<HTMLElement>(null);
+  const cordRef = useRef<HTMLDivElement>(null);
+  const actionsRef = useRef<HTMLDivElement>(null);
 
-  const y = useTransform(scrollYProgress, [0, 1], ["0%", "30%"]);
-  const opacity = useTransform(scrollYProgress, [0, 0.5], [1, 0]);
+  const hydrated = useHydrated();
+  const pinned = useMediaQuery(PIN_QUERY);
+  const reduce = useReducedMotionSafe();
+  const mode: Mode = !hydrated ? 'ssr' : pinned ? 'pin' : reduce ? 'still' : 'exit';
+
+  // p: the pinned runway. e: the unpinned hero leaving the viewport.
+  const { scrollYProgress: p } = useScroll({ target: runwayRef, offset: ['start start', 'end end'] });
+  const { scrollYProgress: e } = useScroll({ target: runwayRef, offset: ['start start', 'end start'] });
+
+  // The light comes up: the band slides in, its image slides back by the same amount
+  const band = useTransform(p, RUN.band, [BAND_START, BAND_REST], { ease: settle });
+  const bandX = useMotionTemplate`${band}%`;
+  const bandCounterX = useTransform(band, (v) => `${-v}%`);
+
+  // The scroll is taken down: roll up from the bottom, rod on the rising edge
+  const roll = useTransform(p, RUN.roll, [0, 100], { ease: steady });
+  const rollerY = useTransform(roll, (v) => `${-v}%`);
+  const rollerCounterY = useMotionTemplate`${roll}%`;
+
+  // Then the cord retracts, lifting the rolled scroll (now just its rod) away
+  const lift = useTransform(p, RUN.lift, [0, 1], { ease: steady });
+  const cordScale = useTransform(lift, (v) => 1 - v);
+  const cordHeight = useMotionValue(0);
+  // A few px past the cord's length, so the rod clears the stage's top edge
+  const liftY = useTransform([lift, cordHeight], ([l, h]: number[]) => -l * (h + 8));
+
+  const captionOpacity = useTransform(p, RUN.caption, [1, 0]);
+  const headOpacity = useTransform(p, RUN.head, [1, 0]);
+  const headY = useTransform(p, RUN.head, [0, -RISE.item]);
+  const actionsOpacity = useTransform(p, RUN.actions, [1, 0]);
+  const actionsY = useTransform(p, RUN.actions, [0, -RISE.word]);
+
+  const ruleScale = useTransform(p, RUN.rule, [0, 1], { ease: draw });
+  const labelOpacity = useTransform(p, RUN.label, [0, 1]);
+  const labelY = useTransform(p, RUN.label, [8, 0]);
+
+  // Unpinned exit: the plate settles back and dims as the hero leaves
+  const exitScale = useTransform(e, [0, 1], [1, EXIT.scale]);
+  const exitY = useTransform(e, [0, 1], ['0vh', EXIT.rise]);
+  const exitOpacity = useTransform(e, EXIT.fade, [1, 0.3]);
+  const exitCaption = useTransform(e, [0, 0.35], [1, 0]);
+
+  // The cord's height is the lift distance; transforms do not change offsetHeight
+  useEffect(() => {
+    const el = cordRef.current;
+    if (!el) return;
+    const measure = () => cordHeight.set(el.offsetHeight);
+    measure();
+    const observer = new ResizeObserver(measure);
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, [cordHeight]);
+
+  // Faded calls to action leave the tab order (and return with them)
+  const setActionsInert = (opacity: number) => {
+    const el = actionsRef.current;
+    if (el) el.inert = mode === 'pin' && opacity < 0.35;
+  };
+  useMotionValueEvent(actionsOpacity, 'change', setActionsInert);
+  useEffect(() => {
+    const el = actionsRef.current;
+    if (el) el.inert = mode === 'pin' && actionsOpacity.get() < 0.35;
+  }, [mode, actionsOpacity]);
+
+  /*
+   * Every element always receives the same keys once hydrated: the live
+   * motion value in its active mode, the resting value otherwise. Swapping a
+   * key out entirely would leave a stale inline value behind on mode changes.
+   */
+  const pin = mode === 'pin';
+  const exit = mode === 'exit';
+  const live = mode !== 'ssr';
+
+  const plateStyles: PlateStyles | undefined = live
+    ? {
+        box: {
+          y: pin ? liftY : exit ? exitY : 0,
+          scale: exit ? exitScale : 1,
+          opacity: exit ? exitOpacity : 1,
+        },
+        roller: { y: pin ? rollerY : '0%' },
+        rollerInner: { y: pin ? rollerCounterY : '0%' },
+        band: { x: pin ? bandX : `${BAND_REST}%` },
+        bandInner: { x: pin ? bandCounterX : `${-BAND_REST}%` },
+        rod: { y: pin ? rollerY : '0%' },
+      }
+    : undefined;
+
+  const cordStyle: MotionStyle | undefined = live
+    ? { scaleY: pin ? cordScale : 1, y: exit ? exitY : 0 }
+    : undefined;
+  const captionStyle: MotionStyle | undefined = live
+    ? { opacity: pin ? captionOpacity : exit ? exitCaption : 1, y: exit ? exitY : 0 }
+    : undefined;
+  const headStyle: MotionStyle | undefined = live
+    ? { opacity: pin ? headOpacity : 1, y: pin ? headY : 0 }
+    : undefined;
+  const actionsStyle: MotionStyle | undefined = live
+    ? { opacity: pin ? actionsOpacity : 1, y: pin ? actionsY : 0 }
+    : undefined;
+  const ruleStyle: MotionStyle | undefined = live ? { scaleX: pin ? ruleScale : 0 } : undefined;
+  const labelStyle: MotionStyle | undefined = live
+    ? { opacity: pin ? labelOpacity : 0, y: pin ? labelY : 0 }
+    : undefined;
 
   return (
-    <HeroWrapper id="hero" ref={ref}>
-      <BackgroundImage style={{ y: reduce ? 0 : y, opacity: reduce ? 1 : opacity }} />
+    <Runway id="hero" ref={runwayRef}>
+      <Stage data-hero-stage>
+        <CordCell>
+          <CordSlot ref={cordRef}>
+            <Cord style={cordStyle} />
+          </CordSlot>
+        </CordCell>
 
-      <Content>
-        <PreTitle>Est. 2022</PreTitle>
+        <PlateCell styles={plateStyles} />
+        <CaptionCell style={captionStyle} />
 
-        <Tagline>
-          Crafting <em>timeless</em> digital legacies.
-        </Tagline>
+        <Copy>
+          <Head style={headStyle}>
+            <Eyebrow>
+              <EyebrowName>Bonsai Web Design</EyebrowName> <EyebrowDot>·</EyebrowDot> A studio of
+              two <EyebrowDot>·</EyebrowDot> Est.&nbsp;2022
+            </Eyebrow>
 
-        <SubText>
-          We craft tailored web experiences for brands that refuse to compromise on elegance.
-        </SubText>
+            <Headline>
+              <span>Timeless websites,</span> <em>shaped by hand.</em>
+            </Headline>
 
-        <CtaRow>
-          <PrimaryCta href="#contact">Start a project</PrimaryCta>
-          <SecondaryCta href="#portfolio">See the work</SecondaryCta>
-        </CtaRow>
+            <Subhead>
+              We&apos;re David and Jenna Shapiro. We design and build custom websites, then keep
+              tending them for years.
+            </Subhead>
+          </Head>
 
-        <PriceLine>
-          <PriceClause>Custom sites from $1500 per page</PriceClause>{' '}
-          <PriceSeparator>·</PriceSeparator>{' '}
-          <PriceClause>Updates and care at $120/hr</PriceClause>
-        </PriceLine>
-      </Content>
+          <Actions ref={actionsRef} style={actionsStyle}>
+            <CtaRow>
+              <PrimaryCta href="#contact">Start a project</PrimaryCta>
+              <SecondaryCta href="#portfolio">See the work</SecondaryCta>
+            </CtaRow>
 
-      <ScrollIndicator>
-        <span style={{ fontSize: '0.8rem', letterSpacing: '0.1em' }}>SCROLL</span>
-        <Line />
-      </ScrollIndicator>
-    </HeroWrapper>
+            <PriceLine>
+              <PriceClause>Custom sites from $1500 per page</PriceClause>{' '}
+              <PriceSeparator>·</PriceSeparator>{' '}
+              <PriceClause>Updates and care at $120/hr</PriceClause>
+            </PriceLine>
+
+            <ColophonLine>
+              <Colophon href="#portfolio">
+                Now cultivating: <ColophonName>Healthspan Collective</ColophonName>, five sites
+                <ColophonArrow>→</ColophonArrow>
+              </Colophon>
+            </ColophonLine>
+          </Actions>
+        </Copy>
+
+        <StageMark aria-hidden="true">
+          <MarkNumeral style={labelStyle}>01 / 07</MarkNumeral>
+          <MarkLabel style={labelStyle}>Selected work</MarkLabel>
+          <MarkRule style={ruleStyle} />
+        </StageMark>
+      </Stage>
+    </Runway>
   );
 }
